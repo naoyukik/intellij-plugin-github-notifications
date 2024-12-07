@@ -132,6 +132,7 @@ detekt {
     allRules = false
     config.setFrom("$projectDir/config/detekt/detekt.yml")
     autoCorrect = true
+    parallel = true
 }
 
 tasks {
