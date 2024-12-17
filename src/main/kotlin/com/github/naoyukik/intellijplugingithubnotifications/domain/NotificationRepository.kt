@@ -5,4 +5,5 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHub
 
 interface NotificationRepository {
     fun fetchNotifications(token: GitHubToken): List<GitHubNotification>
+    fun fetchNotificationsMock(): List<GitHubNotification>
 }

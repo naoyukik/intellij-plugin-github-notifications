@@ -1,5 +1,6 @@
 package com.github.naoyukik.intellijplugingithubnotifications.domain.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,6 +18,7 @@ data class GitHubNotification(
 
     @Serializable
     data class Repository(
+        @SerialName("full_name")
         val fullName: String,
     )
 }

@@ -5,10 +5,12 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.Notification
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubToken
 
-class ApiClientWorkflow(private val repository: NotificationRepository) {
+class ApiClientWorkflow(
+    private val repository: NotificationRepository
+) {
     fun fetchNotifications(): List<TableDataDto> {
-        val token = getToken()
-        val notifications = repository.fetchNotifications(token)
+        // val token = getToken()
+        val notifications = repository.fetchNotificationsMock()
         return notifications.toTableDataDto()
     }
 
