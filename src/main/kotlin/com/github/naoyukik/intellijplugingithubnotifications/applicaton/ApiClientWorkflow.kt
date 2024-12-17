@@ -6,7 +6,7 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHub
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubToken
 
 class ApiClientWorkflow(
-    private val repository: NotificationRepository
+    private val repository: NotificationRepository,
 ) {
     fun fetchNotifications(): List<TableDataDto> {
         // val token = getToken()
@@ -17,12 +17,12 @@ class ApiClientWorkflow(
     private fun List<GitHubNotification>.toTableDataDto(): List<TableDataDto> {
         return this.map {
             TableDataDto(
-                it.subject.title
+                it.subject.title,
             )
         }
     }
 
     private fun getToken(): GitHubToken = GitHubToken(
-        "String"
+        "String",
     )
 }
