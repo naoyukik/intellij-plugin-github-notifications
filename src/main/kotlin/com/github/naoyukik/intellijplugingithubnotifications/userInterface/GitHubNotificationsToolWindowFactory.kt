@@ -11,11 +11,11 @@ import com.intellij.ui.components.JBPanel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.table.JBTable
+import java.awt.BorderLayout
 import javax.swing.table.DefaultTableModel
 
 class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        // val apiClient = GitHubApiClient("your_personal_access_token_here")
         val apiClient = ApiClientWorkflow(NotificationRepositoryImpl())
         val notifications = apiClient.fetchNotifications()
         val notificationToolPanel = notifications.toJBTable().toJBScrollPane().toJBPanel()
@@ -41,7 +41,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     private fun JBScrollPane.toJBPanel(): JBPanel<JBPanel<*>> {
-        return JBPanel<JBPanel<*>>().apply {
+        return JBPanel<JBPanel<*>>(BorderLayout()).apply {
             add(this@toJBPanel)
         }
     }
