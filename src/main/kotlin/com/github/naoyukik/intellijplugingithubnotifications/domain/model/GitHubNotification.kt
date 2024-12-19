@@ -20,5 +20,7 @@ data class GitHubNotification(
     data class Repository(
         @SerialName("full_name")
         val fullName: String,
+        @SerialName("html_url")
+        val htmlUrl: String,
     )
 }
