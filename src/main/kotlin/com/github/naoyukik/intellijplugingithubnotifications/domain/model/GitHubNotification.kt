@@ -1,0 +1,26 @@
+package com.github.naoyukik.intellijplugingithubnotifications.domain.model
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class GitHubNotification(
+    val id: String,
+    val subject: Subject,
+    val repository: Repository,
+) {
+    @Serializable
+    data class Subject(
+        val title: String,
+        val url: String,
+        val type: String,
+    )
+
+    @Serializable
+    data class Repository(
+        @SerialName("full_name")
+        val fullName: String,
+        @SerialName("html_url")
+        val htmlUrl: String,
+    )
+}

@@ -17,7 +17,7 @@ class MyToolWindowFactory : ToolWindowFactory {
     init {
         thisLogger().warn(
             "Don't forget to remove all non-needed sample code files with " +
-                "their corresponding registration entries in `plugin.xml`."
+                "their corresponding registration entries in `plugin.xml`.",
         )
     }
 
@@ -42,7 +42,7 @@ class MyToolWindowFactory : ToolWindowFactory {
                     addActionListener {
                         label.text = MyBundle.message("randomLabel", service.getRandomNumber())
                     }
-                }
+                },
             )
         }
     }
