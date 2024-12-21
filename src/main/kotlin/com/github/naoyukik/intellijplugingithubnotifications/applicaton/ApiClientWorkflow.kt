@@ -3,7 +3,6 @@ package com.github.naoyukik.intellijplugingithubnotifications.applicaton
 import com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.domain.NotificationRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
-import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubToken
 import java.net.URI
 import java.net.URL
 
@@ -17,9 +16,7 @@ class ApiClientWorkflow(
     }
 
     fun fetchNotifications(): List<TableDataDto> {
-        // gh commandを実行する
-
-        val notifications = repository.fetchNotificationsMock()
+        val notifications = repository.fetchNotifications()
         return notifications.toTableDataDto()
     }
 
@@ -41,8 +38,4 @@ class ApiClientWorkflow(
         val number = subjectUrl.split("/").last()
         return URI("$htmlUrl/${TYPE_TO_PATH[type]}/$number").toURL()
     }
-
-    private fun getToken(): GitHubToken = GitHubToken(
-        "String",
-    )
 }
