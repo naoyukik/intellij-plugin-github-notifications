@@ -34,9 +34,10 @@ repositories {
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
-    implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     testImplementation(libs.junit)
+    testImplementation("io.kotest:kotest-runner-junit5:6.0.0.M1")
+    testImplementation("io.kotest:kotest-assertions-core:6.0.0.M1")
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
@@ -50,7 +51,6 @@ dependencies {
         // Uses `platformPlugins` property from the gradle.properties file for plugin from JetBrains Marketplace.
         plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
 
-        instrumentationTools()
         pluginVerifier()
         zipSigner()
         testFramework(TestFrameworkType.Platform)
@@ -172,4 +172,8 @@ intellijPlatformTesting {
             }
         }
     }
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }
