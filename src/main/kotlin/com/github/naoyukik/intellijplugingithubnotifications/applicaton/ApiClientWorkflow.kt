@@ -12,6 +12,7 @@ class ApiClientWorkflow(
     companion object {
         val TYPE_TO_PATH = mapOf(
             "PullRequest" to "pull",
+            "Issue" to "issues",
         )
     }
 
