@@ -15,16 +15,34 @@ import java.awt.BorderLayout
 import java.awt.Desktop
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import javax.swing.JButton
 import javax.swing.table.DefaultTableModel
 
 class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val apiClient = ApiClientWorkflow(NotificationRepositoryImpl())
         val notifications = apiClient.fetchNotifications()
-        val notificationToolPanel = notifications.toJBTable().toJBScrollPane().toJBPanel()
+        val notificationToolTable = notifications.toJBTable()
+        val refreshButton = updateNotifications(notificationToolTable)
 
+        val notificationToolPanel = notificationToolTable.toJBScrollPane().toJBPanel()
+        notificationToolPanel.add(refreshButton, BorderLayout.WEST)
         val content = ContentFactory.getInstance().createContent(notificationToolPanel, null, false)
         toolWindow.contentManager.addContent(content)
+    }
+
+    private fun createRefreshButton(): JButton {
+        return JButton("refresh")
+    }
+
+    private fun updateNotifications(table: JBTable): JButton {
+        val refreshButton = createRefreshButton()
+        refreshButton.addActionListener {
+            val notifications = ApiClientWorkflow(NotificationRepositoryImpl()).fetchNotifications()
+            table.model = notifications.toJBTable().model
+        }
+
+        return refreshButton
     }
 
     private fun List<TableDataDto>.toJBTable(): JBTable {
