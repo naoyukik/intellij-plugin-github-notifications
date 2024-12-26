@@ -24,9 +24,10 @@ import java.awt.event.MouseEvent
 import javax.swing.table.DefaultTableModel
 
 class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
+    private val apiClientWorkflow = ApiClientWorkflow(NotificationRepositoryImpl())
+
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val apiClient = ApiClientWorkflow(NotificationRepositoryImpl())
-        val notifications = apiClient.fetchNotifications()
+        val notifications = apiClientWorkflow.fetchNotifications()
         val notificationToolTable = notifications.toJBTable()
         val refreshButton = createRefreshButton(notificationToolTable)
 
@@ -43,7 +44,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
             AllIcons.Actions.Refresh,
         ) {
             override fun actionPerformed(e: AnActionEvent) {
-                val notifications = ApiClientWorkflow(NotificationRepositoryImpl()).fetchNotifications()
+                val notifications = apiClientWorkflow.fetchNotifications()
                 table.model = notifications.toJBTable().model
             }
         }
