@@ -4,10 +4,11 @@ import com.github.naoyukik.intellijplugingithubnotifications.applicaton.ApiClien
 import com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.NotificationRepositoryImpl
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.impl.ActionButton
-import com.intellij.openapi.actionSystem.impl.PresentationFactory
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
@@ -18,9 +19,9 @@ import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.table.JBTable
 import java.awt.BorderLayout
 import java.awt.Desktop
-import java.awt.Dimension
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import javax.swing.JComponent
 import javax.swing.table.DefaultTableModel
 
 class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
@@ -28,33 +29,44 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val notifications = apiClientWorkflow.fetchNotifications()
+
         val notificationToolTable = notifications.toJBTable()
-        val refreshButton = createRefreshButton(notificationToolTable)
+
+        val actionGroup = DefaultActionGroup()
+
+        val refreshAction = createRefreshAction(notificationToolTable)
+
+        actionGroup.add(refreshAction)
 
         val notificationToolPanel = notificationToolTable.toJBScrollPane().toJBPanel()
-        notificationToolPanel.add(refreshButton, BorderLayout.WEST)
+        val actionToolbar = createActionToolbar(actionGroup, notificationToolPanel)
+        notificationToolPanel.add(actionToolbar.component, BorderLayout.WEST)
+
         val content = ContentFactory.getInstance().createContent(notificationToolPanel, null, false)
         toolWindow.contentManager.addContent(content)
     }
 
-    private fun createRefreshButton(table: JBTable): ActionButton {
-        val refreshAction = object : AnAction(
+    private fun createActionToolbar(actionGroup: DefaultActionGroup, targetComponent: JComponent): ActionToolbar {
+        return ActionManager.getInstance().createActionToolbar(
+            "GitHubNotificationToolbar",
+            actionGroup,
+            false,
+        ).apply {
+            setTargetComponent(targetComponent)
+        }
+    }
+
+    private fun createRefreshAction(table: JBTable): AnAction {
+        return object : AnAction(
             "Refresh Notifications",
             "Fetch latest GitHub notifications",
-            AllIcons.Actions.Refresh,
+            AllIcons.General.InlineRefresh,
         ) {
             override fun actionPerformed(e: AnActionEvent) {
                 val notifications = apiClientWorkflow.fetchNotifications()
                 table.model = notifications.toJBTable().model
             }
         }
-
-        return ActionButton(
-            refreshAction,
-            PresentationFactory().getPresentation(refreshAction),
-            "RefreshNotificationsToolWindow",
-            Dimension(24, 24),
-        )
     }
 
     private fun List<TableDataDto>.toJBTable(): JBTable {
