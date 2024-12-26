@@ -1,6 +1,10 @@
 [versions]
 # libraries
 junit = "4.13.2"
+kotlinx-serialization-json = "1.7.3"
+kotest-runner-junit5 = "6.0.0.M1"
+kotest-assertions-core = "6.0.0.M1"
+detekt-formatting = "1.23.7"
 
 # plugins
 changelog = "2.2.1"
@@ -12,6 +16,10 @@ detekt = "1.23.7"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+kotlinxSerializationJson = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+kotestRunnerJunit = {group = "io.kotest", name = "kotest-runner-junit5", version.ref= "kotest-runner-junit5"}
+kotestAssertionsCore = {group = "io.kotest", name = "kotest-assertions-core", version.ref= "kotest-assertions-core"}
+detektFormatting = {group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt-formatting"}
 
 [plugins]
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
