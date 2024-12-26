@@ -33,11 +33,11 @@ repositories {
 
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    detektPlugins(libs.detektFormatting)
+    implementation(libs.kotlinxSerializationJson)
     testImplementation(libs.junit)
-    testImplementation("io.kotest:kotest-runner-junit5:6.0.0.M1")
-    testImplementation("io.kotest:kotest-assertions-core:6.0.0.M1")
+    testImplementation(libs.kotestRunnerJunit)
+    testImplementation(libs.kotestAssertionsCore)
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
