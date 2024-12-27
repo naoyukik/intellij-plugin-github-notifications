@@ -17,20 +17,30 @@ import com.intellij.ui.components.JBPanel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.table.JBTable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.awt.BorderLayout
 import java.awt.Desktop
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.io.IOException
+import java.net.URI
+import java.net.URISyntaxException
 import javax.swing.JComponent
 import javax.swing.table.DefaultTableModel
+import kotlin.coroutines.CoroutineContext
 
-class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
+class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, CoroutineScope {
     private val apiClientWorkflow = ApiClientWorkflow(NotificationRepositoryImpl())
+    private val coroutineJob = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + coroutineJob
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val notifications = apiClientWorkflow.fetchNotifications()
-
-        val notificationToolTable = notifications.toJBTable()
+        val notificationToolTable = initializeJBTable()
 
         val actionGroup = DefaultActionGroup()
 
@@ -44,6 +54,8 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
 
         val content = ContentFactory.getInstance().createContent(notificationToolPanel, null, false)
         toolWindow.contentManager.addContent(content)
+
+        refreshNotifications(notificationToolTable)
     }
 
     private fun createActionToolbar(actionGroup: DefaultActionGroup, targetComponent: JComponent): ActionToolbar {
@@ -63,10 +75,41 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
             AllIcons.General.InlineRefresh,
         ) {
             override fun actionPerformed(e: AnActionEvent) {
-                val notifications = apiClientWorkflow.fetchNotifications()
-                table.model = notifications.toJBTable().model
+                CoroutineScope(Dispatchers.Main).launch {
+                    try {
+                        val notifications = apiClientWorkflow.fetchNotifications()
+                        table.model = notifications.toJBTable().model
+                    } catch (ex: IOException) {
+                        ex.printStackTrace()
+                    } catch (ex: IllegalStateException) {
+                        ex.printStackTrace()
+                    } catch (ex: IllegalArgumentException) {
+                        ex.printStackTrace()
+                    }
+                }
             }
         }
+    }
+
+    private fun refreshNotifications(table: JBTable) {
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val notifications = apiClientWorkflow.fetchNotifications()
+                table.model = notifications.toJBTable().model
+            } catch (ex: IOException) {
+                ex.printStackTrace()
+            } catch (ex: IllegalArgumentException) {
+                ex.printStackTrace()
+            }
+        }
+    }
+
+    private fun initializeJBTable(): JBTable {
+        val columnName = arrayOf(
+            "message",
+            "Link",
+        )
+        return JBTable(DefaultTableModel(arrayOf(), columnName))
     }
 
     private fun List<TableDataDto>.toJBTable(): JBTable {
@@ -97,10 +140,10 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
                     if (url.isEmpty()) return
                     try {
                         val desktop = Desktop.getDesktop()
-                        desktop.browse(java.net.URI(url))
-                    } catch (ex: java.io.IOException) {
+                        desktop.browse(URI(url))
+                    } catch (ex: IOException) {
                         ex.printStackTrace()
-                    } catch (ex: java.net.URISyntaxException) {
+                    } catch (ex: URISyntaxException) {
                         ex.printStackTrace()
                     }
                 }
