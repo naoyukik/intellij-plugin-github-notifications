@@ -41,6 +41,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val notificationToolTable = initializeJBTable()
+        setupMouseListener(notificationToolTable)
 
         val actionGroup = DefaultActionGroup()
 
@@ -112,22 +113,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         return JBTable(DefaultTableModel(arrayOf(), columnName))
     }
 
-    private fun List<TableDataDto>.toJBTable(): JBTable {
-        val columnName = arrayOf(
-            "message",
-            "Link",
-        )
-        val data = this.map { dto ->
-            arrayOf(
-                dto.title,
-                "<html><a href='${dto.htmlUrl}'>Open</a></html>",
-            )
-        }.toTypedArray()
-
-        val tableModel = DefaultTableModel(data, columnName)
-        val table = JBTable(tableModel)
-
-        // セルのリンクをクリック可能にする
+    private fun setupMouseListener(table: JBTable) {
         table.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
                 val row = table.rowAtPoint(e.point)
@@ -149,6 +135,22 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 }
             }
         })
+    }
+
+    private fun List<TableDataDto>.toJBTable(): JBTable {
+        val columnName = arrayOf(
+            "message",
+            "Link",
+        )
+        val data = this.map { dto ->
+            arrayOf(
+                dto.title,
+                "<html><a href='${dto.htmlUrl}'>Open</a></html>",
+            )
+        }.toTypedArray()
+
+        val tableModel = DefaultTableModel(data, columnName)
+        val table = JBTable(tableModel)
 
         return table
     }
