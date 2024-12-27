@@ -3,11 +3,15 @@ package com.github.naoyukik.intellijplugingithubnotifications.applicaton
 import com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.domain.NotificationRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.net.URI
 import java.net.URL
 
 class ApiClientWorkflow(
     private val repository: NotificationRepository,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
     companion object {
         val TYPE_TO_PATH = mapOf(
@@ -16,9 +20,9 @@ class ApiClientWorkflow(
         )
     }
 
-    fun fetchNotifications(): List<TableDataDto> {
+    suspend fun fetchNotifications(): List<TableDataDto> = withContext(dispatcher) {
         val notifications = repository.fetchNotifications()
-        return notifications.toTableDataDto()
+        notifications.toTableDataDto()
     }
 
     private fun List<GitHubNotification>.toTableDataDto(): List<TableDataDto> {
