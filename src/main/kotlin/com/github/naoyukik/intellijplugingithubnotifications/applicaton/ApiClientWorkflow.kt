@@ -27,20 +27,29 @@ class ApiClientWorkflow(
 
     private fun List<GitHubNotification>.toTableDataDto(): List<TableDataDto> {
         return this.map {
-            val htmlUrl = apiUrlToHtmlUrlConverter(
-                htmlUrl = it.repository.htmlUrl,
-                subjectUrl = it.subject.url,
-                type = it.subject.type,
-            )
+            val issueNumber = getIssueNumber(it.subject.url)
             TableDataDto(
-                it.subject.title,
-                htmlUrl,
+                title = it.subject.title,
+                fullName = apiUrlToRepositoryIssueNumberConverter(
+                    repositoryFullName = it.repository.fullName,
+                    issueNumber = issueNumber,
+                ),
+                htmlUrl = apiUrlToHtmlUrlConverter(
+                    htmlUrl = it.repository.htmlUrl,
+                    issueNumber = issueNumber,
+                    type = it.subject.type,
+                ),
             )
         }
     }
 
-    fun apiUrlToHtmlUrlConverter(htmlUrl: String, subjectUrl: String, type: String): URL {
-        val number = subjectUrl.split("/").last()
-        return URI("$htmlUrl/${TYPE_TO_PATH[type]}/$number").toURL()
+    private fun apiUrlToRepositoryIssueNumberConverter(repositoryFullName: String, issueNumber: Int): String {
+        return "$repositoryFullName #$issueNumber"
     }
+
+    private fun apiUrlToHtmlUrlConverter(htmlUrl: String, issueNumber: Int, type: String): URL {
+        return URI("$htmlUrl/${TYPE_TO_PATH[type]}/$issueNumber").toURL()
+    }
+
+    private fun getIssueNumber(url: String): Int = url.split("/").last().toInt()
 }

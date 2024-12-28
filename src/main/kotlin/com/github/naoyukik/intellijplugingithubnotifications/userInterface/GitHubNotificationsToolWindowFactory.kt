@@ -110,7 +110,9 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             "message",
             "Link",
         )
-        return JBTable(DefaultTableModel(arrayOf(), columnName))
+        return JBTable(object : DefaultTableModel(arrayOf(), columnName) {
+            override fun isCellEditable(row: Int, column: Int) = false
+        })
     }
 
     private fun setupMouseListener(table: JBTable) {
@@ -144,12 +146,14 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         )
         val data = this.map { dto ->
             arrayOf(
-                dto.title,
+                "<html>${dto.fullName}<br>${dto.title}</html>",
                 "<html><a href='${dto.htmlUrl}'>Open</a></html>",
             )
         }.toTypedArray()
 
-        val tableModel = DefaultTableModel(data, columnName)
+        val tableModel = object : DefaultTableModel(data, columnName) {
+            override fun isCellEditable(row: Int, column: Int) = false
+        }
         val table = JBTable(tableModel)
 
         return table
