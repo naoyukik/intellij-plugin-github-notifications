@@ -39,6 +39,8 @@ class ApiClientWorkflow(
                     issueNumber = issueNumber,
                     type = it.subject.type,
                 ),
+                reason = it.reason,
+                updatedAt = it.updatedAt,
             )
         }
     }

@@ -107,8 +107,10 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
 
     private fun initializeJBTable(): JBTable {
         val columnName = arrayOf(
-            "message",
             "Link",
+            "Message",
+            "Reason",
+            "Updated at",
         )
         return JBTable(object : DefaultTableModel(arrayOf(), columnName) {
             override fun isCellEditable(row: Int, column: Int) = false
@@ -122,7 +124,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 val col = table.columnAtPoint(e.point)
 
                 // 対象のセルがリンク列である場合
-                if (col == 1) {
+                if (col == 0) {
                     val link = table.getValueAt(row, col).toString()
                     val url = Regex("href='([^']*)'").find(link)?.groupValues?.get(1) ?: ""
                     if (url.isEmpty()) return
@@ -141,13 +143,17 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
 
     private fun List<TableDataDto>.toJBTable(): JBTable {
         val columnName = arrayOf(
-            "message",
             "Link",
+            "Message",
+            "Reason",
+            "Updated at",
         )
         val data = this.map { dto ->
             arrayOf(
-                "<html>${dto.fullName}<br>${dto.title}</html>",
                 "<html><a href='${dto.htmlUrl}'>Open</a></html>",
+                "<html>${dto.fullName}<br>${dto.title}</html>",
+                "<html>${dto.reason}</html>",
+                "<html>${dto.updatedAt}</html>",
             )
         }.toTypedArray()
 
