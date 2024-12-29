@@ -1,27 +1,22 @@
-# intellij-plugin-github-notifications
+# GitHub Notifications IntelliJ Plugin
 
 ![Build](https://github.com/naoyukik/intellij-plugin-github-notifications/workflows/Build/badge.svg)
-[![Version](https://img.shields.io/jetbrains/plugin/v/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
-
-## Template ToDo list
-- [x] Create a new [IntelliJ Platform Plugin Template][template] project.
-- [ ] Get familiar with the [template documentation][template].
-- [ ] Adjust the [pluginGroup](./gradle.properties) and [pluginName](./gradle.properties), as well as the [id](./src/main/resources/META-INF/plugin.xml) and [sources package](./src/main/kotlin).
-- [ ] Adjust the plugin description in `README` (see [Tips][docs:plugin-description])
-- [ ] Review the [Legal Agreements](https://plugins.jetbrains.com/docs/marketplace/legal-agreements.html?from=IJPluginTemplate).
-- [ ] [Publish a plugin manually](https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate) for the first time.
-- [ ] Set the `MARKETPLACE_ID` in the above README badges. You can obtain it once the plugin is published to JetBrains Marketplace.
-- [ ] Set the [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html?from=IJPluginTemplate) related [secrets](https://github.com/JetBrains/intellij-platform-plugin-template#environment-variables).
-- [ ] Set the [Deployment Token](https://plugins.jetbrains.com/docs/marketplace/plugin-upload.html?from=IJPluginTemplate).
-- [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
+[![Version](https://img.shields.io/jetbrains/plugin/v/26214-github-notifications.svg)](https://plugins.jetbrains.com/plugin/26214-github-notifications)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/26214-github-notifications.svg)](https://plugins.jetbrains.com/plugin/26214-github-notifications)
 
 <!-- Plugin description -->
-This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.
+The **GitHub Notifications IntelliJ Plugin** allows you to effortlessly view your GitHub notifications directly within the IntelliJ IDEA development environment. With this plugin, there's no need to frequently switch back and forth between your browser and IDE, improving your productivity during development.
 
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
+Key Features:
+- **Real-time Notification Tracking**: Displays a list of unread GitHub notifications.
+- **Intuitive Link Navigation**: Quickly open relevant GitHub resources (pull requests, issues, etc.) directly from the notification list.
+- **Simple Usability**: Refresh your notifications with just one click.
+- **Organized Notification View**: Presents notifications in a readable table format, including details like the link, reason, and timestamp.
 
-To keep everything working, do not remove `<!-- ... -->` sections. 
+**Important:**
+This plugin requires the **`gh CLI`** (GitHub CLI) to be installed and properly authenticated on your system. Please ensure it is set up before using this plugin.
+
+This plugin is designed to empower developers to remain focused on their work environment while staying up-to-date with important updates on GitHub.
 <!-- Plugin description end -->
 
 ## Installation
