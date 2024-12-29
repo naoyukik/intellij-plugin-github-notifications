@@ -30,8 +30,10 @@ import java.net.URI
 import java.net.URISyntaxException
 import javax.swing.JComponent
 import javax.swing.table.DefaultTableModel
+import javax.swing.table.TableColumn
 import kotlin.coroutines.CoroutineContext
 
+@Suppress("TooManyFunctions")
 class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, CoroutineScope {
     private val apiClientWorkflow = ApiClientWorkflow(NotificationRepositoryImpl())
     private val coroutineJob = Job()
@@ -80,6 +82,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                     try {
                         val notifications = apiClientWorkflow.fetchNotifications()
                         table.model = notifications.toJBTable().model
+                        setColumnWidth(table, 0, setCalculateLinkColumnWidth(table))
                     } catch (ex: IOException) {
                         ex.printStackTrace()
                     } catch (ex: IllegalStateException) {
@@ -97,6 +100,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             try {
                 val notifications = apiClientWorkflow.fetchNotifications()
                 table.model = notifications.toJBTable().model
+                setColumnWidth(table, 0, setCalculateLinkColumnWidth(table))
             } catch (ex: IOException) {
                 ex.printStackTrace()
             } catch (ex: IllegalArgumentException) {
@@ -107,10 +111,26 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
 
     private fun initializeJBTable(): JBTable {
         val columnName = arrayOf(
-            "message",
             "Link",
+            "Message",
+            "Reason",
+            "Updated at",
         )
-        return JBTable(DefaultTableModel(arrayOf(), columnName))
+        return JBTable(object : DefaultTableModel(arrayOf(), columnName) {
+            override fun isCellEditable(row: Int, column: Int) = false
+        }).apply {
+            setColumnWidth(this, 0, setCalculateLinkColumnWidth(this))
+        }
+    }
+
+    private fun setColumnWidth(table: JBTable, columnIndex: Int, width: Int): TableColumn? {
+        return table.columnModel.getColumn(
+            columnIndex,
+        ).apply {
+            this.preferredWidth = width
+            this.maxWidth = width
+            this.minWidth = width
+        }
     }
 
     private fun setupMouseListener(table: JBTable) {
@@ -120,7 +140,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 val col = table.columnAtPoint(e.point)
 
                 // 対象のセルがリンク列である場合
-                if (col == 1) {
+                if (col == 0) {
                     val link = table.getValueAt(row, col).toString()
                     val url = Regex("href='([^']*)'").find(link)?.groupValues?.get(1) ?: ""
                     if (url.isEmpty()) return
@@ -139,20 +159,39 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
 
     private fun List<TableDataDto>.toJBTable(): JBTable {
         val columnName = arrayOf(
-            "message",
             "Link",
+            "Message",
+            "Reason",
+            "Updated at",
         )
         val data = this.map { dto ->
             arrayOf(
-                dto.title,
                 "<html><a href='${dto.htmlUrl}'>Open</a></html>",
+                "<html>${dto.fullName}<br>${dto.title}</html>",
+                "<html>${dto.reason}</html>",
+                "<html>${dto.updatedAt}</html>",
             )
         }.toTypedArray()
 
-        val tableModel = DefaultTableModel(data, columnName)
-        val table = JBTable(tableModel)
+        val tableModel = object : DefaultTableModel(data, columnName) {
+            override fun isCellEditable(row: Int, column: Int) = false
+        }
+        val table = JBTable(tableModel).apply {
+            setColumnWidth(this, 0, setCalculateLinkColumnWidth(this))
+        }
 
         return table
+    }
+
+    private fun setCalculateColumnWidth(table: JBTable, text: String, padding: Int = 10): Int {
+        val fontWidth = table.getFontMetrics(table.font).run {
+            this.stringWidth(text)
+        }
+        return fontWidth + padding
+    }
+
+    private fun setCalculateLinkColumnWidth(table: JBTable): Int {
+        return setCalculateColumnWidth(table, "Open")
     }
 
     private fun JBTable.toJBScrollPane(): JBScrollPane {
