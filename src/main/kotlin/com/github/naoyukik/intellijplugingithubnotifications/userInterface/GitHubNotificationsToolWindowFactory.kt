@@ -3,6 +3,7 @@ package com.github.naoyukik.intellijplugingithubnotifications.userInterface
 import com.github.naoyukik.intellijplugingithubnotifications.applicaton.ApiClientWorkflow
 import com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.NotificationRepositoryImpl
+import com.github.naoyukik.intellijplugingithubnotifications.utility.DateTimeHandler
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionToolbar
@@ -165,11 +166,12 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             "Updated at",
         )
         val data = this.map { dto ->
+            val updatedAt = DateTimeHandler.convertToLocalDateTime(dto.updatedAt)
             arrayOf(
                 "<html><a href='${dto.htmlUrl}'>Open</a></html>",
                 "<html>${dto.fullName}<br>${dto.title}</html>",
                 "<html>${dto.reason}</html>",
-                "<html>${dto.updatedAt}</html>",
+                "<html>$updatedAt</html>",
             )
         }.toTypedArray()
 
