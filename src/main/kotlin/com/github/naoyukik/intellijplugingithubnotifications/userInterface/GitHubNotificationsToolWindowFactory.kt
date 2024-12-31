@@ -5,6 +5,7 @@ import com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto.Tabl
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.NotificationRepositoryImpl
 import com.github.naoyukik.intellijplugingithubnotifications.utility.DateTimeHandler
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.AnAction
@@ -12,6 +13,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBPanel
@@ -29,15 +31,18 @@ import java.awt.event.MouseEvent
 import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
+import java.util.Timer
 import javax.swing.JComponent
 import javax.swing.table.DefaultTableModel
 import javax.swing.table.TableColumn
+import kotlin.concurrent.fixedRateTimer
 import kotlin.coroutines.CoroutineContext
 
 @Suppress("TooManyFunctions")
-class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, CoroutineScope {
+class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, CoroutineScope, Disposable {
     private val apiClientWorkflow = ApiClientWorkflow(NotificationRepositoryImpl())
     private val coroutineJob = Job()
+    private var timer: Timer? = null
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + coroutineJob
@@ -60,6 +65,10 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         toolWindow.contentManager.addContent(content)
 
         refreshNotifications(notificationToolTable)
+
+        Disposer.register(toolWindow.disposable, this)
+
+        startAutoRefresh(table = notificationToolTable, minute = 15)
     }
 
     private fun createActionToolbar(actionGroup: DefaultActionGroup, targetComponent: JComponent): ActionToolbar {
@@ -156,6 +165,26 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 }
             }
         })
+    }
+
+    private fun startAutoRefresh(table: JBTable, minute: Int) {
+        timer = fixedRateTimer(
+            name = "GitHubNotificationRefresher",
+            initialDelay = 0L,
+            period = (minute * 60 * 1000).toLong(),
+        ) {
+            refreshNotifications(table)
+        }
+    }
+
+    private fun stopAutoRefresh() {
+        timer?.cancel()
+        timer = null
+    }
+
+    override fun dispose() {
+        stopAutoRefresh()
+        coroutineJob.cancel()
     }
 
     private fun List<TableDataDto>.toJBTable(): JBTable {
