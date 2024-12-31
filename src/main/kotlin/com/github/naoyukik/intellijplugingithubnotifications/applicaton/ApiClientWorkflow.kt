@@ -49,8 +49,10 @@ class ApiClientWorkflow(
         return "$repositoryFullName #$issueNumber"
     }
 
-    private fun apiUrlToHtmlUrlConverter(htmlUrl: String, issueNumber: Int, type: String): URL {
-        return URI("$htmlUrl/${TYPE_TO_PATH[type]}/$issueNumber").toURL()
+    private fun apiUrlToHtmlUrlConverter(htmlUrl: String, issueNumber: Int, type: String): URL? {
+        return TYPE_TO_PATH[type]?.let { typeToPath ->
+            URI("$htmlUrl/$typeToPath/$issueNumber").toURL()
+        }
     }
 
     private fun getIssueNumber(url: String): Int = url.split("/").last().toInt()

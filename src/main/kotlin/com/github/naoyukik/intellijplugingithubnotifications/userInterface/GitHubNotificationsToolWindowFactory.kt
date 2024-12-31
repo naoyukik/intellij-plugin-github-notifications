@@ -167,8 +167,9 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         )
         val data = this.map { dto ->
             val updatedAt = DateTimeHandler.convertToLocalDateTime(dto.updatedAt)
+            val htmlUrl = dto.htmlUrl?.let { "<html><a href='$it'>Open</a></html>" } ?: ""
             arrayOf(
-                "<html><a href='${dto.htmlUrl}'>Open</a></html>",
+                htmlUrl,
                 "<html>${dto.fullName}<br>${dto.title}</html>",
                 "<html>${dto.reason}</html>",
                 "<html>$updatedAt</html>",
