@@ -1,8 +1,10 @@
 package com.github.naoyukik.intellijplugingithubnotifications.userInterface
 
 import com.github.naoyukik.intellijplugingithubnotifications.applicaton.ApiClientWorkflow
+import com.github.naoyukik.intellijplugingithubnotifications.applicaton.SettingStateWorkflow
 import com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.NotificationRepositoryImpl
+import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.SettingStateRepositoryImpl
 import com.github.naoyukik.intellijplugingithubnotifications.utility.DateTimeHandler
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
@@ -31,6 +33,7 @@ import java.awt.event.MouseEvent
 import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
+import java.time.LocalDateTime
 import java.util.Timer
 import javax.swing.JComponent
 import javax.swing.table.DefaultTableModel
@@ -41,6 +44,7 @@ import kotlin.coroutines.CoroutineContext
 @Suppress("TooManyFunctions")
 class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, CoroutineScope, Disposable {
     private val apiClientWorkflow = ApiClientWorkflow(NotificationRepositoryImpl())
+    private val settingStateWorkflow = SettingStateWorkflow(SettingStateRepositoryImpl())
     private val coroutineJob = Job()
     private var timer: Timer? = null
 
@@ -68,7 +72,9 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
 
         Disposer.register(toolWindow.disposable, this)
 
-        startAutoRefresh(table = notificationToolTable, minute = 15)
+        val settingState = settingStateWorkflow.getFetchInterval()
+
+        startAutoRefresh(notificationToolTable, settingState.fetchInterval)
     }
 
     private fun createActionToolbar(actionGroup: DefaultActionGroup, targetComponent: JComponent): ActionToolbar {
@@ -174,6 +180,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             period = (minute * 60 * 1000).toLong(),
         ) {
             refreshNotifications(table)
+            println(LocalDateTime.now())
         }
     }
 
