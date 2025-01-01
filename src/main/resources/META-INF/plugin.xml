@@ -10,5 +10,11 @@
         <toolWindow id="GitHub Notifications"
                     factoryClass="com.github.naoyukik.intellijplugingithubnotifications.userInterface.GitHubNotificationsToolWindowFactory"
                     anchor="left" />
+        <projectConfigurable
+            displayName="GitHub Notifications"
+            groupId="tools"
+            instance="com.github.naoyukik.intellijplugingithubnotifications.settings.AppSettingsConfigurable"
+            id="preference.GitHubNotifications"/>
+
     </extensions>
 </idea-plugin>
