@@ -3,7 +3,7 @@ package com.github.naoyukik.intellijplugingithubnotifications.userInterface
 import com.github.naoyukik.intellijplugingithubnotifications.applicaton.ApiClientWorkflow
 import com.github.naoyukik.intellijplugingithubnotifications.applicaton.SettingStateWorkflow
 import com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto.TableDataDto
-import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.NotificationRepositoryImpl
+import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.GitHubNotificationRepositoryImpl
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.SettingStateRepositoryImpl
 import com.github.naoyukik.intellijplugingithubnotifications.utility.DateTimeHandler
 import com.intellij.icons.AllIcons
@@ -43,7 +43,7 @@ import kotlin.coroutines.CoroutineContext
 
 @Suppress("TooManyFunctions")
 class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, CoroutineScope, Disposable {
-    private val apiClientWorkflow = ApiClientWorkflow(NotificationRepositoryImpl())
+    private val apiClientWorkflow = ApiClientWorkflow(GitHubNotificationRepositoryImpl())
     private val settingStateWorkflow = SettingStateWorkflow(SettingStateRepositoryImpl())
     private val coroutineJob = Job()
     private var timer: Timer? = null

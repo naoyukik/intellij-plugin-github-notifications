@@ -1,11 +1,11 @@
 package com.github.naoyukik.intellijplugingithubnotifications.infrastructure
 
-import com.github.naoyukik.intellijplugingithubnotifications.domain.NotificationRepository
+import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotificationRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
 import com.github.naoyukik.intellijplugingithubnotifications.utility.CommandExecutor
 import kotlinx.serialization.json.Json
 
-class NotificationRepositoryImpl : NotificationRepository {
+class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
     override fun fetchNotifications(): List<GitHubNotification> {
         val commandResult = CommandExecutor.execute(
             listOf(
