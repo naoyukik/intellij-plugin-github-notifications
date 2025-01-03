@@ -96,7 +96,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             override fun actionPerformed(e: AnActionEvent) {
                 CoroutineScope(Dispatchers.Main).launch {
                     try {
-                        val notifications = apiClientWorkflow.fetchNotifications()
+                        val notifications = apiClientWorkflow.fetchNotificationsByRepository()
                         table.model = notifications.toJBTable().model
                         setColumnWidth(table, 0, setCalculateLinkColumnWidth(table))
                     } catch (ex: IOException) {
@@ -114,7 +114,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private fun refreshNotifications(table: JBTable) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val notifications = apiClientWorkflow.fetchNotifications()
+                val notifications = apiClientWorkflow.fetchNotificationsByRepository()
                 table.model = notifications.toJBTable().model
                 setColumnWidth(table, 0, setCalculateLinkColumnWidth(table))
             } catch (ex: IOException) {

@@ -25,6 +25,13 @@ class ApiClientWorkflow(
         notifications.toTableDataDto()
     }
 
+    suspend fun fetchNotificationsByRepository(): List<TableDataDto> = withContext(dispatcher) {
+        // TODO: Load from settings
+        val repositoryName = "naoyukik/intellij-plugin-github-notifications"
+        val notifications = repository.fetchNotificationsByRepository(repositoryName)
+        notifications.toTableDataDto()
+    }
+
     private fun List<GitHubNotification>.toTableDataDto(): List<TableDataDto> {
         return this.map {
             val issueNumber = getIssueNumber(it.subject.url)

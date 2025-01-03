@@ -17,6 +17,17 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
         return toGitHubNotification(commandResult)
     }
 
+    override fun fetchNotificationsByRepository(repositoryName: String): List<GitHubNotification> {
+        val commandResult = CommandExecutor.execute(
+            listOf(
+                "gh",
+                "api",
+                "/repos/$repositoryName/notifications",
+            ),
+        )
+        return toGitHubNotification(commandResult)
+    }
+
     private fun toGitHubNotification(jsonString: String?): List<GitHubNotification> {
         return jsonString?.run {
             val json = Json { ignoreUnknownKeys = true }
