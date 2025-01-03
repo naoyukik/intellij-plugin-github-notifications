@@ -2,6 +2,7 @@ package com.github.naoyukik.intellijplugingithubnotifications.settings
 
 import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
 import javax.swing.Box
 import javax.swing.BoxLayout
@@ -17,11 +18,13 @@ class AppSettingsComponent {
         private const val FETCH_INTERVAL_DEFAULT_VALUE = 15
         private const val FETCH_INTERVAL_MIN_VALUE = 1
         private const val FETCH_INTERVAL_MAX_VALUE = 60
+        private const val TEXT_AREA_COLUMNS = 30
     }
 
     private var mainPanel: JPanel? = null
     private val customizedFetchInterval: JBIntSpinner =
         JBIntSpinner(FETCH_INTERVAL_DEFAULT_VALUE, FETCH_INTERVAL_MIN_VALUE, FETCH_INTERVAL_MAX_VALUE, 1)
+    private val customizedRepositoryName = JBTextField(TEXT_AREA_COLUMNS)
 
     init {
         mainPanel = FormBuilder.createFormBuilder()
@@ -39,6 +42,20 @@ class AppSettingsComponent {
             .addComponent(
                 JBLabel(
                     "Min: 1, Max: 60, A restart is required when the value is changed.",
+                ),
+            )
+            .addLabeledComponent(
+                JBLabel("Repository: "),
+                customizedRepositoryName,
+            )
+            .addComponent(
+                JBLabel(
+                    "Repository format: OWNER/REPOSITORY_NAME",
+                ),
+            )
+            .addComponent(
+                JBLabel(
+                    "If blank, retrieve all notifications.",
                 ),
             )
             .addComponentFillVertically(JPanel(), 0)
@@ -59,5 +76,13 @@ class AppSettingsComponent {
 
     fun setCustomizedFetchInterval(newInt: Int?) {
         customizedFetchInterval.value = newInt
+    }
+
+    fun getCustomizedRepositoryName(): String {
+        return customizedRepositoryName.text
+    }
+
+    fun setCustomizedRepositoryName(newRepoName: String?) {
+        customizedRepositoryName.text = newRepoName
     }
 }

@@ -7,14 +7,15 @@ import com.intellij.openapi.components.Storage
 
 @Service
 @State(
-    name = "GitHubNotificationsState",
-    storages = [Storage("GitHubNotificationsState.xml")],
+    name = "com.github.naoyukik.intellijplugingithubnotifications",
+    storages = [Storage("GitHubNotifications.xml")],
 )
 class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
     val myState = State()
 
     class State {
         var fetchInterval = FETCH_INTERVAL_DEFAULT_VALUE
+        var repositoryName: String = ""
     }
 
     companion object {
@@ -34,5 +35,6 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
 
     override fun loadState(state: State) {
         myState.fetchInterval = state.fetchInterval
+        myState.repositoryName = state.repositoryName
     }
 }
