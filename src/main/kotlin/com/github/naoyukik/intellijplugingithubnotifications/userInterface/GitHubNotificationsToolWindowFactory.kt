@@ -43,7 +43,7 @@ import kotlin.coroutines.CoroutineContext
 
 @Suppress("TooManyFunctions")
 class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, CoroutineScope, Disposable {
-    private val apiClientWorkflow = ApiClientWorkflow(GitHubNotificationRepositoryImpl())
+    private val apiClientWorkflow = ApiClientWorkflow(GitHubNotificationRepositoryImpl(), SettingStateRepositoryImpl())
     private val settingStateWorkflow = SettingStateWorkflow(SettingStateRepositoryImpl())
     private val coroutineJob = Job()
     private var timer: Timer? = null
@@ -72,7 +72,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
 
         Disposer.register(toolWindow.disposable, this)
 
-        val settingState = settingStateWorkflow.getFetchInterval()
+        val settingState = settingStateWorkflow.loadSettingState()
 
         startAutoRefresh(notificationToolTable, settingState.fetchInterval, project)
     }

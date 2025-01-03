@@ -2,6 +2,7 @@ package com.github.naoyukik.intellijplugingithubnotifications.applicaton
 
 import com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotificationRepository
+import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingStateRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -11,6 +12,7 @@ import java.net.URL
 
 class ApiClientWorkflow(
     private val repository: GitHubNotificationRepository,
+    private val settingStateRepository: SettingStateRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
     companion object {
@@ -20,15 +22,13 @@ class ApiClientWorkflow(
         )
     }
 
-    suspend fun fetchNotifications(): List<TableDataDto> = withContext(dispatcher) {
-        val notifications = repository.fetchNotifications()
-        notifications.toTableDataDto()
-    }
-
     suspend fun fetchNotificationsByRepository(): List<TableDataDto> = withContext(dispatcher) {
-        // TODO: Load from settings
-        val repositoryName = "naoyukik/intellij-plugin-github-notifications"
-        val notifications = repository.fetchNotificationsByRepository(repositoryName)
+        val settingState = settingStateRepository.loadSettingState()
+        val notifications = if (settingState.repositoryName.isEmpty()) {
+            repository.fetchNotifications()
+        } else {
+            repository.fetchNotificationsByRepository(settingState.repositoryName)
+        }
         notifications.toTableDataDto()
     }
 

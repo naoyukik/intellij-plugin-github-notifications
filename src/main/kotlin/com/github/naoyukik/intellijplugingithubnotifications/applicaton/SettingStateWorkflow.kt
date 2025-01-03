@@ -6,10 +6,11 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingState
 class SettingStateWorkflow(
     private val repository: SettingStateRepository,
 ) {
-    fun getFetchInterval(): SettingStateDto {
-        val settingState = repository.getFetchInterval()
+    fun loadSettingState(): SettingStateDto {
+        val settingState = repository.loadSettingState()
         return SettingStateDto(
             fetchInterval = settingState.fetchInterval,
+            repositoryName = settingState.repositoryName,
         )
     }
 }

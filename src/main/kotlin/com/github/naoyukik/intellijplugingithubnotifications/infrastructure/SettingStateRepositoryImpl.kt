@@ -11,10 +11,12 @@ class SettingStateRepositoryImpl : SettingStateRepository {
         private const val FETCH_INTERVAL_DEFAULT_VALUE = 15
     }
 
-    override fun getFetchInterval(): SettingState {
+    override fun loadSettingState(): SettingState {
         val fetchInterval = state?.myState?.fetchInterval ?: FETCH_INTERVAL_DEFAULT_VALUE
+        val repositoryName = state?.myState?.repositoryName ?: ""
         return SettingState(
             fetchInterval = fetchInterval,
+            repositoryName = repositoryName,
         )
     }
 }
