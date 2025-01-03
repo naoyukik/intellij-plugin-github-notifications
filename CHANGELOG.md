@@ -6,6 +6,7 @@
 
 ### Added
 - Automatically fetching data
+- Support for notification balloons
 
 ### Fixed
 - Fix nullable htmlUrl handling in DTO and related logic

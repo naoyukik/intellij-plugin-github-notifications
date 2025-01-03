@@ -15,6 +15,7 @@
             groupId="tools"
             instance="com.github.naoyukik.intellijplugingithubnotifications.settings.AppSettingsConfigurable"
             id="preference.GitHubNotifications"/>
-
+        <notificationGroup id="GitHub Notifications"
+                           displayType="BALLOON" />
     </extensions>
 </idea-plugin>

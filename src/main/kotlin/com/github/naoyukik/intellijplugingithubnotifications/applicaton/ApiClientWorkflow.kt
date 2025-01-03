@@ -1,7 +1,7 @@
 package com.github.naoyukik.intellijplugingithubnotifications.applicaton
 
 import com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto.TableDataDto
-import com.github.naoyukik.intellijplugingithubnotifications.domain.NotificationRepository
+import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotificationRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -10,7 +10,7 @@ import java.net.URI
 import java.net.URL
 
 class ApiClientWorkflow(
-    private val repository: NotificationRepository,
+    private val repository: GitHubNotificationRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
     companion object {
