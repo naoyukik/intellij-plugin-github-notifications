@@ -7,4 +7,8 @@ class NotificationWorkflow {
     fun fetchedNotification(project: Project) {
         NotificationService().fetchedNotification(project, "GitHub Notifications has been updated.")
     }
+
+    fun fetchedNotificationForError(project: Project, message: String) {
+        NotificationService().fetchedNotificationForError(project, message)
+    }
 }
