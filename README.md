@@ -12,9 +12,12 @@ Key Features:
 - **Intuitive Link Navigation**: Quickly open relevant GitHub resources (pull requests, issues, etc.) directly from the notification list.
 - **Simple Usability**: Refresh your notifications with just one click.
 - **Organized Notification View**: Presents notifications in a readable table format, including details like the link, reason, and timestamp.
+- **Repository Filtering**: Quickly filter notifications by specific GitHub repositories for a more focused view.
+- **Scheduled Updates**: Automatically refresh notifications at user-defined intervals to stay up-to-date without manual intervention.
 
 **Important:**
-This plugin requires the **`gh CLI`** (GitHub CLI) to be installed and properly authenticated on your system. Please ensure it is set up before using this plugin.
+This plugin requires [GitHub CLI](https://cli.github.com/) to be installed and properly authenticated on your system.
+Please ensure it is set up before using this plugin.
 
 This plugin is designed to empower developers to remain focused on their work environment while staying up-to-date with important updates on GitHub.
 <!-- Plugin description end -->
