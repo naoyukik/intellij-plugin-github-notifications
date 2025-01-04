@@ -11,4 +11,11 @@ class NotificationService {
             .createNotification(content, NotificationType.INFORMATION)
             .notify(project)
     }
+
+    fun fetchedNotificationForError(project: Project, content: String) {
+        NotificationGroupManager.getInstance()
+            .getNotificationGroup("GitHub Notifications")
+            .createNotification(content, NotificationType.ERROR)
+            .notify(project)
+    }
 }

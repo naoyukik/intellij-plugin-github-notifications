@@ -31,18 +31,28 @@ class AppSettingsConfigurable : Configurable {
     }
 
     override fun isModified(): Boolean {
-        return mySettingsComponent?.getCustomizedFetchInterval() != mySettingsState?.myState?.fetchInterval
+        return isModifiedFetchInterval() || isModifiedRepositoryName()
     }
 
     override fun apply() {
         mySettingsState?.myState?.fetchInterval = mySettingsComponent!!.getCustomizedFetchInterval()
+        mySettingsState?.myState?.repositoryName = mySettingsComponent!!.getCustomizedRepositoryName()
     }
 
     override fun reset() {
         mySettingsComponent?.setCustomizedFetchInterval(mySettingsState?.myState?.fetchInterval)
+        mySettingsComponent?.setCustomizedRepositoryName(mySettingsState?.myState?.repositoryName)
     }
 
     override fun disposeUIResources() {
         mySettingsComponent = null
+    }
+
+    private fun isModifiedFetchInterval(): Boolean {
+        return mySettingsComponent?.getCustomizedFetchInterval() != mySettingsState?.myState?.fetchInterval
+    }
+
+    private fun isModifiedRepositoryName(): Boolean {
+        return mySettingsComponent?.getCustomizedRepositoryName() != mySettingsState?.myState?.repositoryName
     }
 }

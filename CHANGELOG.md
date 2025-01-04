@@ -7,6 +7,7 @@
 ### Added
 - Automatically fetching data
 - Support for notification balloons
+- Repository filtering
 
 ### Fixed
 - Fix nullable htmlUrl handling in DTO and related logic

@@ -43,7 +43,7 @@ import kotlin.coroutines.CoroutineContext
 
 @Suppress("TooManyFunctions")
 class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, CoroutineScope, Disposable {
-    private val apiClientWorkflow = ApiClientWorkflow(GitHubNotificationRepositoryImpl())
+    private val apiClientWorkflow = ApiClientWorkflow(GitHubNotificationRepositoryImpl(), SettingStateRepositoryImpl())
     private val settingStateWorkflow = SettingStateWorkflow(SettingStateRepositoryImpl())
     private val coroutineJob = Job()
     private var timer: Timer? = null
@@ -57,7 +57,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
 
         val actionGroup = DefaultActionGroup()
 
-        val refreshAction = createRefreshAction(notificationToolTable)
+        val refreshAction = createRefreshAction(notificationToolTable, project)
 
         actionGroup.add(refreshAction)
 
@@ -68,11 +68,11 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         val content = ContentFactory.getInstance().createContent(notificationToolPanel, null, false)
         toolWindow.contentManager.addContent(content)
 
-        refreshNotifications(notificationToolTable)
+        refreshNotifications(notificationToolTable, project)
 
         Disposer.register(toolWindow.disposable, this)
 
-        val settingState = settingStateWorkflow.getFetchInterval()
+        val settingState = settingStateWorkflow.loadSettingState()
 
         startAutoRefresh(notificationToolTable, settingState.fetchInterval, project)
     }
@@ -87,40 +87,27 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         }
     }
 
-    private fun createRefreshAction(table: JBTable): AnAction {
+    private fun createRefreshAction(table: JBTable, project: Project): AnAction {
         return object : AnAction(
             "Refresh Notifications",
             "Fetch latest GitHub notifications",
             AllIcons.General.InlineRefresh,
         ) {
             override fun actionPerformed(e: AnActionEvent) {
-                CoroutineScope(Dispatchers.Main).launch {
-                    try {
-                        val notifications = apiClientWorkflow.fetchNotifications()
-                        table.model = notifications.toJBTable().model
-                        setColumnWidth(table, 0, setCalculateLinkColumnWidth(table))
-                    } catch (ex: IOException) {
-                        ex.printStackTrace()
-                    } catch (ex: IllegalStateException) {
-                        ex.printStackTrace()
-                    } catch (ex: IllegalArgumentException) {
-                        ex.printStackTrace()
-                    }
-                }
+                refreshNotifications(table, project)
             }
         }
     }
 
-    private fun refreshNotifications(table: JBTable) {
+    private fun refreshNotifications(table: JBTable, project: Project) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val notifications = apiClientWorkflow.fetchNotifications()
+                val notifications = apiClientWorkflow.fetchNotificationsByRepository()
                 table.model = notifications.toJBTable().model
                 setColumnWidth(table, 0, setCalculateLinkColumnWidth(table))
-            } catch (ex: IOException) {
-                ex.printStackTrace()
-            } catch (ex: IllegalArgumentException) {
-                ex.printStackTrace()
+                NotificationWorkflow().fetchedNotification(project)
+            } catch (e: IllegalArgumentException) {
+                NotificationWorkflow().fetchedNotificationForError(project, e.message ?: "Unknown error")
             }
         }
     }
@@ -179,8 +166,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             initialDelay = 0L,
             period = (minute * 60 * 1000).toLong(),
         ) {
-            refreshNotifications(table)
-            NotificationWorkflow().fetchedNotification(project)
+            refreshNotifications(table, project)
         }
     }
 
