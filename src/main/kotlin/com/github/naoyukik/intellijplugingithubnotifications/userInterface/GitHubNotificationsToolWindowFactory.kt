@@ -68,8 +68,6 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         val content = ContentFactory.getInstance().createContent(notificationToolPanel, null, false)
         toolWindow.contentManager.addContent(content)
 
-        refreshNotifications(notificationToolTable, project)
-
         Disposer.register(toolWindow.disposable, this)
 
         val settingState = settingStateWorkflow.loadSettingState()
