@@ -4,7 +4,10 @@
 
 ## [Unreleased]
 
+## [0.2.1] - 2025-01-05
+
 ### Fixed
+
 - Fix double refresh on startup
 
 ## [0.2.0] - 2025-01-04
@@ -25,6 +28,7 @@ Initial release of the GitHub Notifications IntelliJ Plugin.
 
 Done is better than perfect.
 
-[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.0.1...v0.2.0
 [0.0.1]: https://github.com/naoyukik/intellij-plugin-github-notifications/commits/v0.0.1
