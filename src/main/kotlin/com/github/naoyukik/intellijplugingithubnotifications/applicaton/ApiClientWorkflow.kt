@@ -4,6 +4,7 @@ import com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto.Tabl
 import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotificationRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingStateRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
+import com.intellij.icons.AllIcons
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,6 +20,10 @@ class ApiClientWorkflow(
         val TYPE_TO_PATH = mapOf(
             "PullRequest" to "pull",
             "Issue" to "issues",
+        )
+
+        val TYPE_TO_EMOJI = mapOf(
+            "PullRequest" to AllIcons.Vcs.Merge,
         )
     }
 
@@ -48,6 +53,7 @@ class ApiClientWorkflow(
                 ),
                 reason = it.reason,
                 updatedAt = it.updatedAt,
+                typeEmoji = apUrlToEmojiConverter(it.subject.type),
             )
         }
     }
@@ -60,6 +66,10 @@ class ApiClientWorkflow(
         return TYPE_TO_PATH[type]?.let { typeToPath ->
             URI("$htmlUrl/$typeToPath/$issueNumber").toURL()
         }
+    }
+
+    private fun apUrlToEmojiConverter(type: String): String {
+        return TYPE_TO_EMOJI[type]?.toString() ?: ""
     }
 
     private fun getIssueNumber(url: String): Int = url.split("/").last().toInt()
