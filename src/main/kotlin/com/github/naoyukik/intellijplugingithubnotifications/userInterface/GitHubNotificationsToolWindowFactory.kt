@@ -103,6 +103,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 val notifications = apiClientWorkflow.fetchNotificationsByRepository()
                 table.model = notifications.toJBTable().model
                 setColumnWidth(table, 0, setCalculateLinkColumnWidth(table))
+                setColumnWidth(table, 1, setCalculateTypeColumnWidth(table))
                 NotificationWorkflow().fetchedNotification(project)
             } catch (e: IllegalArgumentException) {
                 NotificationWorkflow().fetchedNotificationForError(project, e.message ?: "Unknown error")
@@ -113,6 +114,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private fun initializeJBTable(): JBTable {
         val columnName = arrayOf(
             "Link",
+            "Type",
             "Message",
             "Reason",
             "Updated at",
@@ -121,6 +123,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             override fun isCellEditable(row: Int, column: Int) = false
         }).apply {
             setColumnWidth(this, 0, setCalculateLinkColumnWidth(this))
+            setColumnWidth(this, 1, setCalculateTypeColumnWidth(this))
         }
     }
 
@@ -181,6 +184,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private fun List<TableDataDto>.toJBTable(): JBTable {
         val columnName = arrayOf(
             "Link",
+            "Type",
             "Message",
             "Reason",
             "Updated at",
@@ -190,6 +194,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             val htmlUrl = dto.htmlUrl?.let { "<html><a href='$it'>Open</a></html>" } ?: ""
             arrayOf(
                 htmlUrl,
+                dto.typeEmoji,
                 "<html>${dto.fullName}<br>${dto.title}</html>",
                 "<html>${dto.reason}</html>",
                 "<html>$updatedAt</html>",
@@ -201,6 +206,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         }
         val table = JBTable(tableModel).apply {
             setColumnWidth(this, 0, setCalculateLinkColumnWidth(this))
+            setColumnWidth(this, 1, setCalculateTypeColumnWidth(this))
         }
 
         return table
@@ -215,6 +221,10 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
 
     private fun setCalculateLinkColumnWidth(table: JBTable): Int {
         return setCalculateColumnWidth(table, "Open")
+    }
+
+    private fun setCalculateTypeColumnWidth(table: JBTable): Int {
+        return setCalculateColumnWidth(table, "Type")
     }
 
     private fun JBTable.toJBScrollPane(): JBScrollPane {

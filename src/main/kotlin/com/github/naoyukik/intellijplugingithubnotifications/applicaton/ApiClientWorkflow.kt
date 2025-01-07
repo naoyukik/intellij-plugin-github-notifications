@@ -4,7 +4,6 @@ import com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto.Tabl
 import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotificationRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingStateRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
-import com.intellij.icons.AllIcons
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -22,8 +21,27 @@ class ApiClientWorkflow(
             "Issue" to "issues",
         )
 
+        // val pullRequests = IconLoader.getIcon(
+        //     "/com/github/naoyukik/intellijplugingithubnotifications/icons/pullRequests.svg",
+        //     ApiClientWorkflow::class.java,
+        // )
+        // val pullRequests = IconManager.getInstance().getIcon(
+        //     "com/github/naoyukik/intellijplugingithubnotifications/icons/pullRequests.svg",
+        //     this::class.java.classLoader,
+        // )
+
+        // val issues = IconManager.getInstance().getIcon(
+        //     "com/github/naoyukik/intellijplugingithubnotifications/icons/issue-opened.svg",
+        //     this::class.java.classLoader,
+        // )
+        //
+        // val pullRequests = ImageIcon(
+        //     javaClass.getResource("/com/github/naoyukik/intellijplugingithubnotifications/icons/pullRequests.svg"),
+        // )
+
         val TYPE_TO_EMOJI = mapOf(
-            "PullRequest" to AllIcons.Vcs.Merge,
+            "PullRequest" to "pullRequests",
+            "Issue" to "issues",
         )
     }
 
@@ -68,8 +86,8 @@ class ApiClientWorkflow(
         }
     }
 
-    private fun apUrlToEmojiConverter(type: String): String {
-        return TYPE_TO_EMOJI[type]?.toString() ?: ""
+    private fun apUrlToEmojiConverter(type: String): String? {
+        return TYPE_TO_EMOJI[type]
     }
 
     private fun getIssueNumber(url: String): Int = url.split("/").last().toInt()

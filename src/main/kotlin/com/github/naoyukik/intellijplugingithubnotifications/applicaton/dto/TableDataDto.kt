@@ -8,5 +8,5 @@ data class TableDataDto(
     val htmlUrl: URL?,
     val reason: String,
     val updatedAt: String,
-    val typeEmoji: String,
+    val typeEmoji: String?,
 )
