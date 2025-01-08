@@ -1,6 +1,7 @@
 package com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto
 
 import java.net.URL
+import javax.swing.Icon
 
 data class TableDataDto(
     val title: String,
@@ -8,5 +9,5 @@ data class TableDataDto(
     val htmlUrl: URL?,
     val reason: String,
     val updatedAt: String,
-    val typeEmoji: String?,
+    val typeEmoji: Icon?,
 )
