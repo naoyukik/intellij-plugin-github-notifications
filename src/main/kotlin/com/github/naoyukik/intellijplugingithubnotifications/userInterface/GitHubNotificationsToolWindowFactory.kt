@@ -23,6 +23,7 @@ import com.intellij.ui.components.JBPanel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.table.JBTable
+import com.intellij.util.IconUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -35,7 +36,9 @@ import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.Timer
+import javax.swing.Icon
 import javax.swing.JComponent
+import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.DefaultTableModel
 import javax.swing.table.TableColumn
 import kotlin.concurrent.fixedRateTimer
@@ -47,6 +50,11 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private val settingStateWorkflow = SettingStateWorkflow(SettingStateRepositoryImpl())
     private val coroutineJob = Job()
     private var timer: Timer? = null
+
+    companion object {
+        const val ICON_WIDTH = 13
+        const val ICON_HEIGHT = 13
+    }
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + coroutineJob
@@ -101,8 +109,22 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val notifications = apiClientWorkflow.fetchNotificationsByRepository()
+                table.autoCreateColumnsFromModel = false
                 table.model = notifications.toJBTable().model
                 setColumnWidth(table, 0, setCalculateLinkColumnWidth(table))
+                setColumnWidth(table, 1, setCalculateTypeColumnWidth(table))
+                table.columnModel.getColumn(1).cellRenderer = object : DefaultTableCellRenderer() {
+                    override fun setValue(value: Any?) {
+                        if (value is Icon) {
+                            this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
+                            this.horizontalAlignment = CENTER
+                            this.verticalAlignment = CENTER
+                        } else {
+                            this.icon = null
+                        }
+                    }
+                }
+
                 NotificationWorkflow().fetchedNotification(project)
             } catch (e: IllegalArgumentException) {
                 NotificationWorkflow().fetchedNotificationForError(project, e.message ?: "Unknown error")
@@ -113,6 +135,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private fun initializeJBTable(): JBTable {
         val columnName = arrayOf(
             "Link",
+            "Type",
             "Message",
             "Reason",
             "Updated at",
@@ -121,6 +144,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             override fun isCellEditable(row: Int, column: Int) = false
         }).apply {
             setColumnWidth(this, 0, setCalculateLinkColumnWidth(this))
+            setColumnWidth(this, 1, setCalculateTypeColumnWidth(this))
         }
     }
 
@@ -181,15 +205,18 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private fun List<TableDataDto>.toJBTable(): JBTable {
         val columnName = arrayOf(
             "Link",
+            "Type",
             "Message",
             "Reason",
             "Updated at",
         )
+
         val data = this.map { dto ->
             val updatedAt = DateTimeHandler.convertToLocalDateTime(dto.updatedAt)
             val htmlUrl = dto.htmlUrl?.let { "<html><a href='$it'>Open</a></html>" } ?: ""
             arrayOf(
                 htmlUrl,
+                dto.typeEmoji ?: "",
                 "<html>${dto.fullName}<br>${dto.title}</html>",
                 "<html>${dto.reason}</html>",
                 "<html>$updatedAt</html>",
@@ -199,9 +226,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         val tableModel = object : DefaultTableModel(data, columnName) {
             override fun isCellEditable(row: Int, column: Int) = false
         }
-        val table = JBTable(tableModel).apply {
-            setColumnWidth(this, 0, setCalculateLinkColumnWidth(this))
-        }
+        val table = JBTable(tableModel)
 
         return table
     }
@@ -215,6 +240,10 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
 
     private fun setCalculateLinkColumnWidth(table: JBTable): Int {
         return setCalculateColumnWidth(table, "Open")
+    }
+
+    private fun setCalculateTypeColumnWidth(table: JBTable): Int {
+        return setCalculateColumnWidth(table, "Type")
     }
 
     private fun JBTable.toJBScrollPane(): JBScrollPane {
