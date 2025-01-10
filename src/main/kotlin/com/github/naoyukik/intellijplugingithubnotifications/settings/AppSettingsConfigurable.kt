@@ -31,17 +31,19 @@ class AppSettingsConfigurable : Configurable {
     }
 
     override fun isModified(): Boolean {
-        return isModifiedFetchInterval() || isModifiedRepositoryName()
+        return isModifiedFetchInterval() || isModifiedRepositoryName() || isModifiedGhCliPath()
     }
 
     override fun apply() {
         mySettingsState?.myState?.fetchInterval = mySettingsComponent!!.getCustomizedFetchInterval()
         mySettingsState?.myState?.repositoryName = mySettingsComponent!!.getCustomizedRepositoryName()
+        mySettingsState?.myState?.ghCliPath = mySettingsComponent!!.getCustomizedGhCliPath()
     }
 
     override fun reset() {
         mySettingsComponent?.setCustomizedFetchInterval(mySettingsState?.myState?.fetchInterval)
         mySettingsComponent?.setCustomizedRepositoryName(mySettingsState?.myState?.repositoryName)
+        mySettingsComponent?.setCustomizedGhCliPath(mySettingsState?.myState?.ghCliPath)
     }
 
     override fun disposeUIResources() {
@@ -54,5 +56,9 @@ class AppSettingsConfigurable : Configurable {
 
     private fun isModifiedRepositoryName(): Boolean {
         return mySettingsComponent?.getCustomizedRepositoryName() != mySettingsState?.myState?.repositoryName
+    }
+
+    private fun isModifiedGhCliPath(): Boolean {
+        return mySettingsComponent?.getCustomizedGhCliPath() != mySettingsState?.myState?.ghCliPath
     }
 }

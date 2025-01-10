@@ -6,10 +6,10 @@ import com.github.naoyukik.intellijplugingithubnotifications.utility.CommandExec
 import kotlinx.serialization.json.Json
 
 class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
-    override fun fetchNotifications(): List<GitHubNotification> {
+    override fun fetchNotifications(ghCliPath: String): List<GitHubNotification> {
         val commandResult = CommandExecutor.execute(
             listOf(
-                "gh",
+                ghCliPath,
                 "api",
                 "/notifications",
             ),
@@ -17,10 +17,10 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
         return toGitHubNotification(commandResult)
     }
 
-    override fun fetchNotificationsByRepository(repositoryName: String): List<GitHubNotification> {
+    override fun fetchNotificationsByRepository(ghCliPath: String, repositoryName: String): List<GitHubNotification> {
         val commandResult = CommandExecutor.execute(
             listOf(
-                "gh",
+                ghCliPath,
                 "api",
                 "/repos/$repositoryName/notifications",
             ),

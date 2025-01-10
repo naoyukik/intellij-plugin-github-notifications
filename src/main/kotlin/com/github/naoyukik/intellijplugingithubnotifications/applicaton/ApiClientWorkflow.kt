@@ -47,10 +47,11 @@ class ApiClientWorkflow(
 
     suspend fun fetchNotificationsByRepository(): List<TableDataDto> = withContext(dispatcher) {
         val settingState = settingStateRepository.loadSettingState()
+        val ghCliPath = settingState.ghCliPath
         val notifications = if (settingState.repositoryName.isEmpty()) {
-            repository.fetchNotifications()
+            repository.fetchNotifications(ghCliPath)
         } else {
-            repository.fetchNotificationsByRepository(settingState.repositoryName)
+            repository.fetchNotificationsByRepository(ghCliPath, settingState.repositoryName)
         }
         notifications.toTableDataDto()
     }
