@@ -25,6 +25,7 @@ class AppSettingsComponent {
     private val customizedFetchInterval: JBIntSpinner =
         JBIntSpinner(FETCH_INTERVAL_DEFAULT_VALUE, FETCH_INTERVAL_MIN_VALUE, FETCH_INTERVAL_MAX_VALUE, 1)
     private val customizedRepositoryName = JBTextField(TEXT_AREA_COLUMNS)
+    private val customizedGhCliPath = JBTextField(TEXT_AREA_COLUMNS)
 
     init {
         mainPanel = FormBuilder.createFormBuilder()
@@ -58,6 +59,20 @@ class AppSettingsComponent {
                     "If blank, retrieve all notifications.",
                 ),
             )
+            .addLabeledComponent(
+                JBLabel("GH CLI path: "),
+                customizedGhCliPath,
+            )
+            .addComponent(
+                JBLabel(
+                    "If it's not in your PATH, you can specify the GH CLI Path.",
+                ),
+            )
+            .addComponent(
+                JBLabel(
+                    "By default, the \"gh\" command is used.",
+                ),
+            )
             .addComponentFillVertically(JPanel(), 0)
             .panel
     }
@@ -74,15 +89,23 @@ class AppSettingsComponent {
         return customizedFetchInterval.value as Int
     }
 
-    fun setCustomizedFetchInterval(newInt: Int?) {
-        customizedFetchInterval.value = newInt
+    fun setCustomizedFetchInterval(value: Int?) {
+        customizedFetchInterval.value = value
     }
 
     fun getCustomizedRepositoryName(): String {
         return customizedRepositoryName.text
     }
 
-    fun setCustomizedRepositoryName(newRepoName: String?) {
-        customizedRepositoryName.text = newRepoName
+    fun setCustomizedRepositoryName(value: String?) {
+        customizedRepositoryName.text = value
+    }
+
+    fun getCustomizedGhCliPath(): String {
+        return customizedGhCliPath.text
+    }
+
+    fun setCustomizedGhCliPath(value: String?) {
+        customizedGhCliPath.text = value
     }
 }

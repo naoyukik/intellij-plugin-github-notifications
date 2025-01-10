@@ -16,6 +16,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
     class State {
         var fetchInterval = FETCH_INTERVAL_DEFAULT_VALUE
         var repositoryName: String = ""
+        var ghCliPath: String = ""
     }
 
     companion object {
@@ -36,5 +37,6 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
     override fun loadState(state: State) {
         myState.fetchInterval = state.fetchInterval
         myState.repositoryName = state.repositoryName
+        myState.ghCliPath = state.ghCliPath
     }
 }

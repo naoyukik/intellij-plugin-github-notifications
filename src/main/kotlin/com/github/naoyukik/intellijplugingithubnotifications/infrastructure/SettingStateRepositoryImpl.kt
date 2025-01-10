@@ -14,9 +14,11 @@ class SettingStateRepositoryImpl : SettingStateRepository {
     override fun loadSettingState(): SettingState {
         val fetchInterval = state?.myState?.fetchInterval ?: FETCH_INTERVAL_DEFAULT_VALUE
         val repositoryName = state?.myState?.repositoryName ?: ""
+        val ghCliPath = state?.myState?.ghCliPath?.ifEmpty { "gh" } ?: "gh"
         return SettingState(
             fetchInterval = fetchInterval,
             repositoryName = repositoryName,
+            ghCliPath = ghCliPath,
         )
     }
 }
