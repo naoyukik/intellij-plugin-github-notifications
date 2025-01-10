@@ -15,6 +15,14 @@ Key Features:
 - **Repository Filtering**: Quickly filter notifications by specific GitHub repositories for a more focused view.
 - **Scheduled Updates**: Automatically refresh notifications at user-defined intervals to stay up-to-date without manual intervention.
 
+### Limitations
+
+- **Limit on the number of notifications**: Only the latest 50 notifications can be retrieved.
+- **No support for release information links**: Direct links to release information from notifications are not available.
+- **No tracking of updates**: Displaying updates based on differences from the current state is not supported.
+
+These limitations are planned to be addressed in **future updates**.
+
 **Important:**
 This plugin requires [GitHub CLI](https://cli.github.com/) to be installed and properly authenticated on your system.
 Please ensure it is set up before using this plugin.
