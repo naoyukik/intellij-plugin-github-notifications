@@ -5,7 +5,9 @@
 ## [Unreleased]
 
 ### Added
+
 - Display emoji according to type
+- Add support for configuring a custom GitHub CLI path
 
 ## [0.2.1] - 2025-01-05
 
