@@ -1,7 +1,7 @@
 [versions]
 # libraries
 junit = "4.13.2"
-kotlinx-serialization-json = "1.7.3"
+kotlinx-serialization-json = "1.8.0"
 kotest-runner-junit5 = "6.0.0.M1"
 kotest-assertions-core = "6.0.0.M1"
 detekt-formatting = "1.23.7"
@@ -10,7 +10,7 @@ detekt-formatting = "1.23.7"
 changelog = "2.2.1"
 intelliJPlatform = "2.2.1"
 kotlin = "2.1.0"
-kover = "0.9.0"
+kover = "0.9.1"
 qodana = "2024.3.4"
 detekt = "1.23.7"
 
