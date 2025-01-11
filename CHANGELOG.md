@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-01-10
+
 ### Added
 
 - Display emoji according to type
@@ -33,7 +35,8 @@ Initial release of the GitHub Notifications IntelliJ Plugin.
 
 Done is better than perfect.
 
-[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.0.1...v0.2.0
 [0.0.1]: https://github.com/naoyukik/intellij-plugin-github-notifications/commits/v0.0.1
