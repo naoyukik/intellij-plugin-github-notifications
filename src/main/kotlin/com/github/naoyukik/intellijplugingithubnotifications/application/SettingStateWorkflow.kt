@@ -1,6 +1,6 @@
-package com.github.naoyukik.intellijplugingithubnotifications.applicaton
+package com.github.naoyukik.intellijplugingithubnotifications.application
 
-import com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto.SettingStateDto
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.SettingStateDto
 import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingStateRepository
 
 class SettingStateWorkflow(

@@ -1,4 +1,4 @@
-package com.github.naoyukik.intellijplugingithubnotifications.applicaton
+package com.github.naoyukik.intellijplugingithubnotifications.application
 
 import com.github.naoyukik.intellijplugingithubnotifications.domain.NotificationService
 import com.intellij.openapi.project.Project
