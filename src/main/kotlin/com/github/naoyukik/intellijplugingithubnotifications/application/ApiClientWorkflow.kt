@@ -1,6 +1,6 @@
-package com.github.naoyukik.intellijplugingithubnotifications.applicaton
+package com.github.naoyukik.intellijplugingithubnotifications.application
 
-import com.github.naoyukik.intellijplugingithubnotifications.applicaton.dto.TableDataDto
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotificationRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingStateRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
