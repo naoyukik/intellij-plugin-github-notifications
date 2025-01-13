@@ -18,7 +18,6 @@ Key Features:
 ### Limitations
 
 - **Limit on the number of notifications**: Only the latest 50 notifications can be retrieved.
-- **No support for release information links**: Direct links to release information from notifications are not available.
 - **No tracking of updates**: Displaying updates based on differences from the current state is not supported.
 
 These limitations are planned to be addressed in **future updates**.
