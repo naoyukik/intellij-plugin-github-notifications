@@ -21,6 +21,7 @@ class ApiClientWorkflow(
         private val TYPE_TO_PATH = mapOf(
             "PullRequest" to "pull",
             "Issue" to "issues",
+            "Release" to "releases",
         )
 
         private val issues = IconLoader.getIcon(
@@ -53,7 +54,26 @@ class ApiClientWorkflow(
         } else {
             repository.fetchNotificationsByRepository(ghCliPath, settingState.repositoryName)
         }
-        notifications.toTableDataDto()
+
+        val updatedNotifications = notifications.map { notification ->
+            val updatedNotification = if (notification.subject.type == "Release") {
+                val detail = repository.fetchNotificationsReleaseDetail(
+                    ghCliPath = ghCliPath,
+                    repositoryName = notification.repository.fullName,
+                    detailId = URI(notification.subject.url).path.substringAfterLast("/"),
+                )
+                notification.copy(
+                    subject = notification.subject.copy(
+                        url = detail.htmlUrl,
+                    ),
+                )
+            } else {
+                notification
+            }
+            updatedNotification
+        }
+
+        updatedNotifications.toTableDataDto()
     }
 
     private fun List<GitHubNotification>.toTableDataDto(): List<TableDataDto> {
@@ -64,6 +84,7 @@ class ApiClientWorkflow(
                 fullName = apiUrlToRepositoryIssueNumberConverter(
                     repositoryFullName = it.repository.fullName,
                     issueNumber = issueNumber,
+                    type = it.subject.type,
                 ),
                 htmlUrl = apiUrlToHtmlUrlConverter(
                     htmlUrl = it.repository.htmlUrl,
@@ -77,13 +98,27 @@ class ApiClientWorkflow(
         }
     }
 
-    private fun apiUrlToRepositoryIssueNumberConverter(repositoryFullName: String, issueNumber: Int): String {
-        return "$repositoryFullName #$issueNumber"
+    private fun apiUrlToRepositoryIssueNumberConverter(
+        repositoryFullName: String,
+        issueNumber: String,
+        type: String,
+    ): String {
+        return TYPE_TO_PATH[type]?.let { typeToPath ->
+            when (typeToPath) {
+                "issues", "pull" -> "$repositoryFullName #$issueNumber"
+                "releases" -> "$issueNumber in $repositoryFullName"
+                else -> "$repositoryFullName #$issueNumber"
+            }
+        } ?: "$repositoryFullName #$issueNumber"
     }
 
-    private fun apiUrlToHtmlUrlConverter(htmlUrl: String, issueNumber: Int, type: String): URL? {
+    private fun apiUrlToHtmlUrlConverter(htmlUrl: String, issueNumber: String, type: String): URL? {
         return TYPE_TO_PATH[type]?.let { typeToPath ->
-            URI("$htmlUrl/$typeToPath/$issueNumber").toURL()
+            when (typeToPath) {
+                "issues", "pull" -> URI("$htmlUrl/$typeToPath/$issueNumber").toURL()
+                "releases" -> URI("$htmlUrl/$typeToPath/tag/$issueNumber").toURL()
+                else -> null
+            }
         }
     }
 
@@ -91,5 +126,5 @@ class ApiClientWorkflow(
         return TYPE_TO_EMOJI[type]
     }
 
-    private fun getIssueNumber(url: String): Int = url.split("/").last().toInt()
+    private fun getIssueNumber(url: String): String = url.split("/").last()
 }
