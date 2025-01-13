@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Added
+- Support for Release type links 
+
 ## [0.3.0] - 2025-01-10
 
 ### Added
