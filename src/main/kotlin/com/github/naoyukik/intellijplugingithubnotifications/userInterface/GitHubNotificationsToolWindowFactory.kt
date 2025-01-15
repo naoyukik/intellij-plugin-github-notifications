@@ -108,7 +108,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private fun refreshNotifications(table: JBTable, project: Project) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val notifications = apiClientWorkflow.fetchNotificationsByRepository()
+                val notifications = apiClientWorkflow.fetchNotifications()
                 table.autoCreateColumnsFromModel = false
                 table.model = notifications.toJBTable().model
                 setColumnWidth(table, 0, setCalculateLinkColumnWidth(table))
