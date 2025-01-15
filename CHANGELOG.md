@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Refactoring fetchNotifications By Repository In Api Client Workflow
+
 ## [0.4.0] - 2025-01-13
 
 ### Added
