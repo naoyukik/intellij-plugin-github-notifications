@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Support for IntelliJ 2025
+
 ### Fixed
 
 - Refactoring fetchNotifications By Repository In Api Client Workflow
