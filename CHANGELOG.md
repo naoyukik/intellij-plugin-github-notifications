@@ -7,6 +7,7 @@
 ### Breaking Changes
 
 - Change the location of the project settings
+  - If you were using up to 0.4.2, your settings will be initialized🙇
 
 ## [0.4.2] - 2025-01-16
 
