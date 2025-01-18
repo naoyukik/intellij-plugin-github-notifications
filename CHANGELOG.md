@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Breaking Changes
+
+- Change the location of the project settings
+
 ## [0.4.2] - 2025-01-16
 
 ### Changed

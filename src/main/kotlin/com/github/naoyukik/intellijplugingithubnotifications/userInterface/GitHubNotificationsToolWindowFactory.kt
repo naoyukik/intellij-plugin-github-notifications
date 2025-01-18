@@ -46,8 +46,8 @@ import kotlin.coroutines.CoroutineContext
 
 @Suppress("TooManyFunctions")
 class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, CoroutineScope, Disposable {
-    private val apiClientWorkflow = ApiClientWorkflow(GitHubNotificationRepositoryImpl(), SettingStateRepositoryImpl())
-    private val settingStateWorkflow = SettingStateWorkflow(SettingStateRepositoryImpl())
+    private lateinit var apiClientWorkflow: ApiClientWorkflow
+    private lateinit var settingStateWorkflow: SettingStateWorkflow
     private val coroutineJob = Job()
     private var timer: Timer? = null
 
@@ -60,6 +60,8 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         get() = Dispatchers.IO + coroutineJob
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+        apiClientWorkflow = ApiClientWorkflow(GitHubNotificationRepositoryImpl(), SettingStateRepositoryImpl(project))
+        settingStateWorkflow = SettingStateWorkflow(SettingStateRepositoryImpl(project))
         val notificationToolTable = initializeJBTable()
         setupMouseListener(notificationToolTable)
 
