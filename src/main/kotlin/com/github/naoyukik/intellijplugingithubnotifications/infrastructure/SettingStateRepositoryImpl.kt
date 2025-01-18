@@ -3,9 +3,10 @@ package com.github.naoyukik.intellijplugingithubnotifications.infrastructure
 import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingStateRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.SettingState
 import com.github.naoyukik.intellijplugingithubnotifications.settings.AppSettingsState
+import com.intellij.openapi.project.Project
 
-class SettingStateRepositoryImpl : SettingStateRepository {
-    private val state = AppSettingsState.getInstance()
+class SettingStateRepositoryImpl(project: Project) : SettingStateRepository {
+    private val state = AppSettingsState.getInstance(project)
 
     companion object {
         private const val FETCH_INTERVAL_DEFAULT_VALUE = 15
