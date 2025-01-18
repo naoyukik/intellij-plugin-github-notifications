@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.4.3] - 2025-01-18
+
 ### Breaking Changes
 
 - Change the location of the project settings
@@ -56,7 +58,8 @@ Initial release of the GitHub Notifications IntelliJ Plugin.
 
 Done is better than perfect.
 
-[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.4.3...HEAD
+[0.4.3]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.4.0...v0.4.2
 [0.4.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.2.1...v0.3.0
