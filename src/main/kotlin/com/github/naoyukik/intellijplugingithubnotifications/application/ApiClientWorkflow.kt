@@ -61,7 +61,7 @@ class ApiClientWorkflow(
                 val detail = repository.fetchNotificationsReleaseDetail(
                     ghCliPath = ghCliPath,
                     repositoryName = notification.repository.fullName,
-                    detailId = URI(notification.subject.url).path.substringAfterLast("/"),
+                    detailId = setDetailId(notification),
                 )
                 notification.copy(
                     subject = notification.subject.copy(
@@ -75,6 +75,14 @@ class ApiClientWorkflow(
         }
 
         updatedNotifications.toTableDataDto()
+    }
+
+    private fun setDetailId(notification: GitHubNotification): String {
+        return when (notification.subject.type) {
+            SubjectType.Release, SubjectType.Issue, SubjectType.PullRequest -> URI(
+                notification.subject.url,
+            ).path.substringAfterLast("/")
+        }
     }
 
     private fun List<GitHubNotification>.toTableDataDto(): List<TableDataDto> {
