@@ -16,7 +16,7 @@ data class GitHubNotification(
     data class Subject(
         val title: String,
         val url: String,
-        val type: String,
+        val type: SubjectType,
     )
 
     @Serializable
@@ -26,4 +26,11 @@ data class GitHubNotification(
         @SerialName("html_url")
         val htmlUrl: String,
     )
+
+    @Serializable
+    enum class SubjectType {
+        Issue,
+        PullRequest,
+        Release,
+    }
 }

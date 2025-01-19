@@ -4,6 +4,7 @@ import com.github.naoyukik.intellijplugingithubnotifications.application.dto.Tab
 import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotificationRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingStateRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification.SubjectType
 import com.intellij.openapi.util.IconLoader
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -56,7 +57,7 @@ class ApiClientWorkflow(
         }
 
         val updatedNotifications = notifications.map { notification ->
-            val updatedNotification = if (notification.subject.type == "Release") {
+            val updatedNotification = if (notification.subject.type == SubjectType.Release) {
                 val detail = repository.fetchNotificationsReleaseDetail(
                     ghCliPath = ghCliPath,
                     repositoryName = notification.repository.fullName,
@@ -101,9 +102,9 @@ class ApiClientWorkflow(
     private fun apiUrlToRepositoryIssueNumberConverter(
         repositoryFullName: String,
         issueNumber: String,
-        type: String,
+        type: SubjectType,
     ): String {
-        return TYPE_TO_PATH[type]?.let { typeToPath ->
+        return TYPE_TO_PATH[type.name]?.let { typeToPath ->
             when (typeToPath) {
                 "issues", "pull" -> "$repositoryFullName #$issueNumber"
                 "releases" -> "$issueNumber in $repositoryFullName"
@@ -112,8 +113,8 @@ class ApiClientWorkflow(
         } ?: "$repositoryFullName #$issueNumber"
     }
 
-    private fun apiUrlToHtmlUrlConverter(htmlUrl: String, issueNumber: String, type: String): URL? {
-        return TYPE_TO_PATH[type]?.let { typeToPath ->
+    private fun apiUrlToHtmlUrlConverter(htmlUrl: String, issueNumber: String, type: SubjectType): URL? {
+        return TYPE_TO_PATH[type.name]?.let { typeToPath ->
             when (typeToPath) {
                 "issues", "pull" -> URI("$htmlUrl/$typeToPath/$issueNumber").toURL()
                 "releases" -> URI("$htmlUrl/$typeToPath/tag/$issueNumber").toURL()
@@ -122,8 +123,8 @@ class ApiClientWorkflow(
         }
     }
 
-    private fun apUrlToEmojiConverter(type: String): Icon? {
-        return TYPE_TO_EMOJI[type]
+    private fun apUrlToEmojiConverter(type: SubjectType): Icon? {
+        return TYPE_TO_EMOJI[type.name]
     }
 
     private fun getIssueNumber(url: String): String = url.split("/").last()
