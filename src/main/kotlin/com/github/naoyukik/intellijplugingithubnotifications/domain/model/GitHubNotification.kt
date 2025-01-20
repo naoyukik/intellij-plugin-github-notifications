@@ -32,5 +32,14 @@ data class GitHubNotification(
         Issue,
         PullRequest,
         Release,
+        UNKNOWN,
+        ;
+
+        fun isRelevantType(): Boolean {
+            return when (this) {
+                Issue, PullRequest, Release -> true
+                UNKNOWN -> false
+            }
+        }
     }
 }
