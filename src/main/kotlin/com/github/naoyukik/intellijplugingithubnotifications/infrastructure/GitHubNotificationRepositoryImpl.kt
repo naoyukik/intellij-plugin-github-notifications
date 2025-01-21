@@ -32,13 +32,13 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
     override fun fetchNotificationsReleaseDetail(
         ghCliPath: String,
         repositoryName: String,
-        detailId: String,
+        detailApiPath: String,
     ): NotificationReleaseDetail {
         val commandResult = CommandExecutor.execute(
             listOf(
                 ghCliPath,
                 "api",
-                "/repos/$repositoryName/releases/$detailId",
+                "/repos/$repositoryName/$detailApiPath",
             ),
         )
         return toNotificationReleaseDetail(commandResult)

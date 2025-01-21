@@ -41,5 +41,14 @@ data class GitHubNotification(
                 UNKNOWN -> false
             }
         }
+
+        fun setApiPath(): String? {
+            return when (this) {
+                Issue -> "issues"
+                PullRequest -> "pulls"
+                Release -> "releases"
+                UNKNOWN -> null
+            }
+        }
     }
 }

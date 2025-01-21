@@ -9,6 +9,6 @@ interface GitHubNotificationRepository {
     fun fetchNotificationsReleaseDetail(
         ghCliPath: String,
         repositoryName: String,
-        detailId: String,
+        detailApiPath: String,
     ): NotificationReleaseDetail
 }
