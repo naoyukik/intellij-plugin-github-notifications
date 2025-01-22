@@ -115,7 +115,7 @@ class ApiClientWorkflow(
                 ),
                 reason = it.reason,
                 updatedAt = it.updatedAt,
-                typeEmoji = apUrlToEmojiConverter(it.subject.type),
+                typeEmoji = apiUrlToEmojiConverter(it.subject.type),
             )
         }
     }
@@ -144,7 +144,7 @@ class ApiClientWorkflow(
         }
     }
 
-    private fun apUrlToEmojiConverter(type: SubjectType): Icon? {
+    private fun apiUrlToEmojiConverter(type: SubjectType): Icon? {
         return TYPE_TO_EMOJI[type.name]
     }
 
