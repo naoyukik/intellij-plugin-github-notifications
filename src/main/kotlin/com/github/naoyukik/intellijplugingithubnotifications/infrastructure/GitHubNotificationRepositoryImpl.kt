@@ -2,7 +2,7 @@ package com.github.naoyukik.intellijplugingithubnotifications.infrastructure
 
 import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotificationRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
-import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationReleaseDetail
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetail
 import com.github.naoyukik.intellijplugingithubnotifications.utility.CommandExecutor
 import kotlinx.serialization.json.Json
 
@@ -33,7 +33,7 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
         ghCliPath: String,
         repositoryName: String,
         detailApiPath: String,
-    ): NotificationReleaseDetail {
+    ): NotificationDetail {
         val commandResult = CommandExecutor.execute(
             listOf(
                 ghCliPath,
@@ -51,7 +51,7 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
         } ?: emptyList()
     }
 
-    private fun toNotificationReleaseDetail(jsonString: String?): NotificationReleaseDetail {
+    private fun toNotificationReleaseDetail(jsonString: String?): NotificationDetail {
         return jsonString?.run {
             val json = Json { ignoreUnknownKeys = true }
             json.decodeFromString(this)

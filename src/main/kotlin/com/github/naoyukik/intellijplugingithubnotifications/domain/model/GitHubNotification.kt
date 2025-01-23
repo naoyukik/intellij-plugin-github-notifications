@@ -11,6 +11,7 @@ data class GitHubNotification(
     val reason: String,
     @SerialName("updated_at")
     val updatedAt: String,
+    val detail: NotificationDetail? = null,
 ) {
     @Serializable
     data class Subject(

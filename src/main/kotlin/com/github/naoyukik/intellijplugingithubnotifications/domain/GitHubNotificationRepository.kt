@@ -1,7 +1,7 @@
 package com.github.naoyukik.intellijplugingithubnotifications.domain
 
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
-import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationReleaseDetail
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetail
 
 interface GitHubNotificationRepository {
     fun fetchNotifications(ghCliPath: String): List<GitHubNotification>
@@ -10,5 +10,5 @@ interface GitHubNotificationRepository {
         ghCliPath: String,
         repositoryName: String,
         detailApiPath: String,
-    ): NotificationReleaseDetail
+    ): NotificationDetail
 }
