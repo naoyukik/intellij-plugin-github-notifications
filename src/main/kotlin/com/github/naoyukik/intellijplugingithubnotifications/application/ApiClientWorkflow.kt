@@ -5,7 +5,6 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotifi
 import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingStateRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification.SubjectType
-import com.intellij.openapi.fileEditor.impl.HTMLEditorProvider.Request.Companion.url
 import com.intellij.openapi.util.IconLoader
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -112,7 +111,7 @@ class ApiClientWorkflow(
                 val detailId = URI(
                     notification.subject.url,
                 ).path.substringAfterLast("/")
-                if (detailId.isNotEmpty()) detailId else null
+                detailId.ifEmpty { null }
             }
             SubjectType.UNKNOWN -> null
         }
@@ -166,18 +165,14 @@ class ApiClientWorkflow(
 
     private fun apiUrlToEmojiConverter(notification: GitHubNotification): Icon? {
         if (notification.subject.type == SubjectType.UNKNOWN) return null
-        val type = notification.subject.type
-
-        return when (type) {
-            SubjectType.PullRequest -> {
-                notification.detail?.let { detail ->
-                    return when {
-                        detail.isPullRequestDraft() -> TYPE_TO_EMOJI["PullRequestDraft"]
-                        detail.isPullRequestClosed() -> TYPE_TO_EMOJI["PullRequestClosed"]
-                        detail.isPullRequestMerged() -> TYPE_TO_EMOJI["PullRequestMerged"]
-                        detail.isPullRequestOpen() -> TYPE_TO_EMOJI["PullRequestOpen"]
-                        else -> null
-                    }
+        return when (val type = notification.subject.type) {
+            SubjectType.PullRequest -> notification.detail?.let { detail ->
+                return when {
+                    detail.isPullRequestDraft() -> TYPE_TO_EMOJI["PullRequestDraft"]
+                    detail.isPullRequestClosed() -> TYPE_TO_EMOJI["PullRequestClosed"]
+                    detail.isPullRequestMerged() -> TYPE_TO_EMOJI["PullRequestMerged"]
+                    detail.isPullRequestOpen() -> TYPE_TO_EMOJI["PullRequestOpen"]
+                    else -> null
                 }
             }
             SubjectType.Issue -> TYPE_TO_EMOJI[type.name]
