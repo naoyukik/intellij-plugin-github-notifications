@@ -4,6 +4,7 @@ import com.github.naoyukik.intellijplugingithubnotifications.application.dto.Tab
 import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotificationRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingStateRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification.SubjectType
 import com.intellij.openapi.util.IconLoader
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -29,8 +30,23 @@ class ApiClientWorkflow(
             this::class.java.classLoader,
         )
 
-        private val pullRequests = IconLoader.getIcon(
+        private val pullRequestsOpen = IconLoader.getIcon(
             "/com/github/naoyukik/intellijplugingithubnotifications/icons/git-pull-request-16.svg",
+            this::class.java.classLoader,
+        )
+
+        private val pullRequestsMerged = IconLoader.getIcon(
+            "/com/github/naoyukik/intellijplugingithubnotifications/icons/git-merge-16.svg",
+            this::class.java.classLoader,
+        )
+
+        private val pullRequestsClosed = IconLoader.getIcon(
+            "/com/github/naoyukik/intellijplugingithubnotifications/icons/git-pull-request-closed-16.svg",
+            this::class.java.classLoader,
+        )
+
+        private val pullRequestsDraft = IconLoader.getIcon(
+            "/com/github/naoyukik/intellijplugingithubnotifications/icons/git-pull-request-draft-16.svg",
             this::class.java.classLoader,
         )
 
@@ -40,7 +56,10 @@ class ApiClientWorkflow(
         )
 
         private val TYPE_TO_EMOJI: Map<String, Icon> = mapOf(
-            "PullRequest" to pullRequests,
+            "PullRequestOpen" to pullRequestsOpen,
+            "PullRequestMerged" to pullRequestsMerged,
+            "PullRequestClosed" to pullRequestsClosed,
+            "PullRequestDraft" to pullRequestsDraft,
             "Issue" to issues,
             "Release" to release,
         )
@@ -56,16 +75,18 @@ class ApiClientWorkflow(
         }
 
         val updatedNotifications = notifications.map { notification ->
-            val updatedNotification = if (notification.subject.type == "Release") {
+            val detailAPiPath = setDetailApiPath(notification)
+            val updatedNotification = if (detailAPiPath != null) {
                 val detail = repository.fetchNotificationsReleaseDetail(
                     ghCliPath = ghCliPath,
                     repositoryName = notification.repository.fullName,
-                    detailId = URI(notification.subject.url).path.substringAfterLast("/"),
+                    detailApiPath = detailAPiPath,
                 )
                 notification.copy(
                     subject = notification.subject.copy(
                         url = detail.htmlUrl,
                     ),
+                    detail = detail,
                 )
             } else {
                 notification
@@ -74,6 +95,26 @@ class ApiClientWorkflow(
         }
 
         updatedNotifications.toTableDataDto()
+    }
+
+    private fun setDetailApiPath(notification: GitHubNotification): String? {
+        return when (val type = notification.subject.type) {
+            SubjectType.Release, SubjectType.Issue, SubjectType.PullRequest ->
+                "${type.setApiPath()}/${setDetailId(notification)}}"
+            SubjectType.UNKNOWN -> null
+        }
+    }
+
+    private fun setDetailId(notification: GitHubNotification): String? {
+        return when (notification.subject.type) {
+            SubjectType.Release, SubjectType.Issue, SubjectType.PullRequest -> {
+                val detailId = URI(
+                    notification.subject.url,
+                ).path.substringAfterLast("/")
+                detailId.ifEmpty { null }
+            }
+            SubjectType.UNKNOWN -> null
+        }
     }
 
     private fun List<GitHubNotification>.toTableDataDto(): List<TableDataDto> {
@@ -93,7 +134,7 @@ class ApiClientWorkflow(
                 ),
                 reason = it.reason,
                 updatedAt = it.updatedAt,
-                typeEmoji = apUrlToEmojiConverter(it.subject.type),
+                typeEmoji = apiUrlToEmojiConverter(it),
             )
         }
     }
@@ -101,9 +142,9 @@ class ApiClientWorkflow(
     private fun apiUrlToRepositoryIssueNumberConverter(
         repositoryFullName: String,
         issueNumber: String,
-        type: String,
+        type: SubjectType,
     ): String {
-        return TYPE_TO_PATH[type]?.let { typeToPath ->
+        return TYPE_TO_PATH[type.name]?.let { typeToPath ->
             when (typeToPath) {
                 "issues", "pull" -> "$repositoryFullName #$issueNumber"
                 "releases" -> "$issueNumber in $repositoryFullName"
@@ -112,8 +153,8 @@ class ApiClientWorkflow(
         } ?: "$repositoryFullName #$issueNumber"
     }
 
-    private fun apiUrlToHtmlUrlConverter(htmlUrl: String, issueNumber: String, type: String): URL? {
-        return TYPE_TO_PATH[type]?.let { typeToPath ->
+    private fun apiUrlToHtmlUrlConverter(htmlUrl: String, issueNumber: String, type: SubjectType): URL? {
+        return TYPE_TO_PATH[type.name]?.let { typeToPath ->
             when (typeToPath) {
                 "issues", "pull" -> URI("$htmlUrl/$typeToPath/$issueNumber").toURL()
                 "releases" -> URI("$htmlUrl/$typeToPath/tag/$issueNumber").toURL()
@@ -122,8 +163,22 @@ class ApiClientWorkflow(
         }
     }
 
-    private fun apUrlToEmojiConverter(type: String): Icon? {
-        return TYPE_TO_EMOJI[type]
+    private fun apiUrlToEmojiConverter(notification: GitHubNotification): Icon? {
+        if (notification.subject.type == SubjectType.UNKNOWN) return null
+        return when (val type = notification.subject.type) {
+            SubjectType.PullRequest -> notification.detail?.let { detail ->
+                return when {
+                    detail.isPullRequestDraft() -> TYPE_TO_EMOJI["PullRequestDraft"]
+                    detail.isPullRequestClosed() -> TYPE_TO_EMOJI["PullRequestClosed"]
+                    detail.isPullRequestMerged() -> TYPE_TO_EMOJI["PullRequestMerged"]
+                    detail.isPullRequestOpen() -> TYPE_TO_EMOJI["PullRequestOpen"]
+                    else -> null
+                }
+            }
+            SubjectType.Issue -> TYPE_TO_EMOJI[type.name]
+            SubjectType.Release -> TYPE_TO_EMOJI[type.name]
+            SubjectType.UNKNOWN -> null
+        }
     }
 
     private fun getIssueNumber(url: String): String = url.split("/").last()

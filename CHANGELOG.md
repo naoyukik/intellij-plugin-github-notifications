@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Get Notification status for Pull Request from Details
+
 ## [0.4.3] - 2025-01-18
 
 ### Breaking Changes
