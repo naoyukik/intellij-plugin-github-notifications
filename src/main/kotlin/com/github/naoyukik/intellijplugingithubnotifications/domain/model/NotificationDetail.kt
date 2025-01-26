@@ -23,4 +23,16 @@ data class NotificationDetail(
     fun isPullRequestDraft(): Boolean {
         return this.draft
     }
+
+    fun isIssueOpen(): Boolean {
+        return this.state == IssueState.Open.name.lowercase()
+    }
+    fun isIssueClosed(): Boolean {
+        return this.state == IssueState.Closed.name.lowercase()
+    }
+
+    enum class IssueState {
+        Open,
+        Closed,
+    }
 }
