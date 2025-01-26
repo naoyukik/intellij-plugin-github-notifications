@@ -68,19 +68,18 @@ class ApiClientWorkflow(
     suspend fun fetchNotifications(): List<TableDataDto> = withContext(dispatcher) {
         val settingState = settingStateRepository.loadSettingState()
         val ghCliPath = settingState.ghCliPath
-        val notifications = if (settingState.repositoryName.isEmpty()) {
-            repository.fetchNotifications(ghCliPath)
-        } else {
-            repository.fetchNotificationsByRepository(ghCliPath, settingState.repositoryName)
-        }
+
+        val notifications = settingState.repositoryName.takeUnless { it.isEmpty() }?.let { nonEmptyRepositoryName ->
+            repository.fetchNotificationsByRepository(ghCliPath, nonEmptyRepositoryName)
+        } ?: repository.fetchNotifications(ghCliPath)
 
         val updatedNotifications = notifications.map { notification ->
             val detailAPiPath = setDetailApiPath(notification)
-            val updatedNotification = if (detailAPiPath != null) {
+            val updatedNotification = detailAPiPath?.let {
                 val detail = repository.fetchNotificationsReleaseDetail(
                     ghCliPath = ghCliPath,
                     repositoryName = notification.repository.fullName,
-                    detailApiPath = detailAPiPath,
+                    detailApiPath = it,
                 )
                 notification.copy(
                     subject = notification.subject.copy(
@@ -88,9 +87,7 @@ class ApiClientWorkflow(
                     ),
                     detail = detail,
                 )
-            } else {
-                notification
-            }
+            } ?: notification
             updatedNotification
         }
 
@@ -164,7 +161,6 @@ class ApiClientWorkflow(
     }
 
     private fun apiUrlToEmojiConverter(notification: GitHubNotification): Icon? {
-        if (notification.subject.type == SubjectType.UNKNOWN) return null
         return when (val type = notification.subject.type) {
             SubjectType.PullRequest -> notification.detail?.let { detail ->
                 return when {
