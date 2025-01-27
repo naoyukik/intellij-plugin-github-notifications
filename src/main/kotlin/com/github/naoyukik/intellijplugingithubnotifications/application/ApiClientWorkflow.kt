@@ -25,8 +25,13 @@ class ApiClientWorkflow(
             "Release" to "releases",
         )
 
-        private val issues = IconLoader.getIcon(
+        private val issuesOpened = IconLoader.getIcon(
             "com/github/naoyukik/intellijplugingithubnotifications/icons/issue-opened-16.svg",
+            this::class.java.classLoader,
+        )
+
+        private val issuesClosed = IconLoader.getIcon(
+            "com/github/naoyukik/intellijplugingithubnotifications/icons/issue-closed-16.svg",
             this::class.java.classLoader,
         )
 
@@ -60,7 +65,8 @@ class ApiClientWorkflow(
             "PullRequestMerged" to pullRequestsMerged,
             "PullRequestClosed" to pullRequestsClosed,
             "PullRequestDraft" to pullRequestsDraft,
-            "Issue" to issues,
+            "IssueOpen" to issuesOpened,
+            "IssueClosed" to issuesClosed,
             "Release" to release,
         )
     }
@@ -160,6 +166,7 @@ class ApiClientWorkflow(
         }
     }
 
+    @Suppress("ComplexMethod")
     private fun apiUrlToEmojiConverter(notification: GitHubNotification): Icon? {
         return when (val type = notification.subject.type) {
             SubjectType.PullRequest -> notification.detail?.let { detail ->
@@ -171,7 +178,13 @@ class ApiClientWorkflow(
                     else -> null
                 }
             }
-            SubjectType.Issue -> TYPE_TO_EMOJI[type.name]
+            SubjectType.Issue -> notification.detail?.let { detail ->
+                return when {
+                    detail.isIssueClosed() -> TYPE_TO_EMOJI["IssueClosed"]
+                    detail.isIssueOpen() -> TYPE_TO_EMOJI["IssueOpen"]
+                    else -> null
+                }
+            }
             SubjectType.Release -> TYPE_TO_EMOJI[type.name]
             SubjectType.UNKNOWN -> null
         }
