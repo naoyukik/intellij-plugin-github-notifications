@@ -7,6 +7,7 @@
 ### Added
 
 - Get Notification status for Pull Request and Issue from Details
+- Added display of reviewer names for pull requests
 
 ## [0.4.3] - 2025-01-18
 
