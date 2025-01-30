@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.5.0] - 2025-01-30
+
 ### Added
 
 - Get Notification status for Pull Request and Issue from Details
@@ -63,7 +65,8 @@ Initial release of the GitHub Notifications IntelliJ Plugin.
 
 Done is better than perfect.
 
-[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.4.3...HEAD
+[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.4.3...v0.5.0
 [0.4.3]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.4.0...v0.4.2
 [0.4.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.3.0...v0.4.0
