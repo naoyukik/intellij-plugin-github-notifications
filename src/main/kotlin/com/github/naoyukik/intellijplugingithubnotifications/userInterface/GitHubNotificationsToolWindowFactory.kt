@@ -50,6 +50,14 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private lateinit var settingStateWorkflow: SettingStateWorkflow
     private val coroutineJob = Job()
     private var timer: Timer? = null
+    val columnName = arrayOf(
+        "Link",
+        "Type",
+        "Message",
+        "Reason",
+        "Reviewers",
+        "Updated at",
+    )
 
     companion object {
         const val ICON_WIDTH = 13
@@ -135,13 +143,6 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     }
 
     private fun initializeJBTable(): JBTable {
-        val columnName = arrayOf(
-            "Link",
-            "Type",
-            "Message",
-            "Reason",
-            "Updated at",
-        )
         return JBTable(object : DefaultTableModel(arrayOf(), columnName) {
             override fun isCellEditable(row: Int, column: Int) = false
         }).apply {
@@ -205,14 +206,6 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     }
 
     private fun List<TableDataDto>.toJBTable(): JBTable {
-        val columnName = arrayOf(
-            "Link",
-            "Type",
-            "Message",
-            "Reason",
-            "Updated at",
-        )
-
         val data = this.map { dto ->
             val updatedAt = DateTimeHandler.convertToLocalDateTime(dto.updatedAt)
             val htmlUrl = dto.htmlUrl?.let { "<html><a href='$it'>Open</a></html>" } ?: ""
@@ -221,6 +214,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 dto.typeEmoji ?: "",
                 "<html>${dto.fullName}<br>${dto.title}</html>",
                 "<html>${dto.reason}</html>",
+                "<html>${dto.reviewers.joinToString(",")}</html>",
                 "<html>$updatedAt</html>",
             )
         }.toTypedArray()

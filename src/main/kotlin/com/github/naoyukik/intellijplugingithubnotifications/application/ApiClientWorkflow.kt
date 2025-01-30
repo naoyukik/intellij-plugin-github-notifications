@@ -138,6 +138,7 @@ class ApiClientWorkflow(
                 reason = it.reason,
                 updatedAt = it.updatedAt,
                 typeEmoji = apiUrlToEmojiConverter(it),
+                reviewers = it.detail?.requestedReviewers?.map { reviewer -> reviewer.login } ?: emptyList(),
             )
         }
     }

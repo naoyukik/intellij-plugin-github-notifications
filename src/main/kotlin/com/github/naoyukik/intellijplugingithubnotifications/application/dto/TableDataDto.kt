@@ -10,4 +10,5 @@ data class TableDataDto(
     val reason: String,
     val updatedAt: String,
     val typeEmoji: Icon?,
+    val reviewers: List<String?>,
 )

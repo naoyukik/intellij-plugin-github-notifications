@@ -10,7 +10,14 @@ data class NotificationDetail(
     val draft: Boolean = false,
     @SerialName("html_url")
     val htmlUrl: String,
+    @SerialName("requested_reviewers")
+    val requestedReviewers: List<RequestedReviewers> = emptyList(),
 ) {
+    @Serializable
+    data class RequestedReviewers(
+        val login: String,
+    )
+
     fun isPullRequestOpen(): Boolean {
         return this.state == "open"
     }
