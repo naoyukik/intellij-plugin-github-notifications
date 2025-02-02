@@ -5,6 +5,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import java.time.Instant
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeParseException
 
 /**
@@ -50,5 +51,53 @@ class DateTimeHandlerTest : StringSpec({
 
         // Assert
         result shouldBe "2024-12-29 19:00:45"
+    }
+
+    "minusNMinutesIso8601 should subtract 15 minutes correctly in ISO 8601 format" {
+        // Arrange
+        val now = ZonedDateTime.parse("2024-12-29T10:15:00Z")
+        val minutesToSubtract = 15L
+
+        // Act
+        val result = DateTimeHandler.minusNMinutesIso8601(now, minutesToSubtract)
+
+        // Assert
+        result shouldBe "2024-12-29T10:00:00Z"
+    }
+
+    "minusNMinutesIso8601 should return the same time when subtracting zero minutes" {
+        // Arrange
+        val now = ZonedDateTime.parse("2024-12-29T10:15:00Z")
+        val minutesToSubtract = 0L
+
+        // Act
+        val result = DateTimeHandler.minusNMinutesIso8601(now, minutesToSubtract)
+
+        // Assert
+        result shouldBe "2024-12-29T10:15:00Z"
+    }
+
+    "minusNMinutesIso8601 should handle edge case dates like Unix epoch" {
+        // Arrange
+        val now = ZonedDateTime.parse("1970-01-01T00:01:00Z")
+        val minutesToSubtract = 1L
+
+        // Act
+        val result = DateTimeHandler.minusNMinutesIso8601(now, minutesToSubtract)
+
+        // Assert
+        result shouldBe "1970-01-01T00:00:00Z"
+    }
+
+    "minusNMinutesIso8601 should handle edge case dates like Unix epoch with Asia/Tokyo timezone" {
+        // Arrange
+        val now = ZonedDateTime.parse("1970-01-01T09:01:00+09:00")
+        val minutesToSubtract = 1L
+
+        // Act
+        val result = DateTimeHandler.minusNMinutesIso8601(now, minutesToSubtract)
+
+        // Assert
+        result shouldBe "1970-01-01T00:00:00Z"
     }
 })
