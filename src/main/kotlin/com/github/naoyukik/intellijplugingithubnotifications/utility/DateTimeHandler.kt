@@ -10,4 +10,10 @@ object DateTimeHandler {
         val instant = Instant.parse(utcDate)
         val localDateTime = ZonedDateTime.ofInstant(instant, zoneId)
         return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(localDateTime)
-    } }
+    }
+
+    fun toIso8601(zonedDateTime: ZonedDateTime): String {
+        val formatter = DateTimeFormatter.ISO_INSTANT
+        return formatter.format(zonedDateTime)
+    }
+}
