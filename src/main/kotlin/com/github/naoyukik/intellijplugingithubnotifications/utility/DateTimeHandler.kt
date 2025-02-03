@@ -12,9 +12,12 @@ object DateTimeHandler {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(localDateTime)
     }
 
-    fun minusNMinutesIso8601(now: ZonedDateTime, minutes: Long): String {
-        val updatedTime = now.minusMinutes(minutes)
+    fun minusNMinutes(now: ZonedDateTime, minutes: Long): ZonedDateTime {
+        return now.minusMinutes(minutes)
+    }
+
+    fun toIso8601(zonedDateTime: ZonedDateTime): String {
         val formatter = DateTimeFormatter.ISO_INSTANT
-        return formatter.format(updatedTime)
+        return formatter.format(zonedDateTime)
     }
 }
