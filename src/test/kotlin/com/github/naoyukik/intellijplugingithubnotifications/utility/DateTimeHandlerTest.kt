@@ -1,5 +1,6 @@
 package com.github.naoyukik.intellijplugingithubnotifications.utility
 
+import com.github.naoyukik.intellijplugingithubnotifications.utility.DateTimeHandler.toIso8601
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
@@ -59,10 +60,10 @@ class DateTimeHandlerTest : StringSpec({
         val minutesToSubtract = 15L
 
         // Act
-        val result = DateTimeHandler.minusNMinutesIso8601(now, minutesToSubtract)
+        val result = DateTimeHandler.minusNMinutes(now, minutesToSubtract)
 
         // Assert
-        result shouldBe "2024-12-29T10:00:00Z"
+        toIso8601(result) shouldBe "2024-12-29T10:00:00Z"
     }
 
     "minusNMinutesIso8601 should return the same time when subtracting zero minutes" {
@@ -71,10 +72,10 @@ class DateTimeHandlerTest : StringSpec({
         val minutesToSubtract = 0L
 
         // Act
-        val result = DateTimeHandler.minusNMinutesIso8601(now, minutesToSubtract)
+        val result = DateTimeHandler.minusNMinutes(now, minutesToSubtract)
 
         // Assert
-        result shouldBe "2024-12-29T10:15:00Z"
+        toIso8601(result) shouldBe "2024-12-29T10:15:00Z"
     }
 
     "minusNMinutesIso8601 should handle edge case dates like Unix epoch" {
@@ -83,10 +84,10 @@ class DateTimeHandlerTest : StringSpec({
         val minutesToSubtract = 1L
 
         // Act
-        val result = DateTimeHandler.minusNMinutesIso8601(now, minutesToSubtract)
+        val result = DateTimeHandler.minusNMinutes(now, minutesToSubtract)
 
         // Assert
-        result shouldBe "1970-01-01T00:00:00Z"
+        toIso8601(result) shouldBe "1970-01-01T00:00:00Z"
     }
 
     "minusNMinutesIso8601 should handle edge case dates like Unix epoch with Asia/Tokyo timezone" {
@@ -95,9 +96,9 @@ class DateTimeHandlerTest : StringSpec({
         val minutesToSubtract = 1L
 
         // Act
-        val result = DateTimeHandler.minusNMinutesIso8601(now, minutesToSubtract)
+        val result = DateTimeHandler.minusNMinutes(now, minutesToSubtract)
 
         // Assert
-        result shouldBe "1970-01-01T00:00:00Z"
+        toIso8601(result) shouldBe "1970-01-01T00:00:00Z"
     }
 })
