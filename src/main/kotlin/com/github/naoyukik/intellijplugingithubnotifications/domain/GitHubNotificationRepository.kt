@@ -2,6 +2,7 @@ package com.github.naoyukik.intellijplugingithubnotifications.domain
 
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetail
+import java.time.ZonedDateTime
 
 interface GitHubNotificationRepository {
     fun fetchNotifications(ghCliPath: String): List<GitHubNotification>
@@ -11,4 +12,9 @@ interface GitHubNotificationRepository {
         repositoryName: String,
         detailApiPath: String,
     ): NotificationDetail
+    fun fetchLatestNotificationsByRepository(
+        ghCliPath: String,
+        repositoryName: String,
+        previousTime: ZonedDateTime,
+    ): List<GitHubNotification>
 }

@@ -4,7 +4,9 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotifi
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetail
 import com.github.naoyukik.intellijplugingithubnotifications.utility.CommandExecutor
+import com.github.naoyukik.intellijplugingithubnotifications.utility.DateTimeHandler
 import kotlinx.serialization.json.Json
+import java.time.ZonedDateTime
 
 class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
     override fun fetchNotifications(ghCliPath: String): List<GitHubNotification> {
@@ -42,6 +44,22 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
             ),
         )
         return toNotificationReleaseDetail(commandResult)
+    }
+
+    override fun fetchLatestNotificationsByRepository(
+        ghCliPath: String,
+        repositoryName: String,
+        previousTime: ZonedDateTime,
+    ): List<GitHubNotification> {
+        val since = DateTimeHandler.toIso8601(previousTime)
+        val commandResult = CommandExecutor.execute(
+            listOf(
+                ghCliPath,
+                "api",
+                "/repos/$repositoryName/notifications?since=$since",
+            ),
+        )
+        return toGitHubNotification(commandResult)
     }
 
     private fun toGitHubNotification(jsonString: String?): List<GitHubNotification> {

@@ -5,12 +5,15 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotifi
 import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingStateRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification.SubjectType
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.SettingState
+import com.github.naoyukik.intellijplugingithubnotifications.utility.DateTimeHandler
 import com.intellij.openapi.util.IconLoader
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URI
 import java.net.URL
+import java.time.ZonedDateTime
 import javax.swing.Icon
 
 class ApiClientWorkflow(
@@ -18,6 +21,8 @@ class ApiClientWorkflow(
     private val settingStateRepository: SettingStateRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
+    private var latestFetchTime: ZonedDateTime? = null
+
     companion object {
         private val TYPE_TO_PATH = mapOf(
             "PullRequest" to "pull",
@@ -74,10 +79,13 @@ class ApiClientWorkflow(
     suspend fun fetchNotifications(): List<TableDataDto> = withContext(dispatcher) {
         val settingState = settingStateRepository.loadSettingState()
         val ghCliPath = settingState.ghCliPath
+        if (!hasNewNotificationsSinceLastCheck(settingState, ghCliPath)) return@withContext emptyList()
 
         val notifications = settingState.repositoryName.takeUnless { it.isEmpty() }?.let { nonEmptyRepositoryName ->
             repository.fetchNotificationsByRepository(ghCliPath, nonEmptyRepositoryName)
         } ?: repository.fetchNotifications(ghCliPath)
+
+        notifications.takeIf { it.isNotEmpty() } ?: return@withContext emptyList()
 
         val updatedNotifications = notifications.map { notification ->
             val detailAPiPath = setDetailApiPath(notification)
@@ -98,6 +106,26 @@ class ApiClientWorkflow(
         }
 
         updatedNotifications.toTableDataDto()
+    }
+
+    private fun hasNewNotificationsSinceLastCheck(
+        settingState: SettingState,
+        ghCliPath: String,
+    ): Boolean {
+        val previousFetchTime = latestFetchTime ?: run {
+            latestFetchTime = ZonedDateTime.now()
+            return true
+        }
+        latestFetchTime = ZonedDateTime.now()
+        val latestNotifications = repository.fetchLatestNotificationsByRepository(
+            ghCliPath = ghCliPath,
+            repositoryName = settingState.repositoryName,
+            previousTime = DateTimeHandler.minusNMinutes(
+                previousFetchTime,
+                settingState.fetchInterval.toLong(),
+            ),
+        )
+        return latestNotifications.isNotEmpty()
     }
 
     private fun setDetailApiPath(notification: GitHubNotification): String? {
