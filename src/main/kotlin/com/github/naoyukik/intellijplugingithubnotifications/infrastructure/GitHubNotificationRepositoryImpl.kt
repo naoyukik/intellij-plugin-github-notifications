@@ -46,6 +46,21 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
         return toNotificationReleaseDetail(commandResult)
     }
 
+    override fun fetchLatestNotifications(
+        ghCliPath: String,
+        previousTime: ZonedDateTime,
+    ): List<GitHubNotification> {
+        val since = DateTimeHandler.toIso8601(previousTime)
+        val commandResult = CommandExecutor.execute(
+            listOf(
+                ghCliPath,
+                "api",
+                "/notifications?since=$since",
+            ),
+        )
+        return toGitHubNotification(commandResult)
+    }
+
     override fun fetchLatestNotificationsByRepository(
         ghCliPath: String,
         repositoryName: String,

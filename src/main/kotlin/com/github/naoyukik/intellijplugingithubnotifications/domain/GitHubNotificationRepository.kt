@@ -12,6 +12,10 @@ interface GitHubNotificationRepository {
         repositoryName: String,
         detailApiPath: String,
     ): NotificationDetail
+    fun fetchLatestNotifications(
+        ghCliPath: String,
+        previousTime: ZonedDateTime,
+    ): List<GitHubNotification>
     fun fetchLatestNotificationsByRepository(
         ghCliPath: String,
         repositoryName: String,

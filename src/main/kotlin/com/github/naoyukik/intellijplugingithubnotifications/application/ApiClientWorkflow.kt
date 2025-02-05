@@ -6,7 +6,6 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingState
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification.SubjectType
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.SettingState
-import com.github.naoyukik.intellijplugingithubnotifications.utility.DateTimeHandler
 import com.intellij.openapi.util.IconLoader
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -79,7 +78,7 @@ class ApiClientWorkflow(
     suspend fun fetchNotifications(): List<TableDataDto> = withContext(dispatcher) {
         val settingState = settingStateRepository.loadSettingState()
         val ghCliPath = settingState.ghCliPath
-        if (!hasNewNotificationsSinceLastCheck(settingState, ghCliPath)) return@withContext emptyList()
+        if (!hasNewNotificationsSinceLastCheck(settingState)) return@withContext emptyList()
 
         val notifications = settingState.repositoryName.takeUnless { it.isEmpty() }?.let { nonEmptyRepositoryName ->
             repository.fetchNotificationsByRepository(ghCliPath, nonEmptyRepositoryName)
@@ -110,21 +109,22 @@ class ApiClientWorkflow(
 
     private fun hasNewNotificationsSinceLastCheck(
         settingState: SettingState,
-        ghCliPath: String,
     ): Boolean {
         val previousFetchTime = latestFetchTime ?: run {
             latestFetchTime = ZonedDateTime.now()
             return true
         }
         latestFetchTime = ZonedDateTime.now()
-        val latestNotifications = repository.fetchLatestNotificationsByRepository(
-            ghCliPath = ghCliPath,
-            repositoryName = settingState.repositoryName,
-            previousTime = DateTimeHandler.minusNMinutes(
-                previousFetchTime,
-                settingState.fetchInterval.toLong(),
-            ),
-        )
+        val ghCliPath = settingState.ghCliPath
+        val latestNotifications = settingState.repositoryName.takeUnless { repositoryName ->
+            repositoryName.isEmpty()
+        }?.let { nonEmptyRepositoryName ->
+            repository.fetchLatestNotificationsByRepository(
+                ghCliPath = ghCliPath,
+                repositoryName = nonEmptyRepositoryName,
+                previousTime = previousFetchTime,
+            )
+        } ?: repository.fetchLatestNotifications(ghCliPath, previousTime = previousFetchTime)
         return latestNotifications.isNotEmpty()
     }
 
