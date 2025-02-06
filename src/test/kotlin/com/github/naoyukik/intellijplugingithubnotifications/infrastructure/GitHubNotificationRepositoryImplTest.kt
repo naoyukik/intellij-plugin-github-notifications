@@ -5,7 +5,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.mockkObject
 
 class GitHubNotificationRepositoryImplTest : StringSpec({
 
@@ -30,8 +30,8 @@ class GitHubNotificationRepositoryImplTest : StringSpec({
             ]
         """.trimIndent()
 
-        val mockExecutor = mockk<CommandExecutor>()
-        every { mockExecutor.execute(listOf(ghCliPath, "api", "/notifications")) } returns sampleJson
+        mockkObject(CommandExecutor)
+        every { CommandExecutor.execute(any()) } returns sampleJson
 
         val repository = GitHubNotificationRepositoryImpl()
         val result = repository.fetchNotifications(ghCliPath)
@@ -44,8 +44,8 @@ class GitHubNotificationRepositoryImplTest : StringSpec({
     "fetchNotifications should return an empty list when no data is returned" {
         val ghCliPath = "testPath"
 
-        val mockExecutor = mockk<CommandExecutor>()
-        every { mockExecutor.execute(listOf(ghCliPath, "api", "/notifications")) } returns null
+        mockkObject(CommandExecutor)
+        every { CommandExecutor.execute(listOf(ghCliPath, "api", "/notifications")) } returns null
 
         val repository = GitHubNotificationRepositoryImpl()
         val result = repository.fetchNotifications(ghCliPath)
@@ -57,8 +57,8 @@ class GitHubNotificationRepositoryImplTest : StringSpec({
         val ghCliPath = "testPath"
         val invalidJson = "invalid json"
 
-        val mockExecutor = mockk<CommandExecutor>()
-        every { mockExecutor.execute(listOf(ghCliPath, "api", "/notifications")) } returns invalidJson
+        mockkObject(CommandExecutor)
+        every { CommandExecutor.execute(listOf(ghCliPath, "api", "/notifications")) } returns invalidJson
 
         val repository = GitHubNotificationRepositoryImpl()
 
