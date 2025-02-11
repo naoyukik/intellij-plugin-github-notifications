@@ -1,5 +1,6 @@
 package com.github.naoyukik.intellijplugingithubnotifications.domain.model
 
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse.NotificationDetail
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

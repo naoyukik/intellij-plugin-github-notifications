@@ -1,7 +1,7 @@
 package com.github.naoyukik.intellijplugingithubnotifications.domain
 
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
-import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetail
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse.NotificationDetail
 import java.time.ZonedDateTime
 
 interface GitHubNotificationRepository {

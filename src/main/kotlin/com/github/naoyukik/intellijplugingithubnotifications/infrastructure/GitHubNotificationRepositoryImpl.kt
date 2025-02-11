@@ -2,10 +2,14 @@ package com.github.naoyukik.intellijplugingithubnotifications.infrastructure
 
 import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotificationRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
-import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetail
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse.NotificationDetail
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse.NotificationDetailError
 import com.github.naoyukik.intellijplugingithubnotifications.utility.CommandExecutor
 import com.github.naoyukik.intellijplugingithubnotifications.utility.DateTimeHandler
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 import java.time.ZonedDateTime
 
 class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
@@ -86,8 +90,23 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
 
     private fun toNotificationReleaseDetail(jsonString: String?): NotificationDetail {
         return jsonString?.run {
-            val json = Json { ignoreUnknownKeys = true }
-            json.decodeFromString(this)
+            val json = Json {
+                ignoreUnknownKeys = true
+                serializersModule = SerializersModule {
+                    polymorphic(NotificationDetailResponse::class) {
+                        defaultDeserializer { NotificationDetailResponse.NotificationDetailResponseSerializer }
+                    }
+                }
+            }
+            when (
+                val response = json.decodeFromJsonElement(
+                    NotificationDetailResponse.NotificationDetailResponseSerializer,
+                    Json.parseToJsonElement(this),
+                )
+            ) {
+                is NotificationDetail -> response
+                is NotificationDetailError -> null
+            }
         } ?: throw IllegalArgumentException("No detailed data exists")
     }
 }
