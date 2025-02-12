@@ -5,6 +5,8 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotifi
 import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingStateRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification.SubjectType
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse.NotificationDetail
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse.NotificationDetailError
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.SettingState
 import com.intellij.openapi.util.IconLoader
 import kotlinx.coroutines.CoroutineDispatcher
@@ -94,12 +96,17 @@ class ApiClientWorkflow(
                     repositoryName = notification.repository.fullName,
                     detailApiPath = it,
                 )
-                notification.copy(
-                    subject = notification.subject.copy(
-                        url = detail.htmlUrl,
-                    ),
-                    detail = detail,
-                )
+                when (detail) {
+                    is NotificationDetail -> {
+                        notification.copy(
+                            subject = notification.subject.copy(
+                                url = detail.htmlUrl,
+                            ),
+                            detail = detail,
+                        )
+                    }
+                    is NotificationDetailError -> null
+                }
             } ?: notification
             updatedNotification
         }

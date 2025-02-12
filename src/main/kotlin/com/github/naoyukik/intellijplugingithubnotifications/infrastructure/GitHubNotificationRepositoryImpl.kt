@@ -3,8 +3,6 @@ package com.github.naoyukik.intellijplugingithubnotifications.infrastructure
 import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotificationRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse
-import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse.NotificationDetail
-import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse.NotificationDetailError
 import com.github.naoyukik.intellijplugingithubnotifications.utility.CommandExecutor
 import com.github.naoyukik.intellijplugingithubnotifications.utility.DateTimeHandler
 import kotlinx.serialization.json.Json
@@ -39,15 +37,17 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
         ghCliPath: String,
         repositoryName: String,
         detailApiPath: String,
-    ): NotificationDetail {
+    ): NotificationDetailResponse {
         val commandResult = CommandExecutor.execute(
             listOf(
                 ghCliPath,
                 "api",
                 "/repos/$repositoryName/$detailApiPath",
+                "--verbose",
             ),
         )
-        return toNotificationReleaseDetail(commandResult)
+        val result = commandResult?.run { CommandExecutor.parseResponseBody(commandResult) }
+        return toNotificationReleaseDetail(result)
     }
 
     override fun fetchLatestNotifications(
@@ -88,7 +88,7 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
         } ?: emptyList()
     }
 
-    private fun toNotificationReleaseDetail(jsonString: String?): NotificationDetail {
+    private fun toNotificationReleaseDetail(jsonString: String?): NotificationDetailResponse {
         return jsonString?.run {
             val json = Json {
                 ignoreUnknownKeys = true
@@ -98,15 +98,10 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
                     }
                 }
             }
-            when (
-                val response = json.decodeFromJsonElement(
-                    NotificationDetailResponse.NotificationDetailResponseSerializer,
-                    Json.parseToJsonElement(this),
-                )
-            ) {
-                is NotificationDetail -> response
-                is NotificationDetailError -> null
-            }
+            json.decodeFromJsonElement(
+                NotificationDetailResponse.NotificationDetailResponseSerializer,
+                Json.parseToJsonElement(this),
+            )
         } ?: throw IllegalArgumentException("No detailed data exists")
     }
 }
