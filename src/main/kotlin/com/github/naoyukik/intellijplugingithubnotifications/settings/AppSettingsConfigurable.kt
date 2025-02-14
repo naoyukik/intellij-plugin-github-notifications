@@ -2,6 +2,7 @@ package com.github.naoyukik.intellijplugingithubnotifications.settings
 
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
+import com.intellij.platform.ide.progress.ModalTaskOwner.project
 import org.jetbrains.annotations.Nls
 import javax.swing.JComponent
 
@@ -13,7 +14,7 @@ class AppSettingsConfigurable(project: Project) : Configurable {
     private var mySettingsState: AppSettingsState? = null
 
     init {
-        mySettingsComponent = AppSettingsComponent()
+        mySettingsComponent = AppSettingsComponent(project)
         mySettingsState = AppSettingsState.getInstance(project)
     }
 
@@ -27,7 +28,7 @@ class AppSettingsConfigurable(project: Project) : Configurable {
     }
 
     override fun createComponent(): JComponent? {
-        mySettingsComponent = AppSettingsComponent()
+        // mySettingsComponent = AppSettingsComponent(project)
         return mySettingsComponent?.getPanel()
     }
 

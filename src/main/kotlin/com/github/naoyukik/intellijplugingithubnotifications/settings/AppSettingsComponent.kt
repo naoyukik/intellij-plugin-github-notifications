@@ -1,5 +1,10 @@
 package com.github.naoyukik.intellijplugingithubnotifications.settings
 
+import com.github.naoyukik.intellijplugingithubnotifications.application.GitProviderWorkflow
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitRepositoryDto
+import com.github.naoyukik.intellijplugingithubnotifications.domain.GitProviderService
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
@@ -12,7 +17,9 @@ import javax.swing.JPanel
 /**
  * Supports creating and managing a [JPanel] for the Settings Dialog.
  */
-class AppSettingsComponent {
+class AppSettingsComponent(
+    project: Project,
+) {
     companion object {
         private const val PADDING = 5
         private const val FETCH_INTERVAL_DEFAULT_VALUE = 15
@@ -26,8 +33,12 @@ class AppSettingsComponent {
         JBIntSpinner(FETCH_INTERVAL_DEFAULT_VALUE, FETCH_INTERVAL_MIN_VALUE, FETCH_INTERVAL_MAX_VALUE, 1)
     private val customizedRepositoryName = JBTextField(TEXT_AREA_COLUMNS)
     private val customizedGhCliPath = JBTextField(TEXT_AREA_COLUMNS)
+    private val repositoryComboBox: ComboBox<GitRepositoryDto>
 
     init {
+        val vcsRepositoryProvider = GitProviderWorkflow(GitProviderService(project))
+        val gitRepositories = vcsRepositoryProvider.getGitRepositories()
+        repositoryComboBox = ComboBox(gitRepositories.toTypedArray())
         mainPanel = FormBuilder.createFormBuilder()
             .addLabeledComponent(
                 JBLabel("Fetch interval:"),
