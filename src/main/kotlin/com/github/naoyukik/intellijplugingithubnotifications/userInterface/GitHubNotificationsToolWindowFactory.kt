@@ -52,6 +52,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private var timer: Timer? = null
     val columnName = arrayOf(
         "Link",
+        "Unread",
         "Type",
         "Message",
         "Reason",
@@ -123,7 +124,8 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 table.autoCreateColumnsFromModel = false
                 table.model = notifications.toJBTable().model
                 setColumnWidth(table, 0, setCalculateLinkColumnWidth(table))
-                setColumnWidth(table, 1, setCalculateTypeColumnWidth(table))
+                setColumnWidth(table, 1, setCalculateUnreadColumnWidth(table))
+                setColumnWidth(table, 2, setCalculateTypeColumnWidth(table))
                 table.columnModel.getColumn(1).cellRenderer = object : DefaultTableCellRenderer() {
                     override fun setValue(value: Any?) {
                         if (value is Icon) {
@@ -148,7 +150,8 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             override fun isCellEditable(row: Int, column: Int) = false
         }).apply {
             setColumnWidth(this, 0, setCalculateLinkColumnWidth(this))
-            setColumnWidth(this, 1, setCalculateTypeColumnWidth(this))
+            setColumnWidth(this, 1, setCalculateUnreadColumnWidth(this))
+            setColumnWidth(this, 2, setCalculateTypeColumnWidth(this))
         }
     }
 
@@ -212,6 +215,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             val htmlUrl = dto.htmlUrl?.let { "<html><a href='$it'>Open</a></html>" } ?: ""
             arrayOf(
                 htmlUrl,
+                "Unread Icon",
                 dto.typeEmoji ?: "",
                 "<html>${dto.fullName}<br>${dto.title}</html>",
                 "<html>${dto.reason}</html>",
@@ -241,6 +245,10 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
 
     private fun setCalculateTypeColumnWidth(table: JBTable): Int {
         return setCalculateColumnWidth(table, "Type")
+    }
+
+    private fun setCalculateUnreadColumnWidth(table: JBTable): Int {
+        return setCalculateColumnWidth(table, "Unread")
     }
 
     private fun JBTable.toJBScrollPane(): JBScrollPane {
