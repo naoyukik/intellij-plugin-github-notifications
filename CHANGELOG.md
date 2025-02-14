@@ -6,6 +6,15 @@
 
 ### Added
 
+- Check for updates since the last time
+  - With this update, except for the first time after startup, new notifications will appear only when there is an update in Notifications on GitHub
+  - Limitations
+    - Due to GitHub API specifications, you will not be notified if it has been read.
+
+### Fixed
+
+- Fixed a problem in which the list fails to be retrieved if an error is returned when retrieving detailed information.
+
 #### System
 
 - Add mockk

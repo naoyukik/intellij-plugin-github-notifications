@@ -8,4 +8,10 @@ object CommandExecutor {
         process.waitFor()
         return output.ifBlank { null }
     }
+
+    fun parseResponseBody(responseBody: String): String {
+        val bodyStart = responseBody.split("\n\n")
+        require(bodyStart.isNotEmpty()) { "Invalid HTTP response format" }
+        return bodyStart[2].trim()
+    }
 }

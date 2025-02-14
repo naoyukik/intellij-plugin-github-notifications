@@ -5,12 +5,16 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotifi
 import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingStateRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHubNotification.SubjectType
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse.NotificationDetail
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse.NotificationDetailError
+import com.github.naoyukik.intellijplugingithubnotifications.domain.model.SettingState
 import com.intellij.openapi.util.IconLoader
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URI
 import java.net.URL
+import java.time.ZonedDateTime
 import javax.swing.Icon
 
 class ApiClientWorkflow(
@@ -18,6 +22,8 @@ class ApiClientWorkflow(
     private val settingStateRepository: SettingStateRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
+    private var latestFetchTime: ZonedDateTime? = null
+
     companion object {
         private val TYPE_TO_PATH = mapOf(
             "PullRequest" to "pull",
@@ -74,10 +80,13 @@ class ApiClientWorkflow(
     suspend fun fetchNotifications(): List<TableDataDto> = withContext(dispatcher) {
         val settingState = settingStateRepository.loadSettingState()
         val ghCliPath = settingState.ghCliPath
+        if (!hasNewNotificationsSinceLastCheck(settingState)) return@withContext emptyList()
 
         val notifications = settingState.repositoryName.takeUnless { it.isEmpty() }?.let { nonEmptyRepositoryName ->
             repository.fetchNotificationsByRepository(ghCliPath, nonEmptyRepositoryName)
         } ?: repository.fetchNotifications(ghCliPath)
+
+        notifications.takeIf { it.isNotEmpty() } ?: return@withContext emptyList()
 
         val updatedNotifications = notifications.map { notification ->
             val detailAPiPath = setDetailApiPath(notification)
@@ -87,17 +96,43 @@ class ApiClientWorkflow(
                     repositoryName = notification.repository.fullName,
                     detailApiPath = it,
                 )
-                notification.copy(
-                    subject = notification.subject.copy(
-                        url = detail.htmlUrl,
-                    ),
-                    detail = detail,
-                )
+                when (detail) {
+                    is NotificationDetail -> {
+                        notification.copy(
+                            subject = notification.subject.copy(
+                                url = detail.htmlUrl,
+                            ),
+                            detail = detail,
+                        )
+                    }
+                    is NotificationDetailError -> null
+                }
             } ?: notification
             updatedNotification
         }
 
         updatedNotifications.toTableDataDto()
+    }
+
+    private fun hasNewNotificationsSinceLastCheck(
+        settingState: SettingState,
+    ): Boolean {
+        val previousFetchTime = latestFetchTime ?: run {
+            latestFetchTime = ZonedDateTime.now()
+            return true
+        }
+        latestFetchTime = ZonedDateTime.now()
+        val ghCliPath = settingState.ghCliPath
+        val latestNotifications = settingState.repositoryName.takeUnless { repositoryName ->
+            repositoryName.isEmpty()
+        }?.let { nonEmptyRepositoryName ->
+            repository.fetchLatestNotificationsByRepository(
+                ghCliPath = ghCliPath,
+                repositoryName = nonEmptyRepositoryName,
+                previousTime = previousFetchTime,
+            )
+        } ?: repository.fetchLatestNotifications(ghCliPath, previousTime = previousFetchTime)
+        return latestNotifications.isNotEmpty()
     }
 
     private fun setDetailApiPath(notification: GitHubNotification): String? {

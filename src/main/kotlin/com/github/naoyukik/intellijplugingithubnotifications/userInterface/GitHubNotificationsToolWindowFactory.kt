@@ -119,6 +119,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val notifications = apiClientWorkflow.fetchNotifications()
+                notifications.isEmpty() && return@launch
                 table.autoCreateColumnsFromModel = false
                 table.model = notifications.toJBTable().model
                 setColumnWidth(table, 0, setCalculateLinkColumnWidth(table))
