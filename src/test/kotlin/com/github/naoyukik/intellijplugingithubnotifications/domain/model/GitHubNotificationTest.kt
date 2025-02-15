@@ -31,6 +31,7 @@ class GitHubNotificationTest : StringSpec({
             ),
             reason = "subscribed",
             updatedAt = "2023-11-01T10:00:00Z",
+            unread = false,
         )
 
         // Act
@@ -58,7 +59,8 @@ class GitHubNotificationTest : StringSpec({
                     "html_url": "https://github.com/test/repo"
                 },
                 "reason": "subscribed",
-                "updated_at": "2023-11-01T10:00:00Z"
+                "updated_at": "2023-11-01T10:00:00Z",
+                "unread": false
             }
         """.trimIndent()
 
@@ -74,6 +76,7 @@ class GitHubNotificationTest : StringSpec({
         assertEquals("https://github.com/test/repo", notification.repository.htmlUrl)
         assertEquals("subscribed", notification.reason)
         assertEquals("2023-11-01T10:00:00Z", notification.updatedAt)
+        assertEquals(false, notification.unread)
     }
 
     "should correctly handle different SubjectType values" {
@@ -99,6 +102,7 @@ class GitHubNotificationTest : StringSpec({
                 ),
                 reason = "assigned",
                 updatedAt = "2023-11-01T10:00:00Z",
+                unread = false,
             )
 
             val serializedJson = Json.encodeToString(notification)
