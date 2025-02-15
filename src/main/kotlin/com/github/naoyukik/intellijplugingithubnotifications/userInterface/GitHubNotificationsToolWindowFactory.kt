@@ -141,6 +141,18 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                     }
                 }
 
+                table.columnModel.getColumn(COLUMN_NUMBER_UNREAD).cellRenderer = object : DefaultTableCellRenderer() {
+                    override fun setValue(value: Any?) {
+                        if (value is Icon) {
+                            this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
+                            this.horizontalAlignment = CENTER
+                            this.verticalAlignment = CENTER
+                        } else {
+                            this.icon = null
+                        }
+                    }
+                }
+
                 NotificationWorkflow().fetchedNotification(project)
             } catch (e: IllegalArgumentException) {
                 NotificationWorkflow().fetchedNotificationForError(project, e.message ?: "Unknown error")
@@ -218,7 +230,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             val htmlUrl = dto.htmlUrl?.let { "<html><a href='$it'>Open</a></html>" } ?: ""
             arrayOf(
                 htmlUrl,
-                "Unread Icon",
+                dto.unreadEmoji ?: "",
                 dto.typeEmoji ?: "",
                 "<html>${dto.fullName}<br>${dto.title}</html>",
                 "<html>${dto.reason}</html>",
