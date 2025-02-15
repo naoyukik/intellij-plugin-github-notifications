@@ -66,6 +66,11 @@ class ApiClientWorkflow(
             this::class.java.classLoader,
         )
 
+        private val unread = IconLoader.getIcon(
+            "/com/github/naoyukik/intellijplugingithubnotifications/icons/unread-16.svg",
+            this::class.java.classLoader,
+        )
+
         private val TYPE_TO_EMOJI: Map<String, Icon> = mapOf(
             "PullRequestOpen" to pullRequestsOpen,
             "PullRequestMerged" to pullRequestsMerged,
@@ -74,6 +79,7 @@ class ApiClientWorkflow(
             "IssueOpen" to issuesOpened,
             "IssueClosed" to issuesClosed,
             "Release" to release,
+            "Unread" to unread,
         )
     }
 
@@ -174,6 +180,7 @@ class ApiClientWorkflow(
                 updatedAt = it.updatedAt,
                 typeEmoji = apiUrlToEmojiConverter(it),
                 reviewers = it.detail?.requestedReviewers?.map { reviewer -> reviewer.login } ?: emptyList(),
+                unreadEmoji = it.unread.takeIf { it }?.let { TYPE_TO_EMOJI["Unread"] },
             )
         }
     }

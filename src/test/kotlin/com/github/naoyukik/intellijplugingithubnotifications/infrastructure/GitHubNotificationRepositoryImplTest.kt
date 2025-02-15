@@ -26,7 +26,8 @@ class GitHubNotificationRepositoryImplTest : StringSpec({
                         "html_url": "https://github.com/sample/repo"
                     },
                     "reason": "subscribed",
-                    "updated_at": "2023-10-01T12:00:00Z"
+                    "updated_at": "2023-10-01T12:00:00Z",
+                    "unread": false
                 }
             ]
         """.trimIndent()

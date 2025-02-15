@@ -52,6 +52,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private var timer: Timer? = null
     val columnName = arrayOf(
         "Link",
+        "Unread",
         "Type",
         "Message",
         "Reason",
@@ -62,6 +63,9 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     companion object {
         const val ICON_WIDTH = 13
         const val ICON_HEIGHT = 13
+        const val COLUMN_NUMBER_LINK = 0
+        const val COLUMN_NUMBER_UNREAD = 1
+        const val COLUMN_NUMBER_TYPE = 2
     }
 
     override val coroutineContext: CoroutineContext
@@ -122,9 +126,22 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 notifications.isEmpty() && return@launch
                 table.autoCreateColumnsFromModel = false
                 table.model = notifications.toJBTable().model
-                setColumnWidth(table, 0, setCalculateLinkColumnWidth(table))
-                setColumnWidth(table, 1, setCalculateTypeColumnWidth(table))
-                table.columnModel.getColumn(1).cellRenderer = object : DefaultTableCellRenderer() {
+                setColumnWidth(table, COLUMN_NUMBER_LINK, setCalculateLinkColumnWidth(table))
+                setColumnWidth(table, COLUMN_NUMBER_UNREAD, setCalculateUnreadColumnWidth(table))
+                setColumnWidth(table, COLUMN_NUMBER_TYPE, setCalculateTypeColumnWidth(table))
+                table.columnModel.getColumn(COLUMN_NUMBER_TYPE).cellRenderer = object : DefaultTableCellRenderer() {
+                    override fun setValue(value: Any?) {
+                        if (value is Icon) {
+                            this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
+                            this.horizontalAlignment = CENTER
+                            this.verticalAlignment = CENTER
+                        } else {
+                            this.icon = null
+                        }
+                    }
+                }
+
+                table.columnModel.getColumn(COLUMN_NUMBER_UNREAD).cellRenderer = object : DefaultTableCellRenderer() {
                     override fun setValue(value: Any?) {
                         if (value is Icon) {
                             this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
@@ -147,8 +164,9 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         return JBTable(object : DefaultTableModel(arrayOf(), columnName) {
             override fun isCellEditable(row: Int, column: Int) = false
         }).apply {
-            setColumnWidth(this, 0, setCalculateLinkColumnWidth(this))
-            setColumnWidth(this, 1, setCalculateTypeColumnWidth(this))
+            setColumnWidth(this, COLUMN_NUMBER_LINK, setCalculateLinkColumnWidth(this))
+            setColumnWidth(this, COLUMN_NUMBER_UNREAD, setCalculateUnreadColumnWidth(this))
+            setColumnWidth(this, COLUMN_NUMBER_TYPE, setCalculateTypeColumnWidth(this))
         }
     }
 
@@ -169,7 +187,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 val col = table.columnAtPoint(e.point)
 
                 // 対象のセルがリンク列である場合
-                if (col == 0) {
+                if (col == COLUMN_NUMBER_LINK) {
                     val link = table.getValueAt(row, col).toString()
                     val url = Regex("href='([^']*)'").find(link)?.groupValues?.get(1) ?: ""
                     if (url.isEmpty()) return
@@ -212,6 +230,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             val htmlUrl = dto.htmlUrl?.let { "<html><a href='$it'>Open</a></html>" } ?: ""
             arrayOf(
                 htmlUrl,
+                dto.unreadEmoji ?: "",
                 dto.typeEmoji ?: "",
                 "<html>${dto.fullName}<br>${dto.title}</html>",
                 "<html>${dto.reason}</html>",
@@ -241,6 +260,10 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
 
     private fun setCalculateTypeColumnWidth(table: JBTable): Int {
         return setCalculateColumnWidth(table, "Type")
+    }
+
+    private fun setCalculateUnreadColumnWidth(table: JBTable): Int {
+        return setCalculateColumnWidth(table, "Unread")
     }
 
     private fun JBTable.toJBScrollPane(): JBScrollPane {

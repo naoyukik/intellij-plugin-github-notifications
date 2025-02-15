@@ -10,6 +10,7 @@
   - With this update, except for the first time after startup, new notifications will appear only when there is an update in Notifications on GitHub
   - Limitations
     - Due to GitHub API specifications, you will not be notified if it has been read.
+- Add unread notifications column
 
 ### Fixed
 

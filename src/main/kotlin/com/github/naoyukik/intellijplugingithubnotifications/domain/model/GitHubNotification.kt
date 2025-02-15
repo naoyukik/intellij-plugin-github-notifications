@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GitHubNotification(
     val id: String,
+    val unread: Boolean,
     val subject: Subject,
     val repository: Repository,
     val reason: String,
