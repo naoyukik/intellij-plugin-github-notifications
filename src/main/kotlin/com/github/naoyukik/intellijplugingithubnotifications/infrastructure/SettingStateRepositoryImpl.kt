@@ -16,10 +16,12 @@ class SettingStateRepositoryImpl(project: Project) : SettingStateRepository {
         val fetchInterval = state?.myState?.fetchInterval ?: FETCH_INTERVAL_DEFAULT_VALUE
         val repositoryName = state?.myState?.repositoryName ?: ""
         val ghCliPath = state?.myState?.ghCliPath?.ifEmpty { "gh" } ?: "gh"
+        val includingRead = state?.myState?.includingRead == true
         return SettingState(
             fetchInterval = fetchInterval,
             repositoryName = repositoryName,
             ghCliPath = ghCliPath,
+            includingRead = includingRead,
         )
     }
 }
