@@ -86,11 +86,12 @@ class ApiClientWorkflow(
     suspend fun fetchNotifications(): List<TableDataDto> = withContext(dispatcher) {
         val settingState = settingStateRepository.loadSettingState()
         val ghCliPath = settingState.ghCliPath
+        val includingRead = settingState.includingRead
         if (!hasNewNotificationsSinceLastCheck(settingState)) return@withContext emptyList()
 
         val notifications = settingState.repositoryName.takeUnless { it.isEmpty() }?.let { nonEmptyRepositoryName ->
             repository.fetchNotificationsByRepository(ghCliPath, nonEmptyRepositoryName)
-        } ?: repository.fetchNotifications(ghCliPath)
+        } ?: repository.fetchNotifications(ghCliPath, includingRead)
 
         notifications.takeIf { it.isNotEmpty() } ?: return@withContext emptyList()
 

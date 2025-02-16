@@ -11,12 +11,15 @@ import kotlinx.serialization.modules.polymorphic
 import java.time.ZonedDateTime
 
 class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
-    override fun fetchNotifications(ghCliPath: String): List<GitHubNotification> {
+    override fun fetchNotifications(
+        ghCliPath: String,
+        includingRead: Boolean,
+    ): List<GitHubNotification> {
         val commandResult = CommandExecutor.execute(
             listOf(
                 ghCliPath,
                 "api",
-                "/notifications",
+                "/notifications?all=$includingRead",
             ),
         )
         return toGitHubNotification(commandResult)
