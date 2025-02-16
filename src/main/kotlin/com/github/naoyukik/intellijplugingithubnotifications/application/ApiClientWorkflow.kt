@@ -86,12 +86,11 @@ class ApiClientWorkflow(
     suspend fun fetchNotifications(): List<TableDataDto> = withContext(dispatcher) {
         val settingState = settingStateRepository.loadSettingState()
         val ghCliPath = settingState.ghCliPath
-        val includingRead = settingState.includingRead
         if (!hasNewNotificationsSinceLastCheck(settingState)) return@withContext emptyList()
 
         val notifications = settingState.repositoryName.takeUnless { it.isEmpty() }?.let { nonEmptyRepositoryName ->
-            repository.fetchNotificationsByRepository(ghCliPath, nonEmptyRepositoryName, includingRead)
-        } ?: repository.fetchNotifications(ghCliPath, includingRead)
+            repository.fetchNotificationsByRepository(ghCliPath, nonEmptyRepositoryName)
+        } ?: repository.fetchNotifications(ghCliPath)
 
         notifications.takeIf { it.isNotEmpty() } ?: return@withContext emptyList()
 
@@ -130,7 +129,6 @@ class ApiClientWorkflow(
         }
         latestFetchTime = ZonedDateTime.now()
         val ghCliPath = settingState.ghCliPath
-        val includingRead = settingState.includingRead
         val latestNotifications = settingState.repositoryName.takeUnless { repositoryName ->
             repositoryName.isEmpty()
         }?.let { nonEmptyRepositoryName ->
@@ -138,13 +136,8 @@ class ApiClientWorkflow(
                 ghCliPath = ghCliPath,
                 repositoryName = nonEmptyRepositoryName,
                 previousTime = previousFetchTime,
-                includingRead = includingRead,
             )
-        } ?: repository.fetchLatestNotifications(
-            ghCliPath = ghCliPath,
-            previousTime = previousFetchTime,
-            includingRead = includingRead,
-        )
+        } ?: repository.fetchLatestNotifications(ghCliPath, previousTime = previousFetchTime)
         return latestNotifications.isNotEmpty()
     }
 

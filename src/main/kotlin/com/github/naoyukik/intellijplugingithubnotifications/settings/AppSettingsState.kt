@@ -18,7 +18,6 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
         var fetchInterval = FETCH_INTERVAL_DEFAULT_VALUE
         var repositoryName: String = ""
         var ghCliPath: String = ""
-        var includingRead = false
     }
 
     companion object {
@@ -38,6 +37,5 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
         myState.fetchInterval = state.fetchInterval
         myState.repositoryName = state.repositoryName
         myState.ghCliPath = state.ghCliPath
-        myState.includingRead = state.includingRead
     }
 }

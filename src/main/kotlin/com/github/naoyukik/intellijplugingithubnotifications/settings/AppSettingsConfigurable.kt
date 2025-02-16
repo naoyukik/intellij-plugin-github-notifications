@@ -8,7 +8,6 @@ import javax.swing.JComponent
 /**
  * Provides controller functionality for application settings.
  */
-@Suppress("TooManyFunctions")
 class AppSettingsConfigurable(project: Project) : Configurable {
     private var mySettingsComponent: AppSettingsComponent? = null
     private var mySettingsState: AppSettingsState? = null
@@ -33,24 +32,19 @@ class AppSettingsConfigurable(project: Project) : Configurable {
     }
 
     override fun isModified(): Boolean {
-        return isModifiedFetchInterval() ||
-            isModifiedRepositoryName() ||
-            isModifiedGhCliPath() ||
-            isModifiedIncludingRead()
+        return isModifiedFetchInterval() || isModifiedRepositoryName() || isModifiedGhCliPath()
     }
 
     override fun apply() {
         mySettingsState?.myState?.fetchInterval = mySettingsComponent!!.getCustomizedFetchInterval()
         mySettingsState?.myState?.repositoryName = mySettingsComponent!!.getCustomizedRepositoryName()
         mySettingsState?.myState?.ghCliPath = mySettingsComponent!!.getCustomizedGhCliPath()
-        mySettingsState?.myState?.includingRead = mySettingsComponent!!.getCustomizedIncludingRead()
     }
 
     override fun reset() {
         mySettingsComponent?.setCustomizedFetchInterval(mySettingsState?.myState?.fetchInterval)
         mySettingsComponent?.setCustomizedRepositoryName(mySettingsState?.myState?.repositoryName)
         mySettingsComponent?.setCustomizedGhCliPath(mySettingsState?.myState?.ghCliPath)
-        mySettingsComponent?.setCustomizedIncludingRead(mySettingsState?.myState?.includingRead == true)
     }
 
     override fun disposeUIResources() {
@@ -67,9 +61,5 @@ class AppSettingsConfigurable(project: Project) : Configurable {
 
     private fun isModifiedGhCliPath(): Boolean {
         return mySettingsComponent?.getCustomizedGhCliPath() != mySettingsState?.myState?.ghCliPath
-    }
-
-    private fun isModifiedIncludingRead(): Boolean {
-        return mySettingsComponent?.getCustomizedIncludingRead() != mySettingsState?.myState?.includingRead
     }
 }
