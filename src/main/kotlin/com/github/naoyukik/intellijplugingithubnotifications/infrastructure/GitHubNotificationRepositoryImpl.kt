@@ -11,30 +11,23 @@ import kotlinx.serialization.modules.polymorphic
 import java.time.ZonedDateTime
 
 class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
-    override fun fetchNotifications(
-        ghCliPath: String,
-        includingRead: Boolean,
-    ): List<GitHubNotification> {
+    override fun fetchNotifications(ghCliPath: String): List<GitHubNotification> {
         val commandResult = CommandExecutor.execute(
             listOf(
                 ghCliPath,
                 "api",
-                "/notifications?all=$includingRead",
+                "/notifications",
             ),
         )
         return toGitHubNotification(commandResult)
     }
 
-    override fun fetchNotificationsByRepository(
-        ghCliPath: String,
-        repositoryName: String,
-        includingRead: Boolean,
-    ): List<GitHubNotification> {
+    override fun fetchNotificationsByRepository(ghCliPath: String, repositoryName: String): List<GitHubNotification> {
         val commandResult = CommandExecutor.execute(
             listOf(
                 ghCliPath,
                 "api",
-                "/repos/$repositoryName/notifications?all=$includingRead",
+                "/repos/$repositoryName/notifications",
             ),
         )
         return toGitHubNotification(commandResult)
@@ -60,14 +53,13 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
     override fun fetchLatestNotifications(
         ghCliPath: String,
         previousTime: ZonedDateTime,
-        includingRead: Boolean,
     ): List<GitHubNotification> {
         val since = DateTimeHandler.toIso8601(previousTime)
         val commandResult = CommandExecutor.execute(
             listOf(
                 ghCliPath,
                 "api",
-                "/notifications?all=$includingRead&since=$since",
+                "/notifications?since=$since",
             ),
         )
         return toGitHubNotification(commandResult)
@@ -77,14 +69,13 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
         ghCliPath: String,
         repositoryName: String,
         previousTime: ZonedDateTime,
-        includingRead: Boolean,
     ): List<GitHubNotification> {
         val since = DateTimeHandler.toIso8601(previousTime)
         val commandResult = CommandExecutor.execute(
             listOf(
                 ghCliPath,
                 "api",
-                "/repos/$repositoryName/notifications?all=$includingRead&since=$since",
+                "/repos/$repositoryName/notifications?since=$since",
             ),
         )
         return toGitHubNotification(commandResult)

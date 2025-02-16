@@ -1,7 +1,6 @@
 package com.github.naoyukik.intellijplugingithubnotifications.settings
 
 import com.intellij.ui.JBIntSpinner
-import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
@@ -27,7 +26,6 @@ class AppSettingsComponent {
         JBIntSpinner(FETCH_INTERVAL_DEFAULT_VALUE, FETCH_INTERVAL_MIN_VALUE, FETCH_INTERVAL_MAX_VALUE, 1)
     private val customizedRepositoryName = JBTextField(TEXT_AREA_COLUMNS)
     private val customizedGhCliPath = JBTextField(TEXT_AREA_COLUMNS)
-    private val customizedIncludingRead = JBCheckBox()
 
     init {
         mainPanel = FormBuilder.createFormBuilder()
@@ -75,15 +73,6 @@ class AppSettingsComponent {
                     "By default, the \"gh\" command is used.",
                 ),
             )
-            .addLabeledComponent(
-                JBLabel("Including read: "),
-                customizedIncludingRead,
-            )
-            .addComponent(
-                JBLabel(
-                    "When turned on, read data is also acquired.",
-                ),
-            )
             .addComponentFillVertically(JPanel(), 0)
             .panel
     }
@@ -118,13 +107,5 @@ class AppSettingsComponent {
 
     fun setCustomizedGhCliPath(value: String?) {
         customizedGhCliPath.text = value
-    }
-
-    fun getCustomizedIncludingRead(): Boolean {
-        return customizedIncludingRead.isSelected
-    }
-
-    fun setCustomizedIncludingRead(value: Boolean) {
-        customizedIncludingRead.isSelected = value
     }
 }

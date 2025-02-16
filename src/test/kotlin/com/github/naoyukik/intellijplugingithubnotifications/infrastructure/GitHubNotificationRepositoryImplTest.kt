@@ -35,9 +35,8 @@ class GitHubNotificationRepositoryImplTest : StringSpec({
         mockkObject(CommandExecutor)
         every { CommandExecutor.execute(any()) } returns sampleJson
 
-        val includingRead = false
         val repository = GitHubNotificationRepositoryImpl()
-        val result = repository.fetchNotifications(ghCliPath, includingRead)
+        val result = repository.fetchNotifications(ghCliPath)
 
         result.size shouldBe 1
         result[0].id shouldBe "1"
@@ -48,11 +47,10 @@ class GitHubNotificationRepositoryImplTest : StringSpec({
         val ghCliPath = "testPath"
 
         mockkObject(CommandExecutor)
-        every { CommandExecutor.execute(listOf(ghCliPath, "api", "/notifications?all=false")) } returns null
+        every { CommandExecutor.execute(listOf(ghCliPath, "api", "/notifications")) } returns null
 
-        val includingRead = false
         val repository = GitHubNotificationRepositoryImpl()
-        val result = repository.fetchNotifications(ghCliPath, includingRead)
+        val result = repository.fetchNotifications(ghCliPath)
 
         result.size shouldBe 0
     }
@@ -62,13 +60,12 @@ class GitHubNotificationRepositoryImplTest : StringSpec({
         val invalidJson = "invalid json"
 
         mockkObject(CommandExecutor)
-        every { CommandExecutor.execute(listOf(ghCliPath, "api", "/notifications?all=false")) } returns invalidJson
+        every { CommandExecutor.execute(listOf(ghCliPath, "api", "/notifications")) } returns invalidJson
 
-        val includingRead = false
         val repository = GitHubNotificationRepositoryImpl()
 
         shouldThrow<Exception> {
-            repository.fetchNotifications(ghCliPath, includingRead)
+            repository.fetchNotifications(ghCliPath)
         }
     }
 
