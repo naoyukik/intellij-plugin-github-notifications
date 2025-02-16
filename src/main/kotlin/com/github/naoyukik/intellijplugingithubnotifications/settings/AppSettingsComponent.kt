@@ -125,6 +125,6 @@ class AppSettingsComponent {
     }
 
     fun setCustomizedIncludingRead(value: Boolean) {
-        customizedIncludingRead.setSelected(value)
+        customizedIncludingRead.isSelected = value
     }
 }
