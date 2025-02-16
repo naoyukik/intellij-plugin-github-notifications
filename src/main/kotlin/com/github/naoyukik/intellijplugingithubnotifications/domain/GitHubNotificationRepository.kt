@@ -6,7 +6,11 @@ import java.time.ZonedDateTime
 
 interface GitHubNotificationRepository {
     fun fetchNotifications(ghCliPath: String, includingRead: Boolean): List<GitHubNotification>
-    fun fetchNotificationsByRepository(ghCliPath: String, repositoryName: String): List<GitHubNotification>
+    fun fetchNotificationsByRepository(
+        ghCliPath: String,
+        repositoryName: String,
+        includingRead: Boolean,
+    ): List<GitHubNotification>
     fun fetchNotificationsReleaseDetail(
         ghCliPath: String,
         repositoryName: String,
@@ -15,10 +19,12 @@ interface GitHubNotificationRepository {
     fun fetchLatestNotifications(
         ghCliPath: String,
         previousTime: ZonedDateTime,
+        includingRead: Boolean,
     ): List<GitHubNotification>
     fun fetchLatestNotificationsByRepository(
         ghCliPath: String,
         repositoryName: String,
         previousTime: ZonedDateTime,
+        includingRead: Boolean,
     ): List<GitHubNotification>
 }
