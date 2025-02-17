@@ -1,0 +1,16 @@
+{
+  "name": "github-notifications",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "danger": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "naoyukik",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "danger": "^12.3.4"
+  }
+}
