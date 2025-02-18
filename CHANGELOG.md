@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.6.0] - 2025-02-16
+
 ### Added
 
 - Check for updates since the last time
@@ -16,10 +18,6 @@
 ### Fixed
 
 - Fixed a problem in which the list fails to be retrieved if an error is returned when retrieving detailed information.
-
-#### System
-
-- Add mockk
 
 ## [0.5.0] - 2025-01-30
 
@@ -82,7 +80,8 @@ Initial release of the GitHub Notifications IntelliJ Plugin.
 
 Done is better than perfect.
 
-[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.4.3...v0.5.0
 [0.4.3]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.4.0...v0.4.2
