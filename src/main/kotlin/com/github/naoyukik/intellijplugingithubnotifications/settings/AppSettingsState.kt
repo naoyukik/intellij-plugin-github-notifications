@@ -14,6 +14,29 @@ import com.intellij.openapi.project.Project
 class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
     val myState = State()
 
+    var customizedRepositoryName
+        get() = myState.repositoryName
+        set(value) {
+            myState.repositoryName = value
+        }
+
+    var customizedFetchInterval
+        get() = myState.fetchInterval
+        set(value) {
+            myState.fetchInterval = value
+        }
+
+    var customizedGhCliPath
+        get() = myState.ghCliPath
+        set(value) {
+            myState.ghCliPath = value
+        }
+    var customizedIncludingRead
+        get() = myState.includingRead
+        set(value) {
+            myState.includingRead = value
+        }
+
     class State {
         var fetchInterval = FETCH_INTERVAL_DEFAULT_VALUE
         var repositoryName: String = ""
@@ -25,7 +48,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
         private const val FETCH_INTERVAL_DEFAULT_VALUE = 15
 
         @JvmStatic
-        fun getInstance(project: Project): AppSettingsState? {
+        fun getInstance(project: Project): AppSettingsState {
             return project.getService(AppSettingsState::class.java)
         }
     }

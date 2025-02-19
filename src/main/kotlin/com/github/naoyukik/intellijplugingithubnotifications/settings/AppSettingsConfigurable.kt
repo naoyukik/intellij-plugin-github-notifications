@@ -2,20 +2,27 @@ package com.github.naoyukik.intellijplugingithubnotifications.settings
 
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.DialogPanel
+import com.intellij.ui.dsl.builder.bindIntValue
+import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.columns
+import com.intellij.ui.dsl.builder.panel
 import org.jetbrains.annotations.Nls
-import javax.swing.JComponent
 
 /**
  * Provides controller functionality for application settings.
  */
-@Suppress("TooManyFunctions")
-class AppSettingsConfigurable(project: Project) : Configurable {
-    private var mySettingsComponent: AppSettingsComponent? = null
-    private var mySettingsState: AppSettingsState? = null
+class AppSettingsConfigurable(private val project: Project) : Configurable {
+    private val mySettingsState
+        get() = AppSettingsState.getInstance(project)
 
-    init {
-        mySettingsComponent = AppSettingsComponent()
-        mySettingsState = AppSettingsState.getInstance(project)
+    private val mainPanel: DialogPanel by lazy { createUIComponents() }
+
+    companion object {
+        private const val FETCH_INTERVAL_MIN_VALUE = 1
+        private const val FETCH_INTERVAL_MAX_VALUE = 60
+        private const val COLUMNS_MEDIUM = 30
     }
 
     @Nls(capitalization = Nls.Capitalization.Title)
@@ -23,53 +30,52 @@ class AppSettingsConfigurable(project: Project) : Configurable {
         return "GitHub Notifications"
     }
 
-    override fun getPreferredFocusedComponent(): JComponent? {
-        return mySettingsComponent?.getPreferredFocusedComponent()
-    }
-
-    override fun createComponent(): JComponent? {
-        mySettingsComponent = AppSettingsComponent()
-        return mySettingsComponent?.getPanel()
+    override fun createComponent(): DialogPanel {
+        return mainPanel
     }
 
     override fun isModified(): Boolean {
-        return isModifiedFetchInterval() ||
-            isModifiedRepositoryName() ||
-            isModifiedGhCliPath() ||
-            isModifiedIncludingRead()
-    }
-
-    override fun apply() {
-        mySettingsState?.myState?.fetchInterval = mySettingsComponent!!.getCustomizedFetchInterval()
-        mySettingsState?.myState?.repositoryName = mySettingsComponent!!.getCustomizedRepositoryName()
-        mySettingsState?.myState?.ghCliPath = mySettingsComponent!!.getCustomizedGhCliPath()
-        mySettingsState?.myState?.includingRead = mySettingsComponent!!.getCustomizedIncludingRead()
+        return mainPanel.isModified()
     }
 
     override fun reset() {
-        mySettingsComponent?.setCustomizedFetchInterval(mySettingsState?.myState?.fetchInterval)
-        mySettingsComponent?.setCustomizedRepositoryName(mySettingsState?.myState?.repositoryName)
-        mySettingsComponent?.setCustomizedGhCliPath(mySettingsState?.myState?.ghCliPath)
-        mySettingsComponent?.setCustomizedIncludingRead(mySettingsState?.myState?.includingRead == true)
+        mainPanel.reset()
     }
 
-    override fun disposeUIResources() {
-        mySettingsComponent = null
+    override fun apply() {
+        mainPanel.apply()
     }
 
-    private fun isModifiedFetchInterval(): Boolean {
-        return mySettingsComponent?.getCustomizedFetchInterval() != mySettingsState?.myState?.fetchInterval
-    }
-
-    private fun isModifiedRepositoryName(): Boolean {
-        return mySettingsComponent?.getCustomizedRepositoryName() != mySettingsState?.myState?.repositoryName
-    }
-
-    private fun isModifiedGhCliPath(): Boolean {
-        return mySettingsComponent?.getCustomizedGhCliPath() != mySettingsState?.myState?.ghCliPath
-    }
-
-    private fun isModifiedIncludingRead(): Boolean {
-        return mySettingsComponent?.getCustomizedIncludingRead() != mySettingsState?.myState?.includingRead
+    @Suppress("DialogTitleCapitalization")
+    private fun createUIComponents(): DialogPanel {
+        return panel {
+            group("Notification Fetch Settings") {
+                row("Fetch interval:") {
+                    spinner(FETCH_INTERVAL_MIN_VALUE..FETCH_INTERVAL_MAX_VALUE)
+                        .bindIntValue(mySettingsState::customizedFetchInterval)
+                        .comment("Min: 1, Max: 60, A restart is required when the value is changed.")
+                    label("minutes")
+                }
+                row {
+                    checkBox("Show read notifications")
+                        .bindSelected(mySettingsState::customizedIncludingRead)
+                        .comment("When turned on, read data is also acquired.")
+                }
+            }
+            group("GitHub Settings") {
+                row("Repository:") {
+                    textField()
+                        .bindText(mySettingsState::customizedRepositoryName)
+                        .columns(COLUMNS_MEDIUM)
+                        .comment("Repository format: OWNER/REPOSITORY_NAME")
+                }
+                row("GH CLI path:") {
+                    textField()
+                        .bindText(mySettingsState::customizedGhCliPath)
+                        .columns(COLUMNS_MEDIUM)
+                        .comment("If it's not in your PATH, you can specify the GH CLI Path.")
+                }
+            }
+        }
     }
 }
