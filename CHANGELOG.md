@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Fix
+- Remade the settings screen
+
 ## [0.6.0] - 2025-02-16
 
 ### Added
