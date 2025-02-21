@@ -5,11 +5,16 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.model.Notifi
 import java.time.ZonedDateTime
 
 interface GitHubNotificationRepository {
-    fun fetchNotifications(ghCliPath: String, includingRead: Boolean): List<GitHubNotification>
+    fun fetchNotifications(
+        ghCliPath: String,
+        includingRead: Boolean,
+        resultLimit: Int,
+    ): List<GitHubNotification>
     fun fetchNotificationsByRepository(
         ghCliPath: String,
         repositoryName: String,
         includingRead: Boolean,
+        resultLimit: Int,
     ): List<GitHubNotification>
     fun fetchNotificationsReleaseDetail(
         ghCliPath: String,

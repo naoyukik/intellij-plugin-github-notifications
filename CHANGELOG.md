@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Setting a limit on the number of results
+
 ### Fix
 - Remade the settings screen
 

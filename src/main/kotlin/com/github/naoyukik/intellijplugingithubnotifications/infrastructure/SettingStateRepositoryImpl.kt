@@ -8,20 +8,18 @@ import com.intellij.openapi.project.Project
 class SettingStateRepositoryImpl(project: Project) : SettingStateRepository {
     private val state = AppSettingsState.getInstance(project)
 
-    companion object {
-        private const val FETCH_INTERVAL_DEFAULT_VALUE = 15
-    }
-
     override fun loadSettingState(): SettingState {
-        val fetchInterval = state?.myState?.fetchInterval ?: FETCH_INTERVAL_DEFAULT_VALUE
-        val repositoryName = state?.myState?.repositoryName ?: ""
-        val ghCliPath = state?.myState?.ghCliPath?.ifEmpty { "gh" } ?: "gh"
-        val includingRead = state?.myState?.includingRead == true
+        val fetchInterval = state.myState.fetchInterval
+        val repositoryName = state.myState.repositoryName
+        val ghCliPath = state.myState.ghCliPath.ifEmpty { "gh" }
+        val includingRead = state.myState.includingRead
+        val resultLimit = state.myState.resultLimit
         return SettingState(
             fetchInterval = fetchInterval,
             repositoryName = repositoryName,
             ghCliPath = ghCliPath,
             includingRead = includingRead,
+            resultLimit = resultLimit,
         )
     }
 }

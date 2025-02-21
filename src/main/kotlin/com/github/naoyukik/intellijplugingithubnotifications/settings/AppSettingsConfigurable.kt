@@ -23,6 +23,8 @@ class AppSettingsConfigurable(private val project: Project) : Configurable {
         private const val FETCH_INTERVAL_MIN_VALUE = 1
         private const val FETCH_INTERVAL_MAX_VALUE = 60
         private const val COLUMNS_MEDIUM = 30
+        private const val RESULT_LIMIT_MIN_VALUE = 1
+        private const val RESULT_LIMIT_MAX_VALUE = 50
     }
 
     @Nls(capitalization = Nls.Capitalization.Title)
@@ -55,6 +57,11 @@ class AppSettingsConfigurable(private val project: Project) : Configurable {
                         .bindIntValue(mySettingsState::customizedFetchInterval)
                         .comment("Min: 1, Max: 60, A restart is required when the value is changed.")
                     label("minutes")
+                }
+                row("Result limit:") {
+                    spinner(RESULT_LIMIT_MIN_VALUE..RESULT_LIMIT_MAX_VALUE)
+                        .bindIntValue(mySettingsState::customizedResultLimit)
+                        .comment("Min: 1, max: 50, Default: 30")
                 }
                 row {
                     checkBox("Show read notifications")
