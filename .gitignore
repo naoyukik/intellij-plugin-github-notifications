@@ -5,3 +5,6 @@
 build
 *.pem
 *.crt
+/node_modules/
+/.kotlin/
+
