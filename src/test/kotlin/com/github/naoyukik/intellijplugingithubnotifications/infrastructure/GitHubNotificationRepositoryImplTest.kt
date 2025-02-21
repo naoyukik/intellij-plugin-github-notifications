@@ -37,7 +37,8 @@ class GitHubNotificationRepositoryImplTest : StringSpec({
 
         val includingRead = false
         val repository = GitHubNotificationRepositoryImpl()
-        val result = repository.fetchNotifications(ghCliPath, includingRead)
+        val resultLimit = 1
+        val result = repository.fetchNotifications(ghCliPath, includingRead, resultLimit)
 
         result.size shouldBe 1
         result[0].id shouldBe "1"
@@ -48,11 +49,12 @@ class GitHubNotificationRepositoryImplTest : StringSpec({
         val ghCliPath = "testPath"
 
         mockkObject(CommandExecutor)
-        every { CommandExecutor.execute(listOf(ghCliPath, "api", "/notifications?all=false")) } returns null
+        every { CommandExecutor.execute(any()) } returns null
 
         val includingRead = false
         val repository = GitHubNotificationRepositoryImpl()
-        val result = repository.fetchNotifications(ghCliPath, includingRead)
+        val resultLimit = 1
+        val result = repository.fetchNotifications(ghCliPath, includingRead, resultLimit)
 
         result.size shouldBe 0
     }
@@ -62,13 +64,13 @@ class GitHubNotificationRepositoryImplTest : StringSpec({
         val invalidJson = "invalid json"
 
         mockkObject(CommandExecutor)
-        every { CommandExecutor.execute(listOf(ghCliPath, "api", "/notifications?all=false")) } returns invalidJson
+        every { CommandExecutor.execute(any()) } returns invalidJson
 
         val includingRead = false
         val repository = GitHubNotificationRepositoryImpl()
-
+        val resultLimit = 1
         shouldThrow<Exception> {
-            repository.fetchNotifications(ghCliPath, includingRead)
+            repository.fetchNotifications(ghCliPath, includingRead, resultLimit)
         }
     }
 
