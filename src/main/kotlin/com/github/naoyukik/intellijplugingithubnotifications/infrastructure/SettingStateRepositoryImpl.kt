@@ -12,7 +12,7 @@ class SettingStateRepositoryImpl(project: Project) : SettingStateRepository {
         val fetchInterval = state.myState.fetchInterval
         val repositoryName = state.myState.repositoryName
         val ghCliPath = state.myState.ghCliPath.ifEmpty { "gh" }
-        val includingRead = state.myState.includingRead == true
+        val includingRead = state.myState.includingRead
         val resultLimit = state.myState.resultLimit
         return SettingState(
             fetchInterval = fetchInterval,
