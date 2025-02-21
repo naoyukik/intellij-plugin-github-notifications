@@ -37,15 +37,23 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
             myState.includingRead = value
         }
 
+    var customizedResultsLimits
+        get() = myState.resultsLimits
+        set(value) {
+            myState.resultsLimits = value
+        }
+
     class State {
         var fetchInterval = FETCH_INTERVAL_DEFAULT_VALUE
         var repositoryName: String = ""
         var ghCliPath: String = ""
         var includingRead = false
+        var resultsLimits: Int = RESULTS_LIMITS_DEFAULT_VALUE
     }
 
     companion object {
         private const val FETCH_INTERVAL_DEFAULT_VALUE = 15
+        private const val RESULTS_LIMITS_DEFAULT_VALUE = 30
 
         @JvmStatic
         fun getInstance(project: Project): AppSettingsState {
