@@ -10,6 +10,7 @@ class SettingStateRepositoryImpl(project: Project) : SettingStateRepository {
 
     companion object {
         private const val FETCH_INTERVAL_DEFAULT_VALUE = 15
+        private const val RESULT_LIMIT_DEFAULT_VALUE = 30
     }
 
     override fun loadSettingState(): SettingState {
@@ -17,11 +18,13 @@ class SettingStateRepositoryImpl(project: Project) : SettingStateRepository {
         val repositoryName = state?.myState?.repositoryName ?: ""
         val ghCliPath = state?.myState?.ghCliPath?.ifEmpty { "gh" } ?: "gh"
         val includingRead = state?.myState?.includingRead == true
+        val resultLimit = state?.myState?.resultLimit ?: RESULT_LIMIT_DEFAULT_VALUE
         return SettingState(
             fetchInterval = fetchInterval,
             repositoryName = repositoryName,
             ghCliPath = ghCliPath,
             includingRead = includingRead,
+            resultLimit = resultLimit,
         )
     }
 }

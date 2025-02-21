@@ -5,4 +5,5 @@ data class SettingState(
     val repositoryName: String,
     val ghCliPath: String,
     val includingRead: Boolean,
+    val resultLimit: Int,
 )

@@ -14,12 +14,13 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
     override fun fetchNotifications(
         ghCliPath: String,
         includingRead: Boolean,
+        resultLimit: Int,
     ): List<GitHubNotification> {
         val commandResult = CommandExecutor.execute(
             listOf(
                 ghCliPath,
                 "api",
-                "/notifications?all=$includingRead",
+                "/notifications?all=$includingRead&per_page=$resultLimit",
             ),
         )
         return toGitHubNotification(commandResult)
@@ -29,12 +30,13 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
         ghCliPath: String,
         repositoryName: String,
         includingRead: Boolean,
+        resultLimit: Int,
     ): List<GitHubNotification> {
         val commandResult = CommandExecutor.execute(
             listOf(
                 ghCliPath,
                 "api",
-                "/repos/$repositoryName/notifications?all=$includingRead",
+                "/repos/$repositoryName/notifications?all=$includingRead&per_page=$resultLimit",
             ),
         )
         return toGitHubNotification(commandResult)
@@ -67,7 +69,7 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
             listOf(
                 ghCliPath,
                 "api",
-                "/notifications?all=$includingRead&since=$since",
+                "/notifications?all=$includingRead&since=$since&per_page=50",
             ),
         )
         return toGitHubNotification(commandResult)
@@ -84,7 +86,7 @@ class GitHubNotificationRepositoryImpl : GitHubNotificationRepository {
             listOf(
                 ghCliPath,
                 "api",
-                "/repos/$repositoryName/notifications?all=$includingRead&since=$since",
+                "/repos/$repositoryName/notifications?all=$includingRead&since=$since&per_page=100",
             ),
         )
         return toGitHubNotification(commandResult)

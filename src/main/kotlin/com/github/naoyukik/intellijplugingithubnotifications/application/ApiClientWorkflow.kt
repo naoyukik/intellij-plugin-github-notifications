@@ -87,11 +87,12 @@ class ApiClientWorkflow(
         val settingState = settingStateRepository.loadSettingState()
         val ghCliPath = settingState.ghCliPath
         val includingRead = settingState.includingRead
+        val resultLimit = settingState.resultLimit
         if (!hasNewNotificationsSinceLastCheck(settingState)) return@withContext emptyList()
 
         val notifications = settingState.repositoryName.takeUnless { it.isEmpty() }?.let { nonEmptyRepositoryName ->
-            repository.fetchNotificationsByRepository(ghCliPath, nonEmptyRepositoryName, includingRead)
-        } ?: repository.fetchNotifications(ghCliPath, includingRead)
+            repository.fetchNotificationsByRepository(ghCliPath, nonEmptyRepositoryName, includingRead, resultLimit)
+        } ?: repository.fetchNotifications(ghCliPath, includingRead, resultLimit)
 
         notifications.takeIf { it.isNotEmpty() } ?: return@withContext emptyList()
 
