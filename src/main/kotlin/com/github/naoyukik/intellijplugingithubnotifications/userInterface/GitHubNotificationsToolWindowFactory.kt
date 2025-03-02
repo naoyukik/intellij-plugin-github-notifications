@@ -6,6 +6,7 @@ import com.github.naoyukik.intellijplugingithubnotifications.application.Setting
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.GitHubNotificationRepositoryImpl
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.SettingStateRepositoryImpl
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.panel.NotificationFilterPanel
 import com.github.naoyukik.intellijplugingithubnotifications.utility.DateTimeHandler
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
@@ -87,6 +88,10 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         val notificationToolPanel = notificationToolTable.toJBScrollPane().toJBPanel()
         val actionToolbar = createActionToolbar(actionGroup, notificationToolPanel)
         notificationToolPanel.add(actionToolbar.component, BorderLayout.WEST)
+
+        // filter panel
+        val filterPanel = NotificationFilterPanel().create()
+        notificationToolPanel.add(filterPanel, BorderLayout.NORTH)
 
         val content = ContentFactory.getInstance().createContent(notificationToolPanel, null, false)
         toolWindow.contentManager.addContent(content)
