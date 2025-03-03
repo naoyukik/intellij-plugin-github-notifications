@@ -50,6 +50,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private lateinit var settingStateWorkflow: SettingStateWorkflow
     private val coroutineJob = Job()
     private var timer: Timer? = null
+    private var currentNotifications: List<TableDataDto> = emptyList()
     val columnName = arrayOf(
         "Link",
         "Unread",
@@ -124,6 +125,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             try {
                 val notifications = apiClientWorkflow.fetchNotifications()
                 notifications.isEmpty() && return@launch
+                currentNotifications = notifications
                 table.autoCreateColumnsFromModel = false
                 table.model = notifications.toJBTable().model
                 setColumnWidth(table, COLUMN_NUMBER_LINK, setCalculateLinkColumnWidth(table))
