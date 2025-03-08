@@ -2,7 +2,7 @@ package com.github.naoyukik.intellijplugingithubnotifications.userInterface.pane
 
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationFilter
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationType
-import com.github.naoyukik.intellijplugingithubnotifications.domain.model.ObservableFilterState
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.observable.ObservableFilterState
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
