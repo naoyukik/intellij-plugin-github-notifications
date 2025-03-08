@@ -8,6 +8,7 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.model.GitHub
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse.NotificationDetail
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationDetailResponse.NotificationDetailError
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.SettingState
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.filter.NotificationFilter
 import com.intellij.openapi.util.IconLoader
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

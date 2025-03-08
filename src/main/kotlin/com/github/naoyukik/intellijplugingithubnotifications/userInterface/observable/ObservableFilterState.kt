@@ -1,6 +1,6 @@
 package com.github.naoyukik.intellijplugingithubnotifications.userInterface.observable
 
-import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationFilter
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.filter.NotificationFilter
 import kotlin.properties.Delegates
 
 class ObservableFilterState(initialFilter: NotificationFilter) {

@@ -6,6 +6,8 @@ import com.github.naoyukik.intellijplugingithubnotifications.application.Setting
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.GitHubNotificationRepositoryImpl
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.SettingStateRepositoryImpl
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.filter.NotificationFilter
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.observable.ObservableFilterState
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.panel.NotificationFilterPanel
 import com.github.naoyukik.intellijplugingithubnotifications.utility.DateTimeHandler
 import com.intellij.icons.AllIcons
