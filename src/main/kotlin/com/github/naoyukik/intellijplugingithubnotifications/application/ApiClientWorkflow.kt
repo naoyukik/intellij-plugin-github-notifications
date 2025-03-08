@@ -1,5 +1,7 @@
 package com.github.naoyukik.intellijplugingithubnotifications.application
 
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.NotificationDetailDto
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.domain.GitHubNotificationRepository
 import com.github.naoyukik.intellijplugingithubnotifications.domain.SettingStateRepository
@@ -17,6 +19,10 @@ import java.net.URI
 import java.net.URL
 import java.time.ZonedDateTime
 import javax.swing.Icon
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.Repository as DtoRepository
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.Subject as DtoSubject
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.SubjectType as DtoSubjectType
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.NotificationDetailDto.NotificationDetail.RequestedReviewers as DtoRequestedReviewers
 
 class ApiClientWorkflow(
     private val repository: GitHubNotificationRepository,
@@ -84,7 +90,7 @@ class ApiClientWorkflow(
         )
     }
 
-    suspend fun fetchNotifications(): List<TableDataDto> = withContext(dispatcher) {
+    suspend fun fetchNotifications(): List<GitHubNotificationDto> = withContext(dispatcher) {
         val settingState = settingStateRepository.loadSettingState()
         val ghCliPath = settingState.ghCliPath
         val includingRead = settingState.includingRead
@@ -121,6 +127,7 @@ class ApiClientWorkflow(
         }
 
         updatedNotifications.toTableDataDto()
+        filteredNotifications.toGitHubNotificationDto()
     }
 
     private fun hasNewNotificationsSinceLastCheck(
@@ -167,6 +174,37 @@ class ApiClientWorkflow(
                 detailId.ifEmpty { null }
             }
             SubjectType.UNKNOWN -> null
+        }
+    }
+
+    private fun List<GitHubNotification>.toGitHubNotificationDto(): List<GitHubNotificationDto> {
+        return this.map {
+            GitHubNotificationDto(
+                id = it.id,
+                reason = it.reason,
+                updatedAt = it.updatedAt,
+                unread = it.unread,
+                subject = DtoSubject(
+                    title = it.subject.title,
+                    url = it.subject.url,
+                    type = DtoSubjectType.valueOf(
+                        it.subject.type.name,
+                    ),
+                ),
+                repository = DtoRepository(
+                    fullName = it.repository.fullName,
+                    htmlUrl = it.repository.htmlUrl,
+                ),
+                detail = NotificationDetailDto.NotificationDetail(
+                    state = it.detail?.state.toString(),
+                    merged = it.detail?.merged == true,
+                    draft = it.detail?.draft == true,
+                    htmlUrl = it.detail?.htmlUrl.toString(),
+                    requestedReviewers = it.detail?.requestedReviewers?.map { reviewer ->
+                        DtoRequestedReviewers(login = reviewer.login)
+                    } ?: emptyList(),
+                ),
+            )
         }
     }
 
