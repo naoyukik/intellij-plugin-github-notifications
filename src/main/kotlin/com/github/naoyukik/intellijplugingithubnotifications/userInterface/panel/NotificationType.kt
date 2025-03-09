@@ -1,4 +1,5 @@
-package com.github.naoyukik.intellijplugingithubnotifications.domain.model
+package com.github.naoyukik.intellijplugingithubnotifications.userInterface.panel
+
 enum class NotificationType(val displayName: String) {
     PULL_REQUEST_OPEN("Pull Request Open"),
     PULL_REQUEST_MERGED("Pull Request Merged"),

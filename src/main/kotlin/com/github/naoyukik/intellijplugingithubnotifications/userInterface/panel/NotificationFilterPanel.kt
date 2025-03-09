@@ -1,6 +1,5 @@
 package com.github.naoyukik.intellijplugingithubnotifications.userInterface.panel
 
-import com.github.naoyukik.intellijplugingithubnotifications.domain.model.NotificationType
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.filter.NotificationFilter
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.observable.ObservableFilterState
 import com.intellij.openapi.ui.DialogPanel
