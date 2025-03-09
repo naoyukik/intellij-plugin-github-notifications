@@ -1,6 +1,7 @@
 package com.github.naoyukik.intellijplugingithubnotifications.application.dto
 
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.NotificationDetailDto.NotificationDetail
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.NotificationDetailDto.NotificationDetail.State
 
 data class GitHubNotificationDto(
     val id: String,
@@ -22,27 +23,39 @@ data class GitHubNotificationDto(
         val htmlUrl: String,
     )
 
+    fun isPullRequest(): Boolean {
+        return this.subject.type == SubjectType.PullRequest
+    }
+
+    fun isPullRequestOpen(): Boolean {
+        return isPullRequest() && detail?.state == State.Open.name.lowercase()
+    }
+
+    fun isPullRequestMerged(): Boolean {
+        return isPullRequest() && detail?.merged == true
+    }
+    fun isPullRequestClosed(): Boolean {
+        return isPullRequest() && detail?.state == State.Closed.name.lowercase() && detail.merged == false
+    }
+    fun isPullRequestDraft(): Boolean {
+        return isPullRequest() && detail?.draft == true
+    }
+
+    fun isIssue(): Boolean {
+        return this.subject.type == SubjectType.Issue
+    }
+
+    fun isIssueOpen(): Boolean {
+        return isIssue() && detail?.state == State.Open.name.lowercase()
+    }
+    fun isIssueClosed(): Boolean {
+        return isIssue() && detail?.state == State.Closed.name.lowercase()
+    }
+
     enum class SubjectType {
         Issue,
         PullRequest,
         Release,
         UNKNOWN,
-        ;
-
-        fun isRelevantType(): Boolean {
-            return when (this) {
-                Issue, PullRequest, Release -> true
-                UNKNOWN -> false
-            }
-        }
-
-        fun setApiPath(): String? {
-            return when (this) {
-                Issue -> "issues"
-                PullRequest -> "pulls"
-                Release -> "releases"
-                UNKNOWN -> null
-            }
-        }
     }
 }

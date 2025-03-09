@@ -3,6 +3,7 @@ package com.github.naoyukik.intellijplugingithubnotifications.userInterface
 import com.github.naoyukik.intellijplugingithubnotifications.application.ApiClientWorkflow
 import com.github.naoyukik.intellijplugingithubnotifications.application.NotificationWorkflow
 import com.github.naoyukik.intellijplugingithubnotifications.application.SettingStateWorkflow
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.GitHubNotificationRepositoryImpl
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.SettingStateRepositoryImpl
@@ -51,9 +52,13 @@ import kotlin.coroutines.CoroutineContext
 class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, CoroutineScope, Disposable {
     private lateinit var apiClientWorkflow: ApiClientWorkflow
     private lateinit var settingStateWorkflow: SettingStateWorkflow
+    private lateinit var tableDataAssembler: TableDataAssembler
     private val coroutineJob = Job()
     private var timer: Timer? = null
-    private var currentNotifications: List<TableDataDto> = emptyList()
+    private var currentNotifications: List<GitHubNotificationDto> = emptyList()
+    private var filteredNotifications: List<GitHubNotificationDto> = emptyList()
+    private val filterState = ObservableFilterState(NotificationFilter(type = null))
+
     val columnName = arrayOf(
         "Link",
         "Unread",
@@ -78,6 +83,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         apiClientWorkflow = ApiClientWorkflow(GitHubNotificationRepositoryImpl(), SettingStateRepositoryImpl(project))
         settingStateWorkflow = SettingStateWorkflow(SettingStateRepositoryImpl(project))
+        tableDataAssembler = TableDataAssembler()
         val notificationToolTable = initializeJBTable()
         setupMouseListener(notificationToolTable)
 
@@ -93,6 +99,51 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
 
         // filter panel
         val filterPanel = NotificationFilterPanel().create()
+        filterState.addListener {
+            filteredNotifications = NotificationFilter.applyFilter(currentNotifications, it)
+            val displayTable = tableDataAssembler.toTableDataDto(filteredNotifications)
+            notificationToolTable.autoCreateColumnsFromModel = false
+            notificationToolTable.model = displayTable.toJBTable().model
+            setColumnWidth(
+                notificationToolTable,
+                COLUMN_NUMBER_LINK,
+                setCalculateLinkColumnWidth(notificationToolTable),
+            )
+            setColumnWidth(
+                notificationToolTable,
+                COLUMN_NUMBER_UNREAD,
+                setCalculateUnreadColumnWidth(notificationToolTable),
+            )
+            setColumnWidth(
+                notificationToolTable,
+                COLUMN_NUMBER_TYPE,
+                setCalculateTypeColumnWidth(notificationToolTable),
+            )
+            notificationToolTable.columnModel.getColumn(COLUMN_NUMBER_TYPE).cellRenderer = object : DefaultTableCellRenderer() {
+                override fun setValue(value: Any?) {
+                    if (value is Icon) {
+                        this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
+                        this.horizontalAlignment = CENTER
+                        this.verticalAlignment = CENTER
+                    } else {
+                        this.icon = null
+                    }
+                }
+            }
+
+            notificationToolTable.columnModel.getColumn(COLUMN_NUMBER_UNREAD).cellRenderer = object : DefaultTableCellRenderer() {
+                override fun setValue(value: Any?) {
+                    if (value is Icon) {
+                        this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
+                        this.horizontalAlignment = CENTER
+                        this.verticalAlignment = CENTER
+                    } else {
+                        this.icon = null
+                    }
+                }
+            }
+        }
+        val filterPanel = NotificationFilterPanel(filterState).create()
         notificationToolPanel.add(filterPanel, BorderLayout.NORTH)
 
         val content = ContentFactory.getInstance().createContent(notificationToolPanel, null, false)
@@ -133,8 +184,10 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 val notifications = apiClientWorkflow.fetchNotifications()
                 notifications.isEmpty() && return@launch
                 currentNotifications = notifications
+                filteredNotifications = NotificationFilter.applyFilter(currentNotifications, filterState.filter)
+                val displayTable = tableDataAssembler.toTableDataDto(filteredNotifications)
                 table.autoCreateColumnsFromModel = false
-                table.model = notifications.toJBTable().model
+                table.model = displayTable.toJBTable().model
                 setColumnWidth(table, COLUMN_NUMBER_LINK, setCalculateLinkColumnWidth(table))
                 setColumnWidth(table, COLUMN_NUMBER_UNREAD, setCalculateUnreadColumnWidth(table))
                 setColumnWidth(table, COLUMN_NUMBER_TYPE, setCalculateTypeColumnWidth(table))
