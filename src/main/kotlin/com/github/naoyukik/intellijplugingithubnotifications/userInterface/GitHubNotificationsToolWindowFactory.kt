@@ -98,50 +98,10 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         notificationToolPanel.add(actionToolbar.component, BorderLayout.WEST)
 
         // filter panel
-        val filterPanel = NotificationFilterPanel().create()
         filterState.addListener {
             filteredNotifications = NotificationFilter.applyFilter(currentNotifications, it)
             val displayTable = tableDataAssembler.toTableDataDto(filteredNotifications)
-            notificationToolTable.autoCreateColumnsFromModel = false
-            notificationToolTable.model = displayTable.toJBTable().model
-            setColumnWidth(
-                notificationToolTable,
-                COLUMN_NUMBER_LINK,
-                setCalculateLinkColumnWidth(notificationToolTable),
-            )
-            setColumnWidth(
-                notificationToolTable,
-                COLUMN_NUMBER_UNREAD,
-                setCalculateUnreadColumnWidth(notificationToolTable),
-            )
-            setColumnWidth(
-                notificationToolTable,
-                COLUMN_NUMBER_TYPE,
-                setCalculateTypeColumnWidth(notificationToolTable),
-            )
-            notificationToolTable.columnModel.getColumn(COLUMN_NUMBER_TYPE).cellRenderer = object : DefaultTableCellRenderer() {
-                override fun setValue(value: Any?) {
-                    if (value is Icon) {
-                        this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
-                        this.horizontalAlignment = CENTER
-                        this.verticalAlignment = CENTER
-                    } else {
-                        this.icon = null
-                    }
-                }
-            }
-
-            notificationToolTable.columnModel.getColumn(COLUMN_NUMBER_UNREAD).cellRenderer = object : DefaultTableCellRenderer() {
-                override fun setValue(value: Any?) {
-                    if (value is Icon) {
-                        this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
-                        this.horizontalAlignment = CENTER
-                        this.verticalAlignment = CENTER
-                    } else {
-                        this.icon = null
-                    }
-                }
-            }
+            fireTableDataChanged(notificationToolTable, displayTable)
         }
         val filterPanel = NotificationFilterPanel(filterState).create()
         notificationToolPanel.add(filterPanel, BorderLayout.NORTH)
@@ -154,6 +114,54 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         val settingState = settingStateWorkflow.loadSettingState()
 
         startAutoRefresh(notificationToolTable, settingState.fetchInterval, project)
+    }
+
+    private fun fireTableDataChanged(
+        notificationToolTable: JBTable,
+        displayTable: List<TableDataDto>,
+    ) {
+        notificationToolTable.autoCreateColumnsFromModel = false
+        notificationToolTable.model = displayTable.toJBTable().model
+        setColumnWidth(
+            notificationToolTable,
+            COLUMN_NUMBER_LINK,
+            setCalculateLinkColumnWidth(notificationToolTable),
+        )
+        setColumnWidth(
+            notificationToolTable,
+            COLUMN_NUMBER_UNREAD,
+            setCalculateUnreadColumnWidth(notificationToolTable),
+        )
+        setColumnWidth(
+            notificationToolTable,
+            COLUMN_NUMBER_TYPE,
+            setCalculateTypeColumnWidth(notificationToolTable),
+        )
+        notificationToolTable.columnModel.getColumn(COLUMN_NUMBER_TYPE).cellRenderer =
+            object : DefaultTableCellRenderer() {
+                override fun setValue(value: Any?) {
+                    if (value is Icon) {
+                        this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
+                        this.horizontalAlignment = CENTER
+                        this.verticalAlignment = CENTER
+                    } else {
+                        this.icon = null
+                    }
+                }
+            }
+
+        notificationToolTable.columnModel.getColumn(COLUMN_NUMBER_UNREAD).cellRenderer =
+            object : DefaultTableCellRenderer() {
+                override fun setValue(value: Any?) {
+                    if (value is Icon) {
+                        this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
+                        this.horizontalAlignment = CENTER
+                        this.verticalAlignment = CENTER
+                    } else {
+                        this.icon = null
+                    }
+                }
+            }
     }
 
     private fun createActionToolbar(actionGroup: DefaultActionGroup, targetComponent: JComponent): ActionToolbar {
@@ -186,34 +194,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 currentNotifications = notifications
                 filteredNotifications = NotificationFilter.applyFilter(currentNotifications, filterState.filter)
                 val displayTable = tableDataAssembler.toTableDataDto(filteredNotifications)
-                table.autoCreateColumnsFromModel = false
-                table.model = displayTable.toJBTable().model
-                setColumnWidth(table, COLUMN_NUMBER_LINK, setCalculateLinkColumnWidth(table))
-                setColumnWidth(table, COLUMN_NUMBER_UNREAD, setCalculateUnreadColumnWidth(table))
-                setColumnWidth(table, COLUMN_NUMBER_TYPE, setCalculateTypeColumnWidth(table))
-                table.columnModel.getColumn(COLUMN_NUMBER_TYPE).cellRenderer = object : DefaultTableCellRenderer() {
-                    override fun setValue(value: Any?) {
-                        if (value is Icon) {
-                            this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
-                            this.horizontalAlignment = CENTER
-                            this.verticalAlignment = CENTER
-                        } else {
-                            this.icon = null
-                        }
-                    }
-                }
-
-                table.columnModel.getColumn(COLUMN_NUMBER_UNREAD).cellRenderer = object : DefaultTableCellRenderer() {
-                    override fun setValue(value: Any?) {
-                        if (value is Icon) {
-                            this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
-                            this.horizontalAlignment = CENTER
-                            this.verticalAlignment = CENTER
-                        } else {
-                            this.icon = null
-                        }
-                    }
-                }
+                fireTableDataChanged(table, displayTable)
 
                 NotificationWorkflow().fetchedNotification(project)
             } catch (e: IllegalArgumentException) {
