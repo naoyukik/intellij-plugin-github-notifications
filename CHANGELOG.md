@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.8.0] - 2025-03-10
+
 ### Added
 
 - Implement Type filter
@@ -94,7 +96,8 @@ Initial release of the GitHub Notifications IntelliJ Plugin.
 
 Done is better than perfect.
 
-[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.4.3...v0.5.0
