@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Implement Type filter
+
 ## [0.7.0] - 2025-02-21
 
 ### Added

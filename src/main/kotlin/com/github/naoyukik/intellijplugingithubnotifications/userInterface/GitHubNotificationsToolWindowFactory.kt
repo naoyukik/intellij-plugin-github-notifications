@@ -3,9 +3,13 @@ package com.github.naoyukik.intellijplugingithubnotifications.userInterface
 import com.github.naoyukik.intellijplugingithubnotifications.application.ApiClientWorkflow
 import com.github.naoyukik.intellijplugingithubnotifications.application.NotificationWorkflow
 import com.github.naoyukik.intellijplugingithubnotifications.application.SettingStateWorkflow
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.GitHubNotificationRepositoryImpl
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.SettingStateRepositoryImpl
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.filter.NotificationFilter
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.observable.ObservableFilterState
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.panel.NotificationFilterPanel
 import com.github.naoyukik.intellijplugingithubnotifications.utility.DateTimeHandler
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
@@ -48,9 +52,13 @@ import kotlin.coroutines.CoroutineContext
 class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, CoroutineScope, Disposable {
     private lateinit var apiClientWorkflow: ApiClientWorkflow
     private lateinit var settingStateWorkflow: SettingStateWorkflow
+    private lateinit var tableDataAssembler: TableDataAssembler
     private val coroutineJob = Job()
     private var timer: Timer? = null
-    private var currentNotifications: List<TableDataDto> = emptyList()
+    private var currentNotifications: List<GitHubNotificationDto> = emptyList()
+    private var filteredNotifications: List<GitHubNotificationDto> = emptyList()
+    private val filterState = ObservableFilterState(NotificationFilter(type = null))
+
     val columnName = arrayOf(
         "Link",
         "Unread",
@@ -75,6 +83,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         apiClientWorkflow = ApiClientWorkflow(GitHubNotificationRepositoryImpl(), SettingStateRepositoryImpl(project))
         settingStateWorkflow = SettingStateWorkflow(SettingStateRepositoryImpl(project))
+        tableDataAssembler = TableDataAssembler()
         val notificationToolTable = initializeJBTable()
         setupMouseListener(notificationToolTable)
 
@@ -88,6 +97,15 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         val actionToolbar = createActionToolbar(actionGroup, notificationToolPanel)
         notificationToolPanel.add(actionToolbar.component, BorderLayout.WEST)
 
+        // filter panel
+        filterState.addListener {
+            filteredNotifications = NotificationFilter.applyFilter(currentNotifications, it)
+            val displayTable = tableDataAssembler.toTableDataDto(filteredNotifications)
+            fireTableDataChanged(notificationToolTable, displayTable)
+        }
+        val filterPanel = NotificationFilterPanel(filterState).create()
+        notificationToolPanel.add(filterPanel, BorderLayout.NORTH)
+
         val content = ContentFactory.getInstance().createContent(notificationToolPanel, null, false)
         toolWindow.contentManager.addContent(content)
 
@@ -96,6 +114,54 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         val settingState = settingStateWorkflow.loadSettingState()
 
         startAutoRefresh(notificationToolTable, settingState.fetchInterval, project)
+    }
+
+    private fun fireTableDataChanged(
+        notificationToolTable: JBTable,
+        displayTable: List<TableDataDto>,
+    ) {
+        notificationToolTable.autoCreateColumnsFromModel = false
+        notificationToolTable.model = displayTable.toJBTable().model
+        setColumnWidth(
+            notificationToolTable,
+            COLUMN_NUMBER_LINK,
+            setCalculateLinkColumnWidth(notificationToolTable),
+        )
+        setColumnWidth(
+            notificationToolTable,
+            COLUMN_NUMBER_UNREAD,
+            setCalculateUnreadColumnWidth(notificationToolTable),
+        )
+        setColumnWidth(
+            notificationToolTable,
+            COLUMN_NUMBER_TYPE,
+            setCalculateTypeColumnWidth(notificationToolTable),
+        )
+        notificationToolTable.columnModel.getColumn(COLUMN_NUMBER_TYPE).cellRenderer =
+            object : DefaultTableCellRenderer() {
+                override fun setValue(value: Any?) {
+                    if (value is Icon) {
+                        this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
+                        this.horizontalAlignment = CENTER
+                        this.verticalAlignment = CENTER
+                    } else {
+                        this.icon = null
+                    }
+                }
+            }
+
+        notificationToolTable.columnModel.getColumn(COLUMN_NUMBER_UNREAD).cellRenderer =
+            object : DefaultTableCellRenderer() {
+                override fun setValue(value: Any?) {
+                    if (value is Icon) {
+                        this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
+                        this.horizontalAlignment = CENTER
+                        this.verticalAlignment = CENTER
+                    } else {
+                        this.icon = null
+                    }
+                }
+            }
     }
 
     private fun createActionToolbar(actionGroup: DefaultActionGroup, targetComponent: JComponent): ActionToolbar {
@@ -126,34 +192,9 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 val notifications = apiClientWorkflow.fetchNotifications()
                 notifications.isEmpty() && return@launch
                 currentNotifications = notifications
-                table.autoCreateColumnsFromModel = false
-                table.model = notifications.toJBTable().model
-                setColumnWidth(table, COLUMN_NUMBER_LINK, setCalculateLinkColumnWidth(table))
-                setColumnWidth(table, COLUMN_NUMBER_UNREAD, setCalculateUnreadColumnWidth(table))
-                setColumnWidth(table, COLUMN_NUMBER_TYPE, setCalculateTypeColumnWidth(table))
-                table.columnModel.getColumn(COLUMN_NUMBER_TYPE).cellRenderer = object : DefaultTableCellRenderer() {
-                    override fun setValue(value: Any?) {
-                        if (value is Icon) {
-                            this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
-                            this.horizontalAlignment = CENTER
-                            this.verticalAlignment = CENTER
-                        } else {
-                            this.icon = null
-                        }
-                    }
-                }
-
-                table.columnModel.getColumn(COLUMN_NUMBER_UNREAD).cellRenderer = object : DefaultTableCellRenderer() {
-                    override fun setValue(value: Any?) {
-                        if (value is Icon) {
-                            this.icon = IconUtil.toSize(value, ICON_WIDTH, ICON_HEIGHT)
-                            this.horizontalAlignment = CENTER
-                            this.verticalAlignment = CENTER
-                        } else {
-                            this.icon = null
-                        }
-                    }
-                }
+                filteredNotifications = NotificationFilter.applyFilter(currentNotifications, filterState.filter)
+                val displayTable = tableDataAssembler.toTableDataDto(filteredNotifications)
+                fireTableDataChanged(table, displayTable)
 
                 NotificationWorkflow().fetchedNotification(project)
             } catch (e: IllegalArgumentException) {
