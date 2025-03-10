@@ -22,7 +22,7 @@ data class NotificationFilter(
                     NotificationType.ISSUE_CLOSED.displayName -> it.isIssueClosed()
                     NotificationType.Release.displayName -> it.subject.type == GitHubNotificationDto.SubjectType.Release
                     else -> true
-                } == true
+                }
             }
         }
     }

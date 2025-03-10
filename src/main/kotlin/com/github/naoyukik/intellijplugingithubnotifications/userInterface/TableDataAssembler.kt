@@ -88,7 +88,9 @@ class TableDataAssembler {
                 updatedAt = it.updatedAt,
                 typeEmoji = apiUrlToEmojiConverter(it),
                 reviewers = it.detail?.requestedReviewers?.map { reviewer -> reviewer.login } ?: emptyList(),
-                unreadEmoji = it.unread.takeIf { it }?.let { TYPE_TO_EMOJI["Unread"] },
+                unreadEmoji = it.unread.takeIf { bool ->
+                    bool
+                }?.let { TYPE_TO_EMOJI["Unread"] },
             )
         }
     }

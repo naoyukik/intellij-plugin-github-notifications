@@ -23,7 +23,7 @@ data class GitHubNotificationDto(
         val htmlUrl: String,
     )
 
-    fun isPullRequest(): Boolean {
+    private fun isPullRequest(): Boolean {
         return this.subject.type == SubjectType.PullRequest
     }
 
@@ -35,13 +35,13 @@ data class GitHubNotificationDto(
         return isPullRequest() && detail?.merged == true
     }
     fun isPullRequestClosed(): Boolean {
-        return isPullRequest() && detail?.state == State.Closed.name.lowercase() && detail.merged == false
+        return isPullRequest() && detail?.state == State.Closed.name.lowercase() && detail.merged != true
     }
     fun isPullRequestDraft(): Boolean {
         return isPullRequest() && detail?.draft == true
     }
 
-    fun isIssue(): Boolean {
+    private fun isIssue(): Boolean {
         return this.subject.type == SubjectType.Issue
     }
 
