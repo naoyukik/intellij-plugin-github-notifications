@@ -11,14 +11,12 @@ class ObservableFilterState(initialFilter: NotificationFilter) {
     // フィルターの状態を保持
     var filter: NotificationFilter by Delegates.observable(initialFilter) {
             _, oldValue, newValue ->
-        println("Observable：フィルターが変更されました。oldValue: $oldValue, newValue: $newValue")
         if (oldValue != newValue) {
             listeners.forEach { it(newValue) }
         }
     }
 
     fun addListener(listener: (NotificationFilter) -> Unit) {
-        println("add listener")
         listeners.add(listener)
     }
 

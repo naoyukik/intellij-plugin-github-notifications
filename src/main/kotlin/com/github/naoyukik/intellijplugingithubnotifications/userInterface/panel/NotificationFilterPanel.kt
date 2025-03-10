@@ -24,7 +24,6 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
                     ).applyToComponent {
                         addActionListener {
                             selectedType = this.selectedItem as? String
-                            println("タイプ選択が変更されました: $selectedType")
                             filterState.filter = NotificationFilter(
                                 type = selectedType,
                             )
