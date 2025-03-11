@@ -57,7 +57,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private var timer: Timer? = null
     private var currentNotifications: List<GitHubNotificationDto> = emptyList()
     private var filteredNotifications: List<GitHubNotificationDto> = emptyList()
-    private val filterState = ObservableFilterState(NotificationFilter(type = null))
+    private val filterState = ObservableFilterState(NotificationFilter(type = null, reviewer = null))
 
     val columnName = arrayOf(
         "Link",
