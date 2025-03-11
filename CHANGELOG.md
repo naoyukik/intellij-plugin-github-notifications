@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Implement Reviewers filter
+
 ## [0.8.0] - 2025-03-10
 
 ### Added
