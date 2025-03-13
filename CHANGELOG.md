@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Reset the latest fetch time on settings apply
+
 ### Fixed
 
 - Optimize type filter

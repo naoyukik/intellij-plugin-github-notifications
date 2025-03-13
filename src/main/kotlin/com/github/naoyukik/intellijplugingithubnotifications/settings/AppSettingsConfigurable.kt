@@ -1,5 +1,6 @@
 package com.github.naoyukik.intellijplugingithubnotifications.settings
 
+import com.github.naoyukik.intellijplugingithubnotifications.application.ApiClientWorkflow.Companion.resetLatestFetchTime
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
@@ -46,6 +47,7 @@ class AppSettingsConfigurable(private val project: Project) : Configurable {
 
     override fun apply() {
         mainPanel.apply()
+        resetLatestFetchTime()
     }
 
     @Suppress("DialogTitleCapitalization")
@@ -55,13 +57,13 @@ class AppSettingsConfigurable(private val project: Project) : Configurable {
                 row("Fetch interval:") {
                     spinner(FETCH_INTERVAL_MIN_VALUE..FETCH_INTERVAL_MAX_VALUE)
                         .bindIntValue(mySettingsState::customizedFetchInterval)
-                        .comment("Min: 1, Max: 60, A restart is required when the value is changed.")
+                        .comment("Min: $FETCH_INTERVAL_MIN_VALUE, Max: $FETCH_INTERVAL_MAX_VALUE, Default: 15")
                     label("minutes")
                 }
                 row("Result limit:") {
                     spinner(RESULT_LIMIT_MIN_VALUE..RESULT_LIMIT_MAX_VALUE)
                         .bindIntValue(mySettingsState::customizedResultLimit)
-                        .comment("Min: 1, max: 50, Default: 30")
+                        .comment("Min: $RESULT_LIMIT_MIN_VALUE, max: $RESULT_LIMIT_MAX_VALUE, Default: 30")
                 }
                 row {
                     checkBox("Show read notifications")
