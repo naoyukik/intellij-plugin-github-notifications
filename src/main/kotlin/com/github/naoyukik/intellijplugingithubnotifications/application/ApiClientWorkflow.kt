@@ -24,7 +24,13 @@ class ApiClientWorkflow(
     private val settingStateRepository: SettingStateRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
-    private var latestFetchTime: ZonedDateTime? = null
+    companion object {
+        private var latestFetchTime: ZonedDateTime? = null
+
+        fun resetLatestFetchTime() {
+            latestFetchTime = null
+        }
+    }
 
     suspend fun fetchNotifications(): List<GitHubNotificationDto> = withContext(dispatcher) {
         val settingState = settingStateRepository.loadSettingState()
