@@ -5,12 +5,15 @@ import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
-import javax.swing.JComboBox
+import com.intellij.util.ui.JBUI
 
 class NotificationFilterPanel(private val filterState: ObservableFilterState) {
 
     private var selectedType: String? = null
-    private lateinit var typeComboBox: JComboBox<String>
+
+    companion object {
+        const val PADDING_LEFT = 38
+    }
 
     fun create(): DialogPanel {
         val dialogPanel = panel {
@@ -42,6 +45,8 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
                     addActionListener { filterState.filter = filterState.filter.copy(reviewer = this.text) }
                 }
             }
+        }.apply {
+            border = JBUI.Borders.emptyLeft(PADDING_LEFT)
         }
 
         return dialogPanel
