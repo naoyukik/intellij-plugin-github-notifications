@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Optimize type filter
+
 ## [0.9.0] - 2025-03-12
 
 ### Added
