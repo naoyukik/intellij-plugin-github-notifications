@@ -7,6 +7,7 @@
 ### Added
 
 - Reset the latest fetch time on settings apply
+- Add label column
 
 ### Fixed
 
