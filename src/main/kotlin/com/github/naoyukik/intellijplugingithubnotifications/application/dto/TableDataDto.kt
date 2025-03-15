@@ -12,4 +12,5 @@ data class TableDataDto(
     val typeEmoji: Icon?,
     val reviewers: List<String?>,
     val unreadEmoji: Icon?,
+    val labels: List<String?>,
 )

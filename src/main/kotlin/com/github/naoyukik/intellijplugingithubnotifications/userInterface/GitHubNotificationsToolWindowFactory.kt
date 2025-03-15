@@ -66,6 +66,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         "Message",
         "Reason",
         "Reviewers",
+        "Labels",
         "Updated at",
     )
 
@@ -277,7 +278,8 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 dto.typeEmoji ?: "",
                 "<html>${dto.fullName}<br>${dto.title}</html>",
                 "<html>${dto.reason}</html>",
-                "<html>${dto.reviewers.joinToString(",")}</html>",
+                "<html>${dto.reviewers.joinToString(", ")}</html>",
+                "<html>${dto.labels.joinToString(", ")}</html>",
                 "<html>$updatedAt</html>",
             )
         }.toTypedArray()

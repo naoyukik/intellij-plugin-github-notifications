@@ -91,6 +91,7 @@ class TableDataAssembler {
                 unreadEmoji = it.unread.takeIf { bool ->
                     bool
                 }?.let { TYPE_TO_EMOJI["Unread"] },
+                labels = it.detail?.labels?.map { label -> label.name } ?: emptyList(),
             )
         }
     }
