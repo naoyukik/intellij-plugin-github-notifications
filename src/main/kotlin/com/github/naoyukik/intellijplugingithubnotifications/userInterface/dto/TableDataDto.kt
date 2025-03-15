@@ -1,4 +1,4 @@
-package com.github.naoyukik.intellijplugingithubnotifications.application.dto
+package com.github.naoyukik.intellijplugingithubnotifications.userInterface.dto
 
 import java.net.URL
 import javax.swing.Icon
@@ -12,4 +12,5 @@ data class TableDataDto(
     val typeEmoji: Icon?,
     val reviewers: List<String?>,
     val unreadEmoji: Icon?,
+    val labels: List<String?>,
 )

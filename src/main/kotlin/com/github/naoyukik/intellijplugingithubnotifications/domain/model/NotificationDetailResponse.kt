@@ -18,10 +18,16 @@ sealed class NotificationDetailResponse {
         val htmlUrl: String,
         @SerialName("requested_reviewers")
         val requestedReviewers: List<RequestedReviewers> = emptyList(),
+        val labels: List<Label> = emptyList(),
     ) : NotificationDetailResponse() {
         @Serializable
         data class RequestedReviewers(
             val login: String,
+        )
+
+        @Serializable
+        data class Label(
+            val name: String,
         )
 
         fun isPullRequestOpen(): Boolean {

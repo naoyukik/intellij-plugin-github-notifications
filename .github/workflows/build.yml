@@ -62,6 +62,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Clean and build with Gradle
+        run: |
+          ./gradlew clean
+          ./gradlew build --no-build-cache
+
       # Set environment variables
       - name: Export Properties
         id: properties
@@ -128,6 +133,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Clean and build with Gradle
+        run: |
+          ./gradlew clean
+          ./gradlew build --no-build-cache
+
       # Run tests
       - name: Run Tests
         run: ./gradlew check -Dkotest.tags.exclude=Learn
@@ -178,6 +188,11 @@ jobs:
           distribution: zulu
           java-version: 21
 
+      - name: Clean and build with Gradle
+        run: |
+          ./gradlew clean
+          ./gradlew build --no-build-cache
+
       # Run Qodana inspections
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@v2024.3
@@ -212,6 +227,11 @@ jobs:
       # Setup Gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+
+      - name: Clean and build with Gradle
+        run: |
+          ./gradlew clean
+          ./gradlew build --no-build-cache
 
       # Cache Plugin Verifier IDEs
       - name: Setup Plugin Verifier IDEs Cache
