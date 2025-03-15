@@ -2,7 +2,7 @@ package com.github.naoyukik.intellijplugingithubnotifications.userInterface
 
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.SubjectType
-import com.github.naoyukik.intellijplugingithubnotifications.application.dto.TableDataDto
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.dto.TableDataDto
 import com.intellij.openapi.util.IconLoader
 import java.net.URI
 import java.net.URL

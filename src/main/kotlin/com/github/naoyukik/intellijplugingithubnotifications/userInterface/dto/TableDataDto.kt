@@ -1,4 +1,4 @@
-package com.github.naoyukik.intellijplugingithubnotifications.application.dto
+package com.github.naoyukik.intellijplugingithubnotifications.userInterface.dto
 
 import java.net.URL
 import javax.swing.Icon
