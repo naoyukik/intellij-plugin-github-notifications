@@ -4,9 +4,9 @@ import com.github.naoyukik.intellijplugingithubnotifications.application.ApiClie
 import com.github.naoyukik.intellijplugingithubnotifications.application.NotificationWorkflow
 import com.github.naoyukik.intellijplugingithubnotifications.application.SettingStateWorkflow
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto
-import com.github.naoyukik.intellijplugingithubnotifications.application.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.GitHubNotificationRepositoryImpl
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.SettingStateRepositoryImpl
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.filter.NotificationFilter
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.observable.ObservableFilterState
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.panel.NotificationFilterPanel
@@ -66,6 +66,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         "Message",
         "Reason",
         "Reviewers",
+        "Labels",
         "Updated at",
     )
 
@@ -277,7 +278,8 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 dto.typeEmoji ?: "",
                 "<html>${dto.fullName}<br>${dto.title}</html>",
                 "<html>${dto.reason}</html>",
-                "<html>${dto.reviewers.joinToString(",")}</html>",
+                "<html>${dto.reviewers.joinToString(", ")}</html>",
+                "<html>${dto.labels.joinToString(", ")}</html>",
                 "<html>$updatedAt</html>",
             )
         }.toTypedArray()
