@@ -2,18 +2,26 @@ package com.github.naoyukik.intellijplugingithubnotifications.userInterface.filt
 
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.panel.NotificationType
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.panel.NotificationUnread
 
 data class NotificationFilter(
+    val unread: String?,
     val type: String?,
     val reviewer: String?,
     val label: String?,
 ) {
     companion object {
+        @Suppress("ComplexMethod")
         fun applyFilter(
             notifications: List<GitHubNotificationDto>,
             filter: NotificationFilter,
         ): List<GitHubNotificationDto> {
             return notifications.filter { notification ->
+                val unreadMatches = when (filter.unread) {
+                    NotificationUnread.UNREAD.displayName -> notification.unread
+                    else -> true
+                }
+
                 val typeMatches = when (filter.type) {
                     NotificationType.PULL_REQUEST_OPEN.displayName -> notification.isPullRequestOpen()
                     NotificationType.PULL_REQUEST_MERGED.displayName -> notification.isPullRequestMerged()
@@ -36,7 +44,7 @@ data class NotificationFilter(
                         label.name.lowercase() == filter.label.lowercase()
                     } == true
 
-                typeMatches && reviewerMatches && labelMatches
+                unreadMatches && typeMatches && reviewerMatches && labelMatches
             }
         }
     }
