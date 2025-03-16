@@ -6,6 +6,7 @@ import com.github.naoyukik.intellijplugingithubnotifications.userInterface.panel
 data class NotificationFilter(
     val type: String?,
     val reviewer: String?,
+    val label: String?,
 ) {
     companion object {
         fun applyFilter(
@@ -30,7 +31,12 @@ data class NotificationFilter(
                         reviewer.login.lowercase() == filter.reviewer.lowercase()
                     } == true
 
-                typeMatches && reviewerMatches
+                val labelMatches =
+                    filter.label.isNullOrBlank() || notification.detail?.labels?.any { label ->
+                        label.name.lowercase() == filter.label.lowercase()
+                    } == true
+
+                typeMatches && reviewerMatches && labelMatches
             }
         }
     }
