@@ -8,7 +8,7 @@
 
 - Reset the latest fetch time on settings apply
 - Implement label column
-- Implement label filter
+- Implement label and unread filter
 
 ### Fixed
 
