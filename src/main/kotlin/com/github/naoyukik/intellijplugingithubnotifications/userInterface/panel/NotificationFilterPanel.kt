@@ -44,6 +44,15 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
                     emptyText.text = "Enter Reviewer"
                     addActionListener { filterState.filter = filterState.filter.copy(reviewer = this.text) }
                 }
+                textField().bindText(
+                    getter = { filterState.filter.label ?: "" },
+                    setter = { newLabel ->
+                        filterState.filter = filterState.filter.copy(label = newLabel)
+                    },
+                ).applyToComponent {
+                    emptyText.text = "Enter Label"
+                    addActionListener { filterState.filter = filterState.filter.copy(label = this.text) }
+                }
             }
         }.apply {
             border = JBUI.Borders.emptyLeft(PADDING_LEFT)
