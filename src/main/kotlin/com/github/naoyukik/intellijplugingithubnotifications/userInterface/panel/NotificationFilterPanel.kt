@@ -10,6 +10,7 @@ import com.intellij.util.ui.JBUI
 class NotificationFilterPanel(private val filterState: ObservableFilterState) {
 
     private var selectedType: String? = null
+    private var selectedUnread: String? = null
 
     companion object {
         const val PADDING_LEFT = 38
@@ -18,6 +19,21 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
     fun create(): DialogPanel {
         val dialogPanel = panel {
             row {
+                comboBox(NotificationUnread.entries.map { it.displayName }).bindItem(
+                    getter = { filterState.filter.unread ?: NotificationUnread.ALL.displayName },
+                    setter = { newUnread ->
+                        filterState.filter = filterState.filter.copy(
+                            unread = if (newUnread == NotificationUnread.ALL.displayName) null else newUnread,
+                        )
+                    },
+                ).applyToComponent {
+                    addActionListener {
+                        selectedUnread = this.selectedItem as? String
+                        filterState.filter = filterState.filter.copy(
+                            unread = selectedUnread,
+                        )
+                    }
+                }
                 comboBox(
                     NotificationType.entries.map { it.displayName },
                 ).bindItem(
