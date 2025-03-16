@@ -7,7 +7,8 @@
 ### Added
 
 - Reset the latest fetch time on settings apply
-- Add label column
+- Implement label column
+- Implement label filter
 
 ### Fixed
 
