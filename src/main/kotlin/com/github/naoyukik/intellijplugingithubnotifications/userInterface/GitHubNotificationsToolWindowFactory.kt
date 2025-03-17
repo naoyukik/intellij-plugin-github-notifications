@@ -83,6 +83,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         const val COLUMN_NUMBER_LINK = 0
         const val COLUMN_NUMBER_UNREAD = 1
         const val COLUMN_NUMBER_TYPE = 2
+        const val ROW_MIN_HEIGHT = 37
     }
 
     override val coroutineContext: CoroutineContext
@@ -215,6 +216,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         return JBTable(object : DefaultTableModel(arrayOf(), columnName) {
             override fun isCellEditable(row: Int, column: Int) = false
         }).apply {
+            rowHeight = ROW_MIN_HEIGHT
             setColumnWidth(this, COLUMN_NUMBER_LINK, setCalculateLinkColumnWidth(this))
             setColumnWidth(this, COLUMN_NUMBER_UNREAD, setCalculateUnreadColumnWidth(this))
             setColumnWidth(this, COLUMN_NUMBER_TYPE, setCalculateTypeColumnWidth(this))
