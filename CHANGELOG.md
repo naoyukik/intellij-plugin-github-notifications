@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Set a minimum value for column height
+
 ## [0.10.0] - 2025-03-16
 
 ### Added
