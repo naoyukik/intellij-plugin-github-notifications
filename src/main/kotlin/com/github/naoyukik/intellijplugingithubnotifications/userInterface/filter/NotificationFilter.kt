@@ -19,6 +19,7 @@ data class NotificationFilter(
             return notifications.filter { notification ->
                 val unreadMatches = when (filter.unread) {
                     NotificationUnread.UNREAD.displayName -> notification.unread
+                    NotificationUnread.READ.displayName -> !notification.unread
                     else -> true
                 }
 
