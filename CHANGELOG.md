@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add Read filter
+
 ### Fixed
 
 - Set a minimum value for column height
