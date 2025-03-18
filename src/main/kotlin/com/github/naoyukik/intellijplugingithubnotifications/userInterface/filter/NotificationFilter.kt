@@ -2,27 +2,50 @@ package com.github.naoyukik.intellijplugingithubnotifications.userInterface.filt
 
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.panel.NotificationType
-import kotlin.collections.filter
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.panel.NotificationUnread
 
 data class NotificationFilter(
+    val unread: String?,
     val type: String?,
+    val reviewer: String?,
+    val label: String?,
 ) {
     companion object {
+        @Suppress("ComplexMethod")
         fun applyFilter(
             notifications: List<GitHubNotificationDto>,
             filter: NotificationFilter,
         ): List<GitHubNotificationDto> {
-            return notifications.filter {
-                when (filter.type) {
-                    NotificationType.PULL_REQUEST_OPEN.displayName -> it.isPullRequestOpen()
-                    NotificationType.PULL_REQUEST_MERGED.displayName -> it.isPullRequestMerged()
-                    NotificationType.PULL_REQUEST_CLOSED.displayName -> it.isPullRequestClosed()
-                    NotificationType.PULL_REQUEST_DRAFT.displayName -> it.isPullRequestDraft()
-                    NotificationType.ISSUE_OPEN.displayName -> it.isIssueOpen()
-                    NotificationType.ISSUE_CLOSED.displayName -> it.isIssueClosed()
-                    NotificationType.Release.displayName -> it.subject.type == GitHubNotificationDto.SubjectType.Release
+            return notifications.filter { notification ->
+                val unreadMatches = when (filter.unread) {
+                    NotificationUnread.UNREAD.displayName -> notification.unread
+                    NotificationUnread.READ.displayName -> !notification.unread
                     else -> true
                 }
+
+                val typeMatches = when (filter.type) {
+                    NotificationType.PULL_REQUEST_OPEN.displayName -> notification.isPullRequestOpen()
+                    NotificationType.PULL_REQUEST_MERGED.displayName -> notification.isPullRequestMerged()
+                    NotificationType.PULL_REQUEST_CLOSED.displayName -> notification.isPullRequestClosed()
+                    NotificationType.PULL_REQUEST_DRAFT.displayName -> notification.isPullRequestDraft()
+                    NotificationType.ISSUE_OPEN.displayName -> notification.isIssueOpen()
+                    NotificationType.ISSUE_CLOSED.displayName -> notification.isIssueClosed()
+                    NotificationType.Release.displayName ->
+                        notification.subject.type == GitHubNotificationDto.SubjectType.Release
+                    else -> true
+                }
+
+                val reviewerMatches =
+                    filter.reviewer.isNullOrBlank() || notification.detail?.requestedReviewers?.any { reviewer ->
+                        reviewer.login.lowercase() == filter.reviewer.lowercase()
+                    } == true
+
+                val labelMatches =
+                    filter.label.isNullOrBlank() || notification.detail?.labels?.any { label ->
+                        label.name.lowercase() == filter.label.lowercase()
+                    } == true
+
+                unreadMatches && typeMatches && reviewerMatches && labelMatches
             }
         }
     }

@@ -17,6 +17,7 @@ import java.time.ZonedDateTime
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.Repository as DtoRepository
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.Subject as DtoSubject
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.SubjectType as DtoSubjectType
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.NotificationDetailDto.NotificationDetail.Label as DtoLabel
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.NotificationDetailDto.NotificationDetail.RequestedReviewers as DtoRequestedReviewers
 
 class ApiClientWorkflow(
@@ -24,7 +25,13 @@ class ApiClientWorkflow(
     private val settingStateRepository: SettingStateRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
-    private var latestFetchTime: ZonedDateTime? = null
+    companion object {
+        private var latestFetchTime: ZonedDateTime? = null
+
+        fun resetLatestFetchTime() {
+            latestFetchTime = null
+        }
+    }
 
     suspend fun fetchNotifications(): List<GitHubNotificationDto> = withContext(dispatcher) {
         val settingState = settingStateRepository.loadSettingState()
@@ -113,32 +120,37 @@ class ApiClientWorkflow(
     }
 
     private fun List<GitHubNotification>.toGitHubNotificationDto(): List<GitHubNotificationDto> {
-        return this.map {
+        return this.map { notification ->
             GitHubNotificationDto(
-                id = it.id,
-                reason = it.reason,
-                updatedAt = it.updatedAt,
-                unread = it.unread,
+                id = notification.id,
+                reason = notification.reason,
+                updatedAt = notification.updatedAt,
+                unread = notification.unread,
                 subject = DtoSubject(
-                    title = it.subject.title,
-                    url = it.subject.url,
+                    title = notification.subject.title,
+                    url = notification.subject.url,
                     type = DtoSubjectType.valueOf(
-                        it.subject.type.name,
+                        notification.subject.type.name,
                     ),
                 ),
                 repository = DtoRepository(
-                    fullName = it.repository.fullName,
-                    htmlUrl = it.repository.htmlUrl,
+                    fullName = notification.repository.fullName,
+                    htmlUrl = notification.repository.htmlUrl,
                 ),
-                detail = NotificationDetailDto.NotificationDetail(
-                    state = it.detail?.state.toString(),
-                    merged = it.detail?.merged == true,
-                    draft = it.detail?.draft == true,
-                    htmlUrl = it.detail?.htmlUrl.toString(),
-                    requestedReviewers = it.detail?.requestedReviewers?.map { reviewer ->
-                        DtoRequestedReviewers(login = reviewer.login)
-                    } ?: emptyList(),
-                ),
+                detail = notification.detail?.let { detail ->
+                    NotificationDetailDto.NotificationDetail(
+                        state = detail.state,
+                        merged = detail.merged,
+                        draft = detail.draft,
+                        htmlUrl = detail.htmlUrl,
+                        requestedReviewers = detail.requestedReviewers.map { reviewer ->
+                            DtoRequestedReviewers(login = reviewer.login)
+                        },
+                        labels = detail.labels.map { label ->
+                            DtoLabel(name = label.name)
+                        },
+                    )
+                },
             )
         }
     }

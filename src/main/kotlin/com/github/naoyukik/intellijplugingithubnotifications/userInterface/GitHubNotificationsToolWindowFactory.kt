@@ -4,9 +4,9 @@ import com.github.naoyukik.intellijplugingithubnotifications.application.ApiClie
 import com.github.naoyukik.intellijplugingithubnotifications.application.NotificationWorkflow
 import com.github.naoyukik.intellijplugingithubnotifications.application.SettingStateWorkflow
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto
-import com.github.naoyukik.intellijplugingithubnotifications.application.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.GitHubNotificationRepositoryImpl
 import com.github.naoyukik.intellijplugingithubnotifications.infrastructure.SettingStateRepositoryImpl
+import com.github.naoyukik.intellijplugingithubnotifications.userInterface.dto.TableDataDto
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.filter.NotificationFilter
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.observable.ObservableFilterState
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.panel.NotificationFilterPanel
@@ -57,7 +57,14 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private var timer: Timer? = null
     private var currentNotifications: List<GitHubNotificationDto> = emptyList()
     private var filteredNotifications: List<GitHubNotificationDto> = emptyList()
-    private val filterState = ObservableFilterState(NotificationFilter(type = null))
+    private val filterState = ObservableFilterState(
+        NotificationFilter(
+            unread = null,
+            type = null,
+            reviewer = null,
+            label = null,
+        ),
+    )
 
     val columnName = arrayOf(
         "Link",
@@ -66,6 +73,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         "Message",
         "Reason",
         "Reviewers",
+        "Labels",
         "Updated at",
     )
 
@@ -75,6 +83,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         const val COLUMN_NUMBER_LINK = 0
         const val COLUMN_NUMBER_UNREAD = 1
         const val COLUMN_NUMBER_TYPE = 2
+        const val ROW_MIN_HEIGHT = 37
     }
 
     override val coroutineContext: CoroutineContext
@@ -207,6 +216,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         return JBTable(object : DefaultTableModel(arrayOf(), columnName) {
             override fun isCellEditable(row: Int, column: Int) = false
         }).apply {
+            rowHeight = ROW_MIN_HEIGHT
             setColumnWidth(this, COLUMN_NUMBER_LINK, setCalculateLinkColumnWidth(this))
             setColumnWidth(this, COLUMN_NUMBER_UNREAD, setCalculateUnreadColumnWidth(this))
             setColumnWidth(this, COLUMN_NUMBER_TYPE, setCalculateTypeColumnWidth(this))
@@ -277,7 +287,8 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 dto.typeEmoji ?: "",
                 "<html>${dto.fullName}<br>${dto.title}</html>",
                 "<html>${dto.reason}</html>",
-                "<html>${dto.reviewers.joinToString(",")}</html>",
+                "<html>${dto.reviewers.joinToString(", ")}</html>",
+                "<html>${dto.labels.joinToString(", ")}</html>",
                 "<html>$updatedAt</html>",
             )
         }.toTypedArray()
