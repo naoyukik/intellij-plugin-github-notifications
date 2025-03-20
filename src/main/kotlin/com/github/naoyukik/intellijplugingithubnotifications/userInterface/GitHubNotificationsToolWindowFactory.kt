@@ -204,6 +204,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 notifications.isEmpty() && return@launch
                 currentNotifications = notifications
                 notificationFilterPanel.notificationLabelsToComboBoxItems(currentNotifications)
+                notificationFilterPanel.notificationReviewerToComboBoxItems(currentNotifications)
                 filteredNotifications = NotificationFilter.applyFilter(currentNotifications, filterState.filter)
                 val displayTable = tableDataAssembler.toTableDataDto(filteredNotifications)
                 fireTableDataChanged(table, displayTable)

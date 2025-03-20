@@ -4,23 +4,26 @@ import com.github.naoyukik.intellijplugingithubnotifications.application.dto.Git
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.observable.ObservableFilterState
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.bindItem
-import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.toMutableProperty
 import com.intellij.util.ui.JBUI
 import javax.swing.DefaultComboBoxModel
 import javax.swing.SwingUtilities
+import kotlin.collections.sorted
 
 class NotificationFilterPanel(private val filterState: ObservableFilterState) {
 
     private var selectedType: String? = null
     private var selectedUnread: String? = null
     private var selectedLabel: String? = DEFAULT_LABEL
+    private var selectedReviewer: String? = DEFAULT_REVIEWER
     private var notificationLabels = DefaultComboBoxModel(arrayOf(DEFAULT_LABEL))
+    private var notificationReviewer = DefaultComboBoxModel(arrayOf(DEFAULT_REVIEWER))
 
     companion object {
         const val PADDING_LEFT = 38
         const val DEFAULT_LABEL = "<Choose Label>"
+        const val DEFAULT_REVIEWER = "<Choose Reviewer>"
     }
 
     fun create(): DialogPanel {
@@ -58,14 +61,13 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
                         )
                     }
                 }
-                textField().bindText(
-                    getter = { filterState.filter.reviewer ?: "" },
-                    setter = { newReviewer ->
-                        filterState.filter = filterState.filter.copy(reviewer = newReviewer)
-                    },
+                comboBox(notificationReviewer).bindItem(
+                    ::selectedReviewer.toMutableProperty(),
                 ).applyToComponent {
-                    emptyText.text = "Enter Reviewer"
-                    addActionListener { filterState.filter = filterState.filter.copy(reviewer = this.text) }
+                    addActionListener {
+                        selectedReviewer = this.selectedItem as? String
+                        filterState.filter = filterState.filter.copy(reviewer = selectedReviewer)
+                    }
                 }
                 comboBox(notificationLabels).bindItem(
                     ::selectedLabel.toMutableProperty(),
@@ -97,6 +99,37 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
                 if (exists) currentSelectedLabel else DEFAULT_LABEL
             }
             notificationLabels.selectedItem = existsLabel
+        }
+    }
+
+    fun notificationReviewerToComboBoxItems(currentNotifications: List<GitHubNotificationDto>) {
+        val currentSelectedItem = selectedReviewer ?: DEFAULT_REVIEWER
+        val newItems = currentNotifications.flatMap { notification: GitHubNotificationDto ->
+            notification.detail?.requestedReviewers?.map { reviewer -> reviewer.login } ?: emptyList()
+        }.distinct().sorted()
+
+        updateComboBoxItem(
+            defaultComboBox = notificationReviewer,
+            newItems = newItems,
+            currentSelectedItem = currentSelectedItem,
+            defaultItem = DEFAULT_REVIEWER,
+        )
+    }
+
+    private fun updateComboBoxItem(
+        defaultComboBox: DefaultComboBoxModel<String>,
+        newItems: List<String>,
+        currentSelectedItem: String,
+        defaultItem: String,
+    ) {
+        SwingUtilities.invokeLater {
+            defaultComboBox.removeAllElements()
+            defaultComboBox.addElement(defaultItem)
+            newItems.forEach { defaultComboBox.addElement(it) }
+            val existsItem = newItems.contains(currentSelectedItem).let { exists ->
+                if (exists) currentSelectedItem else defaultItem
+            }
+            defaultComboBox.selectedItem = existsItem
         }
     }
 }
