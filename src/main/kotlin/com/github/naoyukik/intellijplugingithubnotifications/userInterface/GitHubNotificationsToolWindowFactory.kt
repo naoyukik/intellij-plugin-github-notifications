@@ -53,6 +53,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private lateinit var apiClientWorkflow: ApiClientWorkflow
     private lateinit var settingStateWorkflow: SettingStateWorkflow
     private lateinit var tableDataAssembler: TableDataAssembler
+    private lateinit var notificationFilterPanel: NotificationFilterPanel
     private val coroutineJob = Job()
     private var timer: Timer? = null
     private var currentNotifications: List<GitHubNotificationDto> = emptyList()
@@ -107,12 +108,13 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         notificationToolPanel.add(actionToolbar.component, BorderLayout.WEST)
 
         // filter panel
+        notificationFilterPanel = NotificationFilterPanel(filterState)
         filterState.addListener {
             filteredNotifications = NotificationFilter.applyFilter(currentNotifications, it)
             val displayTable = tableDataAssembler.toTableDataDto(filteredNotifications)
             fireTableDataChanged(notificationToolTable, displayTable)
         }
-        val filterPanel = NotificationFilterPanel(filterState).create()
+        val filterPanel = notificationFilterPanel.create()
         notificationToolPanel.add(filterPanel, BorderLayout.NORTH)
 
         val content = ContentFactory.getInstance().createContent(notificationToolPanel, null, false)
@@ -201,6 +203,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 val notifications = apiClientWorkflow.fetchNotifications()
                 notifications.isEmpty() && return@launch
                 currentNotifications = notifications
+                notificationFilterPanel.notificationLabelsToComboBoxItems(currentNotifications)
                 filteredNotifications = NotificationFilter.applyFilter(currentNotifications, filterState.filter)
                 val displayTable = tableDataAssembler.toTableDataDto(filteredNotifications)
                 fireTableDataChanged(table, displayTable)

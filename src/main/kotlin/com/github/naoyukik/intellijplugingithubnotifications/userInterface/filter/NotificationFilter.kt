@@ -40,10 +40,14 @@ data class NotificationFilter(
                         reviewer.login.lowercase() == filter.reviewer.lowercase()
                     } == true
 
-                val labelMatches =
-                    filter.label.isNullOrBlank() || notification.detail?.labels?.any { label ->
-                        label.name.lowercase() == filter.label.lowercase()
-                    } == true
+                val labelMatches = when (filter.label) {
+                    "<Choose Label>" -> true
+                    else -> {
+                        filter.label.isNullOrBlank() || notification.detail?.labels?.any { label ->
+                            label.name.lowercase() == filter.label.lowercase()
+                        } == true
+                    }
+                }
 
                 unreadMatches && typeMatches && reviewerMatches && labelMatches
             }

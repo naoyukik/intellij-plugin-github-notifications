@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add dynamic label filtering in notification panel
+
 ## [0.10.2] - 2025-03-17
 
 ### Added
