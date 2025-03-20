@@ -1,19 +1,26 @@
 package com.github.naoyukik.intellijplugingithubnotifications.userInterface.panel
 
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.observable.ObservableFilterState
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.toMutableProperty
 import com.intellij.util.ui.JBUI
+import javax.swing.DefaultComboBoxModel
+import javax.swing.SwingUtilities
 
 class NotificationFilterPanel(private val filterState: ObservableFilterState) {
 
     private var selectedType: String? = null
     private var selectedUnread: String? = null
+    private var selectedLabel: String? = DEFAULT_LABEL
+    private var notificationLabels = DefaultComboBoxModel(arrayOf(DEFAULT_LABEL))
 
     companion object {
         const val PADDING_LEFT = 38
+        const val DEFAULT_LABEL = "<Choose Label>"
     }
 
     fun create(): DialogPanel {
@@ -50,7 +57,7 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
                             type = selectedType,
                         )
                     }
-                }.component
+                }
                 textField().bindText(
                     getter = { filterState.filter.reviewer ?: "" },
                     setter = { newReviewer ->
@@ -60,14 +67,13 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
                     emptyText.text = "Enter Reviewer"
                     addActionListener { filterState.filter = filterState.filter.copy(reviewer = this.text) }
                 }
-                textField().bindText(
-                    getter = { filterState.filter.label ?: "" },
-                    setter = { newLabel ->
-                        filterState.filter = filterState.filter.copy(label = newLabel)
-                    },
+                comboBox(notificationLabels).bindItem(
+                    ::selectedLabel.toMutableProperty(),
                 ).applyToComponent {
-                    emptyText.text = "Enter Label"
-                    addActionListener { filterState.filter = filterState.filter.copy(label = this.text) }
+                    addActionListener {
+                        selectedLabel = this.selectedItem as? String
+                        filterState.filter = filterState.filter.copy(label = selectedLabel)
+                    }
                 }
             }
         }.apply {
@@ -75,5 +81,22 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
         }
 
         return dialogPanel
+    }
+
+    fun notificationLabelsToComboBoxItems(currentNotifications: List<GitHubNotificationDto>) {
+        val currentSelectedLabel = selectedLabel ?: DEFAULT_LABEL
+        val newLabelsItems = currentNotifications.flatMap { notification: GitHubNotificationDto ->
+            notification.detail?.labels?.map { label -> label.name } ?: emptyList()
+        }.distinct().sorted()
+
+        SwingUtilities.invokeLater {
+            notificationLabels.removeAllElements()
+            notificationLabels.addElement(DEFAULT_LABEL)
+            newLabelsItems.forEach { label -> notificationLabels.addElement(label) }
+            val existsLabel = newLabelsItems.contains(currentSelectedLabel).let { exists ->
+                if (exists) currentSelectedLabel else DEFAULT_LABEL
+            }
+            notificationLabels.selectedItem = existsLabel
+        }
     }
 }
