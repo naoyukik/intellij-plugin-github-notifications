@@ -86,20 +86,17 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
     }
 
     fun notificationLabelsToComboBoxItems(currentNotifications: List<GitHubNotificationDto>) {
-        val currentSelectedLabel = selectedLabel ?: DEFAULT_LABEL
-        val newLabelsItems = currentNotifications.flatMap { notification: GitHubNotificationDto ->
+        val currentSelectedItem = selectedLabel ?: DEFAULT_LABEL
+        val newItems = currentNotifications.flatMap { notification: GitHubNotificationDto ->
             notification.detail?.labels?.map { label -> label.name } ?: emptyList()
         }.distinct().sorted()
 
-        SwingUtilities.invokeLater {
-            notificationLabels.removeAllElements()
-            notificationLabels.addElement(DEFAULT_LABEL)
-            newLabelsItems.forEach { label -> notificationLabels.addElement(label) }
-            val existsLabel = newLabelsItems.contains(currentSelectedLabel).let { exists ->
-                if (exists) currentSelectedLabel else DEFAULT_LABEL
-            }
-            notificationLabels.selectedItem = existsLabel
-        }
+        updateComboBoxItem(
+            defaultComboBox = notificationLabels,
+            newItems = newItems,
+            currentSelectedItem = currentSelectedItem,
+            defaultItem = DEFAULT_LABEL,
+        )
     }
 
     fun notificationReviewerToComboBoxItems(currentNotifications: List<GitHubNotificationDto>) {
