@@ -6,7 +6,7 @@
 
 ### Added
 
-- Add dynamic label filtering in notification panel
+- Add dynamic label and reviewer filtering in notification panel
 
 ## [0.10.2] - 2025-03-17
 
