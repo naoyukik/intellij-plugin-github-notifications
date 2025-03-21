@@ -9,7 +9,6 @@ import com.intellij.ui.dsl.builder.toMutableProperty
 import com.intellij.util.ui.JBUI
 import javax.swing.DefaultComboBoxModel
 import javax.swing.SwingUtilities
-import kotlin.collections.sorted
 
 class NotificationFilterPanel(private val filterState: ObservableFilterState) {
 
@@ -89,7 +88,7 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
         val currentSelectedItem = selectedLabel ?: DEFAULT_LABEL
         val newItems = currentNotifications.flatMap { notification: GitHubNotificationDto ->
             notification.detail?.labels?.map { label -> label.name } ?: emptyList()
-        }.distinct().sorted()
+        }.distinct().sortedBy { it.lowercase() }
 
         updateComboBoxItem(
             defaultComboBox = notificationLabels,
@@ -103,7 +102,7 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
         val currentSelectedItem = selectedReviewer ?: DEFAULT_REVIEWER
         val newItems = currentNotifications.flatMap { notification: GitHubNotificationDto ->
             notification.detail?.requestedReviewers?.map { reviewer -> reviewer.login } ?: emptyList()
-        }.distinct().sorted()
+        }.distinct().sortedBy { it.lowercase() }
 
         updateComboBoxItem(
             defaultComboBox = notificationReviewer,
