@@ -210,6 +210,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
                 fireTableDataChanged(table, displayTable)
 
                 NotificationWorkflow().fetchedNotification(project)
+                NotificationManager(project).updateBadge()
             } catch (e: IllegalArgumentException) {
                 NotificationWorkflow().fetchedNotificationForError(project, e.message ?: "Unknown error")
             }
