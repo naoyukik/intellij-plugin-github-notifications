@@ -7,6 +7,7 @@
 ### Added
 
 - Add dynamic label and reviewer filtering in notification panel
+- Add a badge to the tool window icon to indicate updates
 
 ## [0.10.2] - 2025-03-17
 
