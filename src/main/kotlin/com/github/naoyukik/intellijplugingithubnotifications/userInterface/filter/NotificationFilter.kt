@@ -35,10 +35,14 @@ data class NotificationFilter(
                     else -> true
                 }
 
-                val reviewerMatches =
-                    filter.reviewer.isNullOrBlank() || notification.detail?.requestedReviewers?.any { reviewer ->
-                        reviewer.login.lowercase() == filter.reviewer.lowercase()
-                    } == true
+                val reviewerMatches = when (filter.reviewer) {
+                    "<Choose Reviewer>" -> true
+                    else -> {
+                        filter.reviewer.isNullOrBlank() || notification.detail?.requestedReviewers?.any { reviewer ->
+                            reviewer.login.lowercase() == filter.reviewer.lowercase()
+                        } == true
+                    }
+                }
 
                 val labelMatches = when (filter.label) {
                     "<Choose Label>" -> true

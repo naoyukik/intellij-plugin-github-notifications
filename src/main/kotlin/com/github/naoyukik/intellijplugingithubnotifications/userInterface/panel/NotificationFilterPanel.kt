@@ -4,7 +4,6 @@ import com.github.naoyukik.intellijplugingithubnotifications.application.dto.Git
 import com.github.naoyukik.intellijplugingithubnotifications.userInterface.observable.ObservableFilterState
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.bindItem
-import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.toMutableProperty
 import com.intellij.util.ui.JBUI
@@ -16,11 +15,14 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
     private var selectedType: String? = null
     private var selectedUnread: String? = null
     private var selectedLabel: String? = DEFAULT_LABEL
+    private var selectedReviewer: String? = DEFAULT_REVIEWER
     private var notificationLabels = DefaultComboBoxModel(arrayOf(DEFAULT_LABEL))
+    private var notificationReviewer = DefaultComboBoxModel(arrayOf(DEFAULT_REVIEWER))
 
     companion object {
         const val PADDING_LEFT = 38
         const val DEFAULT_LABEL = "<Choose Label>"
+        const val DEFAULT_REVIEWER = "<Choose Reviewer>"
     }
 
     fun create(): DialogPanel {
@@ -58,14 +60,13 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
                         )
                     }
                 }
-                textField().bindText(
-                    getter = { filterState.filter.reviewer ?: "" },
-                    setter = { newReviewer ->
-                        filterState.filter = filterState.filter.copy(reviewer = newReviewer)
-                    },
+                comboBox(notificationReviewer).bindItem(
+                    ::selectedReviewer.toMutableProperty(),
                 ).applyToComponent {
-                    emptyText.text = "Enter Reviewer"
-                    addActionListener { filterState.filter = filterState.filter.copy(reviewer = this.text) }
+                    addActionListener {
+                        selectedReviewer = this.selectedItem as? String
+                        filterState.filter = filterState.filter.copy(reviewer = selectedReviewer)
+                    }
                 }
                 comboBox(notificationLabels).bindItem(
                     ::selectedLabel.toMutableProperty(),
@@ -84,19 +85,47 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
     }
 
     fun notificationLabelsToComboBoxItems(currentNotifications: List<GitHubNotificationDto>) {
-        val currentSelectedLabel = selectedLabel ?: DEFAULT_LABEL
-        val newLabelsItems = currentNotifications.flatMap { notification: GitHubNotificationDto ->
+        val currentSelectedItem = selectedLabel ?: DEFAULT_LABEL
+        val newItems = currentNotifications.flatMap { notification: GitHubNotificationDto ->
             notification.detail?.labels?.map { label -> label.name } ?: emptyList()
-        }.distinct().sorted()
+        }.distinct().sortedBy { it.lowercase() }
 
+        updateComboBoxItem(
+            defaultComboBox = notificationLabels,
+            newItems = newItems,
+            currentSelectedItem = currentSelectedItem,
+            defaultItem = DEFAULT_LABEL,
+        )
+    }
+
+    fun notificationReviewerToComboBoxItems(currentNotifications: List<GitHubNotificationDto>) {
+        val currentSelectedItem = selectedReviewer ?: DEFAULT_REVIEWER
+        val newItems = currentNotifications.flatMap { notification: GitHubNotificationDto ->
+            notification.detail?.requestedReviewers?.map { reviewer -> reviewer.login } ?: emptyList()
+        }.distinct().sortedBy { it.lowercase() }
+
+        updateComboBoxItem(
+            defaultComboBox = notificationReviewer,
+            newItems = newItems,
+            currentSelectedItem = currentSelectedItem,
+            defaultItem = DEFAULT_REVIEWER,
+        )
+    }
+
+    private fun updateComboBoxItem(
+        defaultComboBox: DefaultComboBoxModel<String>,
+        newItems: List<String>,
+        currentSelectedItem: String,
+        defaultItem: String,
+    ) {
         SwingUtilities.invokeLater {
-            notificationLabels.removeAllElements()
-            notificationLabels.addElement(DEFAULT_LABEL)
-            newLabelsItems.forEach { label -> notificationLabels.addElement(label) }
-            val existsLabel = newLabelsItems.contains(currentSelectedLabel).let { exists ->
-                if (exists) currentSelectedLabel else DEFAULT_LABEL
+            defaultComboBox.removeAllElements()
+            defaultComboBox.addElement(defaultItem)
+            newItems.forEach { defaultComboBox.addElement(it) }
+            val existsItem = newItems.contains(currentSelectedItem).let { exists ->
+                if (exists) currentSelectedItem else defaultItem
             }
-            notificationLabels.selectedItem = existsLabel
+            defaultComboBox.selectedItem = existsItem
         }
     }
 }
