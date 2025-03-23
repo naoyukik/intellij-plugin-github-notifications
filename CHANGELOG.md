@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.11.0] - 2025-03-23
+
 ### Added
 
 - Add dynamic label and reviewer filtering in notification panel
@@ -129,7 +131,8 @@ Initial release of the GitHub Notifications IntelliJ Plugin.
 
 Done is better than perfect.
 
-[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.10.2...HEAD
+[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.10.2...v0.11.0
 [0.10.2]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.10.0...v0.10.2
 [0.10.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.8.0...v0.9.0
