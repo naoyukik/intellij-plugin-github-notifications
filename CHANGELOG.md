@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### Added
+
+- Support multiple labels in notification filtering
+  - Label filters are comma-separated and can be filtered by multiple labels.
+
+
 ## [0.11.0] - 2025-03-23
 
 ### Added
