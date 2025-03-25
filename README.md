@@ -7,13 +7,22 @@
 <!-- Plugin description -->
 The **GitHub Notifications IntelliJ Plugin** allows you to effortlessly view your GitHub notifications directly within the IntelliJ IDEA development environment. With this plugin, there's no need to frequently switch back and forth between your browser and IDE, improving your productivity during development.
 
-Key Features:
+### Key Features
 - **Real-time Notification Tracking**: Displays a list of unread GitHub notifications.
 - **Intuitive Link Navigation**: Quickly open relevant GitHub resources (pull requests, issues, etc.) directly from the notification list.
 - **Simple Usability**: Refresh your notifications with just one click.
 - **Organized Notification View**: Presents notifications in a readable table format, including details like the link, reason, and timestamp.
 - **Repository Filtering**: Quickly filter notifications by specific GitHub repositories for a more focused view.
 - **Scheduled Updates**: Automatically refresh notifications at user-defined intervals to stay up-to-date without manual intervention.
+
+### How to Use
+#### Label Filters
+- **Basic usage**: Choose a label name to filter notifications with that specific label
+- **Multiple labels**: Separate with commas to filter by ANY of the specified labels
+
+  ```
+  Format: label1,label2,label3
+  ```
 
 ### Limitations
 
