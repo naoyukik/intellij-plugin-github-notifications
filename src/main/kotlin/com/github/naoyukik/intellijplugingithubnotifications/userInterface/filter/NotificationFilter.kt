@@ -47,13 +47,27 @@ data class NotificationFilter(
                 val labelMatches = when (filter.label) {
                     "<Choose Label>" -> true
                     else -> {
-                        filter.label.isNullOrBlank() || notification.detail?.labels?.any { label ->
-                            label.name.lowercase() == filter.label.lowercase()
-                        } == true
+                        matchesLabelFilter(filter, notification)
                     }
                 }
 
                 unreadMatches && typeMatches && reviewerMatches && labelMatches
+            }
+        }
+
+        private fun matchesLabelFilter(
+            filter: NotificationFilter,
+            notification: GitHubNotificationDto,
+        ): Boolean {
+            return if (filter.label?.contains(',') == true) {
+                val labels = filter.label.split(",")
+                labels.any { label ->
+                    notification.detail?.labels?.any { it.name.lowercase() == label.lowercase() } == true
+                }
+            } else {
+                filter.label.isNullOrBlank() || notification.detail?.labels?.any { label ->
+                    label.name.lowercase() == filter.label.lowercase()
+                } == true
             }
         }
     }

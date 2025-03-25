@@ -7,7 +7,10 @@ import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.toMutableProperty
 import com.intellij.util.ui.JBUI
+import java.awt.event.FocusAdapter
+import java.awt.event.FocusEvent
 import javax.swing.DefaultComboBoxModel
+import javax.swing.JComboBox
 import javax.swing.SwingUtilities
 
 class NotificationFilterPanel(private val filterState: ObservableFilterState) {
@@ -71,6 +74,8 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
                 comboBox(notificationLabels).bindItem(
                     ::selectedLabel.toMutableProperty(),
                 ).applyToComponent {
+                    isEditable = true
+                    setupPlaceholder(this, DEFAULT_LABEL)
                     addActionListener {
                         selectedLabel = this.selectedItem as? String
                         filterState.filter = filterState.filter.copy(label = selectedLabel)
@@ -127,5 +132,30 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
             }
             defaultComboBox.selectedItem = existsItem
         }
+    }
+
+    private fun setupPlaceholder(comboBox: JComboBox<String>, placeholder: String) {
+        if (!comboBox.isEditable) {
+            comboBox.isEditable = true
+        }
+
+        val editor = comboBox.editor.editorComponent as javax.swing.JTextField
+        if (comboBox.selectedItem == null || comboBox.selectedItem!!.toString().isEmpty()) {
+            editor.text = placeholder
+        }
+
+        editor.addFocusListener(object : FocusAdapter() {
+            override fun focusGained(e: FocusEvent?) {
+                if (editor.text == placeholder) {
+                    editor.text = ""
+                }
+            }
+
+            override fun focusLost(e: FocusEvent?) {
+                if (editor.text.isEmpty()) {
+                    editor.text = placeholder
+                }
+            }
+        })
     }
 }
