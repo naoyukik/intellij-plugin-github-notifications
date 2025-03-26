@@ -47,9 +47,16 @@ class ApiClientWorkflow(
 
         notifications.takeIf { it.isNotEmpty() } ?: return@withContext emptyList()
 
-        val updatedNotifications = notifications.map { notification ->
+        // Create a map to store the results of each thread's execution
+        val resultMap = java.util.concurrent.ConcurrentHashMap<String, GitHubNotification>()
+
+        // Create and start threads for each notification
+        val threads = notifications.mapNotNull { notification ->
             val detailAPiPath = setDetailApiPath(notification)
-            val updatedNotification = detailAPiPath?.let {
+            detailAPiPath?.let {
+                // Store the original notification in the map
+                resultMap[notification.id] = notification
+
                 val task = Runnable {
                     val detail = repository.fetchNotificationsReleaseDetail(
                         ghCliPath = ghCliPath,
@@ -58,23 +65,30 @@ class ApiClientWorkflow(
                     )
                     when (detail) {
                         is NotificationDetail -> {
-                            notification.copy(
+                            // Update the notification in the map with the details
+                            val updatedNotification = notification.copy(
                                 subject = notification.subject.copy(
                                     url = detail.htmlUrl,
                                 ),
                                 detail = detail,
                             )
+                            resultMap[notification.id] = updatedNotification
                         }
-                        is NotificationDetailError -> null
+                        is NotificationDetailError -> {
+                            // Keep the original notification in the map
+                        }
                     }
                 }
-                val thread = Thread.startVirtualThread(task)
-                Pair(thread, notification)
-            } ?: Pair(null, notification)
-            updatedNotification
-        }.map { (thread, notification) ->
-            thread?.join()
-            notification
+                Thread.startVirtualThread(task)
+            }
+        }
+
+        // Wait for all threads to complete
+        threads.forEach { it.join() }
+
+        // Get the updated notifications from the map
+        val updatedNotifications = notifications.map { notification ->
+            resultMap[notification.id] ?: notification
         }
 
         updatedNotifications.toGitHubNotificationDto()
@@ -110,7 +124,7 @@ class ApiClientWorkflow(
     private fun setDetailApiPath(notification: GitHubNotification): String? {
         return when (val type = notification.subject.type) {
             SubjectType.Release, SubjectType.Issue, SubjectType.PullRequest ->
-                "${type.setApiPath()}/${setDetailId(notification)}}"
+                "${type.setApiPath()}/${setDetailId(notification)}"
             SubjectType.UNKNOWN -> null
         }
     }
