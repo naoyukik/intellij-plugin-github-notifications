@@ -11,6 +11,7 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.model.Notifi
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.SettingState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.withContext
 import java.net.URI
 import java.time.ZonedDateTime
@@ -49,24 +50,31 @@ class ApiClientWorkflow(
         val updatedNotifications = notifications.map { notification ->
             val detailAPiPath = setDetailApiPath(notification)
             val updatedNotification = detailAPiPath?.let {
-                val detail = repository.fetchNotificationsReleaseDetail(
-                    ghCliPath = ghCliPath,
-                    repositoryName = notification.repository.fullName,
-                    detailApiPath = it,
-                )
-                when (detail) {
-                    is NotificationDetail -> {
-                        notification.copy(
-                            subject = notification.subject.copy(
-                                url = detail.htmlUrl,
-                            ),
-                            detail = detail,
-                        )
+                val task = Runnable {
+                    val detail = repository.fetchNotificationsReleaseDetail(
+                        ghCliPath = ghCliPath,
+                        repositoryName = notification.repository.fullName,
+                        detailApiPath = it,
+                    )
+                    when (detail) {
+                        is NotificationDetail -> {
+                            notification.copy(
+                                subject = notification.subject.copy(
+                                    url = detail.htmlUrl,
+                                ),
+                                detail = detail,
+                            )
+                        }
+                        is NotificationDetailError -> null
                     }
-                    is NotificationDetailError -> null
                 }
-            } ?: notification
+                val thread = Thread.startVirtualThread(task)
+                Pair(thread, notification)
+            } ?: Pair(null, notification)
             updatedNotification
+        }.map { (thread, notification) ->
+            thread?.join()
+            notification
         }
 
         updatedNotifications.toGitHubNotificationDto()
