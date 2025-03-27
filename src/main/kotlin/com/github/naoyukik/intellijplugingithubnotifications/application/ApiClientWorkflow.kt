@@ -15,6 +15,7 @@ import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.withContext
 import java.net.URI
 import java.time.ZonedDateTime
+import java.util.concurrent.ConcurrentHashMap
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.Repository as DtoRepository
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.Subject as DtoSubject
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.SubjectType as DtoSubjectType
@@ -47,22 +48,26 @@ class ApiClientWorkflow(
 
         notifications.takeIf { it.isNotEmpty() } ?: return@withContext emptyList()
 
-        // Create a map to store the results of each thread's execution
-        val resultMap = java.util.concurrent.ConcurrentHashMap<String, GitHubNotification>()
+        /** Stores the results of each thread's execution */
+        val resultMap = ConcurrentHashMap<String, GitHubNotification>()
 
-        // Create and start threads for each notification
+        /** Create and start threads for each notification */
         val threads = notifications.mapNotNull { notification ->
             val detailAPiPath = setDetailApiPath(notification)
             detailAPiPath?.let {
-                // Store the original notification in the map
                 resultMap[notification.id] = notification
 
+                /**
+                 * Creates and executes a Virtual Threads task for fetching
+                 * and processing GitHub notification details
+                 */
                 val task = Runnable {
-                    val detail = repository.fetchNotificationsReleaseDetail(
-                        ghCliPath = ghCliPath,
-                        repositoryName = notification.repository.fullName,
-                        detailApiPath = it,
-                    )
+                    val detail =
+                        repository.fetchNotificationsReleaseDetail(
+                            ghCliPath = ghCliPath,
+                            repositoryName = notification.repository.fullName,
+                            detailApiPath = it,
+                        )
                     when (detail) {
                         is NotificationDetail -> {
                             // Update the notification in the map with the details
@@ -76,6 +81,10 @@ class ApiClientWorkflow(
                         }
                         is NotificationDetailError -> {
                             // Keep the original notification in the map
+                            // No action needed here because we already stored the original notification at line 58
+                            // and we want to keep it as is when there's an error fetching details
+                            // Note: In the previous implementation, this case returned null, but that's unnecessary
+                            // in the current implementation because we're using a ConcurrentHashMap to store results
                         }
                     }
                 }
@@ -83,10 +92,8 @@ class ApiClientWorkflow(
             }
         }
 
-        // Wait for all threads to complete
         threads.forEach { it.join() }
 
-        // Get the updated notifications from the map
         val updatedNotifications = notifications.map { notification ->
             resultMap[notification.id] ?: notification
         }
