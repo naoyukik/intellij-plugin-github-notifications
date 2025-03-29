@@ -8,7 +8,7 @@
 
 - Support multiple labels in notification filtering
   - Label filters are comma-separated and can be filtered by multiple labels.
-
+- Introduce Virtual Threads to get notification details
 
 ## [0.11.0] - 2025-03-23
 
