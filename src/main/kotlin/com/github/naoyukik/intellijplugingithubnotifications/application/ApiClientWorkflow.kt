@@ -11,9 +11,11 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.model.Notifi
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.SettingState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.withContext
 import java.net.URI
 import java.time.ZonedDateTime
+import java.util.concurrent.ConcurrentHashMap
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.Repository as DtoRepository
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.Subject as DtoSubject
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.SubjectType as DtoSubjectType
@@ -46,27 +48,54 @@ class ApiClientWorkflow(
 
         notifications.takeIf { it.isNotEmpty() } ?: return@withContext emptyList()
 
-        val updatedNotifications = notifications.map { notification ->
+        /** Stores the results of each thread's execution */
+        val resultMap = ConcurrentHashMap<String, GitHubNotification>()
+
+        /** Create and start threads for each notification */
+        val threads = notifications.mapNotNull { notification ->
             val detailAPiPath = setDetailApiPath(notification)
-            val updatedNotification = detailAPiPath?.let {
-                val detail = repository.fetchNotificationsReleaseDetail(
-                    ghCliPath = ghCliPath,
-                    repositoryName = notification.repository.fullName,
-                    detailApiPath = it,
-                )
-                when (detail) {
-                    is NotificationDetail -> {
-                        notification.copy(
-                            subject = notification.subject.copy(
-                                url = detail.htmlUrl,
-                            ),
-                            detail = detail,
+            detailAPiPath?.let {
+                resultMap[notification.id] = notification
+
+                /**
+                 * Creates and executes a Virtual Threads task for fetching
+                 * and processing GitHub notification details
+                 */
+                val task = Runnable {
+                    val detail =
+                        repository.fetchNotificationsReleaseDetail(
+                            ghCliPath = ghCliPath,
+                            repositoryName = notification.repository.fullName,
+                            detailApiPath = it,
                         )
+                    when (detail) {
+                        is NotificationDetail -> {
+                            // Update the notification in the map with the details
+                            val updatedNotification = notification.copy(
+                                subject = notification.subject.copy(
+                                    url = detail.htmlUrl,
+                                ),
+                                detail = detail,
+                            )
+                            resultMap[notification.id] = updatedNotification
+                        }
+                        is NotificationDetailError -> {
+                            // Keep the original notification in the map
+                            // No action needed here because we already stored the original notification at line 58
+                            // and we want to keep it as is when there's an error fetching details
+                            // Note: In the previous implementation, this case returned null, but that's unnecessary
+                            // in the current implementation because we're using a ConcurrentHashMap to store results
+                        }
                     }
-                    is NotificationDetailError -> null
                 }
-            } ?: notification
-            updatedNotification
+                Thread.startVirtualThread(task)
+            }
+        }
+
+        threads.forEach { it.join() }
+
+        val updatedNotifications = notifications.map { notification ->
+            resultMap[notification.id] ?: notification
         }
 
         updatedNotifications.toGitHubNotificationDto()
@@ -102,7 +131,7 @@ class ApiClientWorkflow(
     private fun setDetailApiPath(notification: GitHubNotification): String? {
         return when (val type = notification.subject.type) {
             SubjectType.Release, SubjectType.Issue, SubjectType.PullRequest ->
-                "${type.setApiPath()}/${setDetailId(notification)}}"
+                "${type.setApiPath()}/${setDetailId(notification)}"
             SubjectType.UNKNOWN -> null
         }
     }
