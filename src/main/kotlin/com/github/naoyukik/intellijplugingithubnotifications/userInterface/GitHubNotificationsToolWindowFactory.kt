@@ -31,6 +31,8 @@ import com.intellij.util.IconUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.awt.BorderLayout
 import java.awt.Desktop
@@ -39,13 +41,11 @@ import java.awt.event.MouseEvent
 import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
-import java.util.Timer
 import javax.swing.Icon
 import javax.swing.JComponent
 import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.DefaultTableModel
 import javax.swing.table.TableColumn
-import kotlin.concurrent.fixedRateTimer
 import kotlin.coroutines.CoroutineContext
 
 @Suppress("TooManyFunctions")
@@ -55,7 +55,6 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private lateinit var tableDataAssembler: TableDataAssembler
     private lateinit var notificationFilterPanel: NotificationFilterPanel
     private val coroutineJob = Job()
-    private var timer: Timer? = null
     private var currentNotifications: List<GitHubNotificationDto> = emptyList()
     private var filteredNotifications: List<GitHubNotificationDto> = emptyList()
     private val filterState = ObservableFilterState(
@@ -263,22 +262,15 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     }
 
     private fun startAutoRefresh(table: JBTable, minute: Int, project: Project) {
-        timer = fixedRateTimer(
-            name = "GitHubNotificationRefresher",
-            initialDelay = 0L,
-            period = (minute * 60 * 1000).toLong(),
-        ) {
-            refreshNotifications(table, project)
+        launch {
+            while (isActive) {
+                refreshNotifications(table, project)
+                delay(timeMillis = minute * 60 * 1000L)
+            }
         }
     }
 
-    private fun stopAutoRefresh() {
-        timer?.cancel()
-        timer = null
-    }
-
     override fun dispose() {
-        stopAutoRefresh()
         coroutineJob.cancel()
     }
 
