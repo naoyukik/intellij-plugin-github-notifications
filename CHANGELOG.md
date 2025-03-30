@@ -10,6 +10,11 @@
   - Label filters are comma-separated and can be filtered by multiple labels.
 - Introduce Virtual Threads to get notification details
 
+### Fixed
+
+- replace fixedRateTimer with coroutine for auto-refresh
+
+
 ## [0.11.0] - 2025-03-23
 
 ### Added
