@@ -32,6 +32,7 @@ data class NotificationFilter(
                     NotificationType.ISSUE_CLOSED.displayName -> notification.isIssueClosed()
                     NotificationType.Release.displayName ->
                         notification.subject.type == GitHubNotificationDto.SubjectType.Release
+
                     else -> true
                 }
 

@@ -7,8 +7,7 @@ class ObservableFilterState(initialFilter: NotificationFilter) {
 
     private val listeners = mutableListOf<(NotificationFilter) -> Unit>()
 
-    var filter: NotificationFilter by Delegates.observable(initialFilter) {
-            _, oldValue, newValue ->
+    var filter: NotificationFilter by Delegates.observable(initialFilter) { _, oldValue, newValue ->
         if (oldValue != newValue) {
             listeners.forEach { it(newValue) }
         }

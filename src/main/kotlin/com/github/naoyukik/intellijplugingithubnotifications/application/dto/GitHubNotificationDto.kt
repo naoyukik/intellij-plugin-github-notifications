@@ -34,9 +34,11 @@ data class GitHubNotificationDto(
     fun isPullRequestMerged(): Boolean {
         return isPullRequest() && detail?.merged == true
     }
+
     fun isPullRequestClosed(): Boolean {
         return isPullRequest() && detail?.state == State.Closed.name.lowercase() && detail.merged != true
     }
+
     fun isPullRequestDraft(): Boolean {
         return isPullRequest() && detail?.draft == true
     }
@@ -48,6 +50,7 @@ data class GitHubNotificationDto(
     fun isIssueOpen(): Boolean {
         return isIssue() && detail?.state == State.Open.name.lowercase()
     }
+
     fun isIssueClosed(): Boolean {
         return isIssue() && detail?.state == State.Closed.name.lowercase()
     }

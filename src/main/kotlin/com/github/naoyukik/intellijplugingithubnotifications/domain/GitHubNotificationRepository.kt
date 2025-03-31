@@ -10,22 +10,26 @@ interface GitHubNotificationRepository {
         includingRead: Boolean,
         resultLimit: Int,
     ): List<GitHubNotification>
+
     fun fetchNotificationsByRepository(
         ghCliPath: String,
         repositoryName: String,
         includingRead: Boolean,
         resultLimit: Int,
     ): List<GitHubNotification>
+
     fun fetchNotificationsReleaseDetail(
         ghCliPath: String,
         repositoryName: String,
         detailApiPath: String,
     ): NotificationDetailResponse
+
     fun fetchLatestNotifications(
         ghCliPath: String,
         previousTime: ZonedDateTime,
         includingRead: Boolean,
     ): List<GitHubNotification>
+
     fun fetchLatestNotificationsByRepository(
         ghCliPath: String,
         repositoryName: String,
