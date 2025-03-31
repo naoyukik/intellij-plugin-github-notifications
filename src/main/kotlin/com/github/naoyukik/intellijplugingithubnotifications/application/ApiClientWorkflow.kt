@@ -79,6 +79,7 @@ class ApiClientWorkflow(
                             )
                             resultMap[notification.id] = updatedNotification
                         }
+
                         is NotificationDetailError -> {
                             // Keep the original notification in the map
                             // No action needed here because we already stored the original notification at line 58
@@ -132,6 +133,7 @@ class ApiClientWorkflow(
         return when (val type = notification.subject.type) {
             SubjectType.Release, SubjectType.Issue, SubjectType.PullRequest ->
                 "${type.setApiPath()}/${setDetailId(notification)}"
+
             SubjectType.UNKNOWN -> null
         }
     }
@@ -144,6 +146,7 @@ class ApiClientWorkflow(
                 ).path.substringAfterLast("/")
                 detailId.ifEmpty { null }
             }
+
             SubjectType.UNKNOWN -> null
         }
     }

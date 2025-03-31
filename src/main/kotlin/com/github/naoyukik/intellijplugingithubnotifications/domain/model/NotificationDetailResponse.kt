@@ -33,12 +33,15 @@ sealed class NotificationDetailResponse {
         fun isPullRequestOpen(): Boolean {
             return this.state == "open"
         }
+
         fun isPullRequestMerged(): Boolean {
             return this.merged
         }
+
         fun isPullRequestClosed(): Boolean {
             return this.state == "closed" && !this.merged
         }
+
         fun isPullRequestDraft(): Boolean {
             return this.draft
         }
@@ -46,6 +49,7 @@ sealed class NotificationDetailResponse {
         fun isIssueOpen(): Boolean {
             return this.state == IssueState.Open.name.lowercase()
         }
+
         fun isIssueClosed(): Boolean {
             return this.state == IssueState.Closed.name.lowercase()
         }

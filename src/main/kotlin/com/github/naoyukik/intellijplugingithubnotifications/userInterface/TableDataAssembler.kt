@@ -7,7 +7,6 @@ import com.intellij.openapi.util.IconLoader
 import java.net.URI
 import java.net.URL
 import javax.swing.Icon
-import kotlin.collections.map
 
 class TableDataAssembler {
     companion object {
@@ -132,6 +131,7 @@ class TableDataAssembler {
                     else -> null
                 }
             }
+
             SubjectType.Issue -> notification.let {
                 return when {
                     it.isIssueClosed() -> TYPE_TO_EMOJI["IssueClosed"]
@@ -139,6 +139,7 @@ class TableDataAssembler {
                     else -> null
                 }
             }
+
             SubjectType.Release -> TYPE_TO_EMOJI[type.name]
             SubjectType.UNKNOWN -> null
         }
