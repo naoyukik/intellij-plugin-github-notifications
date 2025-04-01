@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Prevent crashing on invalid table cell clicks
+
 ## [0.12.0] - 2025-03-30
 
 ### Added
