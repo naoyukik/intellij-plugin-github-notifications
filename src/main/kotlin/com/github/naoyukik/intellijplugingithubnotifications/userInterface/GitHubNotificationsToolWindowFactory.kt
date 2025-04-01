@@ -242,8 +242,8 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
             override fun mouseClicked(e: MouseEvent) {
                 val row = table.rowAtPoint(e.point)
                 val col = table.columnAtPoint(e.point)
+                if (row < 0 || col < 0) return
 
-                // 対象のセルがリンク列である場合
                 if (col == COLUMN_NUMBER_LINK) {
                     val link = table.getValueAt(row, col).toString()
                     val url = Regex("href='([^']*)'").find(link)?.groupValues?.get(1) ?: ""
