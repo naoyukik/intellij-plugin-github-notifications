@@ -6,4 +6,5 @@ data class SettingState(
     val ghCliPath: String,
     val includingRead: Boolean,
     val resultLimit: Int,
+    val forceRefresh: Boolean,
 )

@@ -11,6 +11,7 @@ class SettingStateWorkflow(
         return SettingStateDto(
             fetchInterval = settingState.fetchInterval,
             repositoryName = settingState.repositoryName,
+            forceRefresh = settingState.forceRefresh,
         )
     }
 }

@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Set the refresh button to always acquire
+
 ### Fixed
 
 - Prevent crashing on invalid table cell clicks

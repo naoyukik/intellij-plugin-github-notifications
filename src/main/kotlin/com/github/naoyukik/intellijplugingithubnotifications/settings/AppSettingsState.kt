@@ -37,6 +37,12 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
             myState.includingRead = value
         }
 
+    var customizedForceRefresh
+        get() = myState.forceRefresh
+        set(value) {
+            myState.forceRefresh = value
+        }
+
     var customizedResultLimit
         get() = myState.resultLimit
         set(value) {
@@ -48,6 +54,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
         var repositoryName: String = ""
         var ghCliPath: String = ""
         var includingRead = false
+        var forceRefresh = false
         var resultLimit: Int = RESULT_LIMIT_DEFAULT_VALUE
     }
 
@@ -70,6 +77,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
         myState.repositoryName = state.repositoryName
         myState.ghCliPath = state.ghCliPath
         myState.includingRead = state.includingRead
+        myState.forceRefresh = state.forceRefresh
         myState.resultLimit = state.resultLimit
     }
 }
