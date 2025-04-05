@@ -14,12 +14,14 @@ class SettingStateRepositoryImpl(project: Project) : SettingStateRepository {
         val ghCliPath = state.myState.ghCliPath.ifEmpty { "gh" }
         val includingRead = state.myState.includingRead
         val resultLimit = state.myState.resultLimit
+        val forceRefresh = state.myState.forceRefresh
         return SettingState(
             fetchInterval = fetchInterval,
             repositoryName = repositoryName,
             ghCliPath = ghCliPath,
             includingRead = includingRead,
             resultLimit = resultLimit,
+            forceRefresh = forceRefresh,
         )
     }
 }
