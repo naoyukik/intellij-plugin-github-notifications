@@ -70,6 +70,11 @@ class AppSettingsConfigurable(private val project: Project) : Configurable {
                         .bindSelected(mySettingsState::customizedIncludingRead)
                         .comment("When turned on, read data is also acquired.")
                 }
+                row {
+                    checkBox("Action buttons always force refresh")
+                        .bindSelected(mySettingsState::customizedForceRefresh)
+                        .comment("When you switch, you need to restart the IDE.")
+                }
             }
             group("GitHub Settings") {
                 row("Repository:") {

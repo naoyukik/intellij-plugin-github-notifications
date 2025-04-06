@@ -92,14 +92,14 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         apiClientWorkflow = ApiClientWorkflow(GitHubNotificationRepositoryImpl(), SettingStateRepositoryImpl(project))
         settingStateWorkflow = SettingStateWorkflow(SettingStateRepositoryImpl(project))
+        val settingState = settingStateWorkflow.loadSettingState()
         tableDataAssembler = TableDataAssembler()
+
         val notificationToolTable = initializeJBTable()
         setupMouseListener(notificationToolTable)
 
         val actionGroup = DefaultActionGroup()
-
-        val refreshAction = createRefreshAction(notificationToolTable, project)
-
+        val refreshAction = createRefreshAction(notificationToolTable, project, settingState.forceRefresh)
         actionGroup.add(refreshAction)
 
         val notificationToolPanel = notificationToolTable.toJBScrollPane().toJBPanel()
@@ -120,8 +120,6 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         toolWindow.contentManager.addContent(content)
 
         Disposer.register(toolWindow.disposable, this)
-
-        val settingState = settingStateWorkflow.loadSettingState()
 
         startAutoRefresh(notificationToolTable, settingState.fetchInterval, project)
     }
@@ -184,22 +182,22 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         }
     }
 
-    private fun createRefreshAction(table: JBTable, project: Project): AnAction {
+    private fun createRefreshAction(table: JBTable, project: Project, isForceRefresh: Boolean): AnAction {
         return object : AnAction(
             "Refresh Notifications",
             "Fetch latest GitHub notifications",
             AllIcons.General.InlineRefresh,
         ) {
             override fun actionPerformed(e: AnActionEvent) {
-                refreshNotifications(table, project)
+                refreshNotifications(table, project, isForceRefresh)
             }
         }
     }
 
-    private fun refreshNotifications(table: JBTable, project: Project) {
+    private fun refreshNotifications(table: JBTable, project: Project, isForceRefresh: Boolean) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val notifications = apiClientWorkflow.fetchNotifications()
+                val notifications = apiClientWorkflow.fetchNotifications(isForceRefresh)
                 notifications.isEmpty() && return@launch
                 currentNotifications = notifications
                 notificationFilterPanel.notificationLabelsToComboBoxItems(currentNotifications)
@@ -264,7 +262,7 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private fun startAutoRefresh(table: JBTable, minute: Int, project: Project) {
         launch {
             while (isActive) {
-                refreshNotifications(table, project)
+                refreshNotifications(table, project, false)
                 delay(timeMillis = minute * 60 * 1000L)
             }
         }

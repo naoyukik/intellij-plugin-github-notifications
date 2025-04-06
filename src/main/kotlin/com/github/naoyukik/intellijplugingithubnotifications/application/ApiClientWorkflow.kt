@@ -27,6 +27,7 @@ class ApiClientWorkflow(
     private val settingStateRepository: SettingStateRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
+
     companion object {
         private var latestFetchTime: ZonedDateTime? = null
 
@@ -35,12 +36,12 @@ class ApiClientWorkflow(
         }
     }
 
-    suspend fun fetchNotifications(): List<GitHubNotificationDto> = withContext(dispatcher) {
+    suspend fun fetchNotifications(isForceRefresh: Boolean): List<GitHubNotificationDto> = withContext(dispatcher) {
         val settingState = settingStateRepository.loadSettingState()
         val ghCliPath = settingState.ghCliPath
         val includingRead = settingState.includingRead
         val resultLimit = settingState.resultLimit
-        if (!hasNewNotificationsSinceLastCheck(settingState)) return@withContext emptyList()
+        if (!isForceRefresh && !hasNewNotificationsSinceLastCheck(settingState)) return@withContext emptyList()
 
         val notifications = settingState.repositoryName.takeUnless { it.isEmpty() }?.let { nonEmptyRepositoryName ->
             repository.fetchNotificationsByRepository(ghCliPath, nonEmptyRepositoryName, includingRead, resultLimit)
