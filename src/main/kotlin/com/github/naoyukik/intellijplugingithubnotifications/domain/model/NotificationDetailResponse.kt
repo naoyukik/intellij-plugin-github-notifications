@@ -18,11 +18,18 @@ sealed class NotificationDetailResponse {
         val htmlUrl: String,
         @SerialName("requested_reviewers")
         val requestedReviewers: List<RequestedReviewers> = emptyList(),
+        @SerialName("requested_teams")
+        val requestedTeams: List<RequestedTeams> = emptyList(),
         val labels: List<Label> = emptyList(),
     ) : NotificationDetailResponse() {
         @Serializable
         data class RequestedReviewers(
             val login: String,
+        )
+
+        @Serializable
+        data class RequestedTeams(
+            val name: String,
         )
 
         @Serializable

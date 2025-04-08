@@ -7,10 +7,15 @@ sealed class NotificationDetailDto {
         val draft: Boolean = false,
         val htmlUrl: String,
         val requestedReviewers: List<RequestedReviewers> = emptyList(),
+        val requestedTeams: List<RequestedTeams> = emptyList(),
         val labels: List<Label> = emptyList(),
     ) : NotificationDetailDto() {
         data class RequestedReviewers(
             val login: String,
+        )
+
+        data class RequestedTeams(
+            val name: String,
         )
 
         data class Label(
