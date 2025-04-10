@@ -103,11 +103,15 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
         )
     }
 
-    fun notificationReviewerToComboBoxItems(currentNotifications: List<GitHubNotificationDto>) {
+    fun notificationReviewersAndTeamsToComboBoxItems(currentNotifications: List<GitHubNotificationDto>) {
         val currentSelectedItem = selectedReviewer ?: DEFAULT_REVIEWER
-        val newItems = currentNotifications.flatMap { notification: GitHubNotificationDto ->
+        val newReviewers = currentNotifications.flatMap { notification: GitHubNotificationDto ->
             notification.detail?.requestedReviewers?.map { reviewer -> reviewer.login } ?: emptyList()
-        }.distinct().sortedBy { it.lowercase() }
+        }
+        val newTeams = currentNotifications.flatMap { notification ->
+            notification.detail?.requestedTeams?.map { team -> team.name } ?: emptyList()
+        }
+        val newItems = (newReviewers + newTeams).distinct().sortedBy { it.lowercase() }
 
         updateComboBoxItem(
             defaultComboBox = notificationReviewer,

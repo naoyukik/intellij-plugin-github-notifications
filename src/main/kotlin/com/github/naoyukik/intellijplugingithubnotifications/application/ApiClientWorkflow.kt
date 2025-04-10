@@ -21,6 +21,7 @@ import com.github.naoyukik.intellijplugingithubnotifications.application.dto.Git
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.GitHubNotificationDto.SubjectType as DtoSubjectType
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.NotificationDetailDto.NotificationDetail.Label as DtoLabel
 import com.github.naoyukik.intellijplugingithubnotifications.application.dto.NotificationDetailDto.NotificationDetail.RequestedReviewers as DtoRequestedReviewers
+import com.github.naoyukik.intellijplugingithubnotifications.application.dto.NotificationDetailDto.NotificationDetail.RequestedTeams as DtoRequestedTeams
 
 class ApiClientWorkflow(
     private val repository: GitHubNotificationRepository,
@@ -178,6 +179,9 @@ class ApiClientWorkflow(
                         htmlUrl = detail.htmlUrl,
                         requestedReviewers = detail.requestedReviewers.map { reviewer ->
                             DtoRequestedReviewers(login = reviewer.login)
+                        },
+                        requestedTeams = detail.requestedTeams.map { team ->
+                            DtoRequestedTeams(name = team.name)
                         },
                         labels = detail.labels.map { label ->
                             DtoLabel(name = label.name)
