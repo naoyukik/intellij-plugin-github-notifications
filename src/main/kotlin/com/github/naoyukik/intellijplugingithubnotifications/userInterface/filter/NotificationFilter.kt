@@ -39,9 +39,7 @@ data class NotificationFilter(
                 val reviewerMatches = when (filter.reviewer) {
                     "<Choose Reviewer>" -> true
                     else -> {
-                        filter.reviewer.isNullOrBlank() || notification.detail?.requestedReviewers?.any { reviewer ->
-                            reviewer.login.lowercase() == filter.reviewer.lowercase()
-                        } == true
+                        matchesReviewerFilter(filter, notification)
                     }
                 }
 
@@ -61,15 +59,54 @@ data class NotificationFilter(
             notification: GitHubNotificationDto,
         ): Boolean {
             return if (filter.label?.contains(',') == true) {
-                val labels = filter.label.split(",")
+                val labels = filter.label.split(",").map { it.trim() }
                 labels.any { label ->
-                    notification.detail?.labels?.any { it.name.lowercase() == label.lowercase() } == true
+                    hasLabels(notification, label)
                 }
             } else {
-                filter.label.isNullOrBlank() || notification.detail?.labels?.any { label ->
-                    label.name.lowercase() == filter.label.lowercase()
-                } == true
+                filter.label.isNullOrBlank() || hasLabels(notification, filter.label)
             }
+        }
+
+        private fun hasLabels(
+            notification: GitHubNotificationDto,
+            label: String,
+        ): Boolean {
+            return notification.detail?.labels?.any { it.name.lowercase() == label.lowercase() } == true
+        }
+
+        private fun matchesReviewerFilter(
+            filter: NotificationFilter,
+            notification: GitHubNotificationDto,
+        ): Boolean {
+            return if (filter.reviewer?.contains(',') == true) {
+                val reviewers = filter.reviewer.split(",").map { it.trim() }
+                reviewers.any { reviewer ->
+                    hasReviewers(notification, reviewer) || hasTeams(notification, reviewer)
+                }
+            } else {
+                filter.reviewer.isNullOrBlank() ||
+                    hasReviewers(notification, filter.reviewer) ||
+                    hasTeams(notification, filter.reviewer)
+            }
+        }
+
+        private fun hasReviewers(
+            notification: GitHubNotificationDto,
+            reviewer: String,
+        ): Boolean {
+            return notification.detail?.requestedReviewers?.any { requestedReviewer ->
+                requestedReviewer.login.lowercase() == reviewer.lowercase()
+            } == true
+        }
+
+        private fun hasTeams(
+            notification: GitHubNotificationDto,
+            reviewer: String,
+        ): Boolean {
+            return notification.detail?.requestedTeams?.any { requestedTeam ->
+                requestedTeam.name.lowercase() == reviewer.lowercase()
+            } == true
         }
     }
 }
