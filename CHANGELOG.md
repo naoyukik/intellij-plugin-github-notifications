@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add reviewers of Teams selectable
+
 ## [0.13.0] - 2025-04-06
 
 ### Added
