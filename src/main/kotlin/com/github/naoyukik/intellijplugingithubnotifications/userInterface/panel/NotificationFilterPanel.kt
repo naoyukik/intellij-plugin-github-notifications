@@ -28,6 +28,7 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
         const val DEFAULT_REVIEWER = "<Choose Reviewer>"
     }
 
+    @Suppress("LongMethod")
     fun create(): DialogPanel {
         val dialogPanel = panel {
             row {
@@ -66,6 +67,8 @@ class NotificationFilterPanel(private val filterState: ObservableFilterState) {
                 comboBox(notificationReviewer).bindItem(
                     ::selectedReviewer.toMutableProperty(),
                 ).applyToComponent {
+                    isEditable = true
+                    setupPlaceholder(this, DEFAULT_REVIEWER)
                     addActionListener {
                         selectedReviewer = this.selectedItem as? String
                         filterState.filter = filterState.filter.copy(reviewer = selectedReviewer)
