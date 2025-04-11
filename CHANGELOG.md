@@ -7,6 +7,8 @@
 ### Added
 
 - Add reviewers of Teams selectable
+- Support multiple reviewers in notification filtering
+    - Reviewer filters are comma-separated and can be filtered by multiple reviewers.
 
 ## [0.13.0] - 2025-04-06
 
