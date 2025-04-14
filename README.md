@@ -16,6 +16,16 @@ The **GitHub Notifications IntelliJ Plugin** allows you to effortlessly view you
 - **Scheduled Updates**: Automatically refresh notifications at user-defined intervals to stay up-to-date without manual intervention.
 
 ### How to Use
+
+#### Reviewer Filters
+
+- **Basic usage**: Choose a reviewer name to filter notifications with that specific reviewer
+- **Multiple reviewers**: Separate with commas to filter by ANY of the specified reviewers
+
+  ```
+  Format: reviewer1,reviewer2,reviewer3
+  ```
+
 #### Label Filters
 - **Basic usage**: Choose a label name to filter notifications with that specific label
 - **Multiple labels**: Separate with commas to filter by ANY of the specified labels
