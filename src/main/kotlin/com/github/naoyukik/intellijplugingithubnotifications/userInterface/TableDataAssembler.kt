@@ -71,6 +71,9 @@ class TableDataAssembler {
     fun toTableDataDto(list: List<GitHubNotificationDto>): List<TableDataDto> {
         return list.map {
             val issueNumber = getIssueNumber(it.subject.url)
+            val reviewers = it.detail?.requestedReviewers?.map { reviewer -> reviewer.login } ?: emptyList()
+            val teams = it.detail?.requestedTeams?.map { team -> team.name } ?: emptyList()
+            val reviewersAndTeams = reviewers + teams
             TableDataDto(
                 title = it.subject.title,
                 fullName = apiUrlToRepositoryIssueNumberConverter(
@@ -86,7 +89,7 @@ class TableDataAssembler {
                 reason = it.reason,
                 updatedAt = it.updatedAt,
                 typeEmoji = apiUrlToEmojiConverter(it),
-                reviewers = it.detail?.requestedReviewers?.map { reviewer -> reviewer.login } ?: emptyList(),
+                reviewers = reviewersAndTeams,
                 unreadEmoji = it.unread.takeIf { bool ->
                     bool
                 }?.let { TYPE_TO_EMOJI["Unread"] },
