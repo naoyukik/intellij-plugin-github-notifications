@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Reviewers filter does not show contents of requested_teams
+
 ## [0.14.0] - 2025-04-14
 
 ### Added
