@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.14.0] - 2025-04-14
+
 ### Added
 
 - Add reviewers of Teams selectable
@@ -159,7 +161,8 @@ Initial release of the GitHub Notifications IntelliJ Plugin.
 
 Done is better than perfect.
 
-[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.13.0...HEAD
+[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.14.0...HEAD
+[0.14.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.10.2...v0.11.0
