@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix a bug where Instances are shared between projects
+
 ## [0.14.1] - 2025-04-15
 
 ### Fixed
