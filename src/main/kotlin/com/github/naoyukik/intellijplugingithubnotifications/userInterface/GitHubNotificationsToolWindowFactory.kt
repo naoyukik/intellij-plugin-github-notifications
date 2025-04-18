@@ -18,6 +18,7 @@ import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -48,16 +49,16 @@ import javax.swing.table.DefaultTableModel
 import javax.swing.table.TableColumn
 import kotlin.coroutines.CoroutineContext
 
-@Suppress("TooManyFunctions")
-class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, CoroutineScope, Disposable {
-    private lateinit var apiClientWorkflow: ApiClientWorkflow
-    private lateinit var settingStateWorkflow: SettingStateWorkflow
-    private lateinit var tableDataAssembler: TableDataAssembler
-    private lateinit var notificationFilterPanel: NotificationFilterPanel
-    private val coroutineJob = Job()
-    private var currentNotifications: List<GitHubNotificationDto> = emptyList()
-    private var filteredNotifications: List<GitHubNotificationDto> = emptyList()
-    private val filterState = ObservableFilterState(
+@Service(Service.Level.PROJECT)
+private class ProjectData : CoroutineScope, Disposable {
+    lateinit var apiClientWorkflow: ApiClientWorkflow
+    lateinit var settingStateWorkflow: SettingStateWorkflow
+    lateinit var tableDataAssembler: TableDataAssembler
+    lateinit var notificationFilterPanel: NotificationFilterPanel
+    val coroutineJob = Job()
+    var currentNotifications: List<GitHubNotificationDto> = emptyList()
+    var filteredNotifications: List<GitHubNotificationDto> = emptyList()
+    val filterState = ObservableFilterState(
         NotificationFilter(
             unread = null,
             type = null,
@@ -66,6 +67,16 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         ),
     )
 
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + coroutineJob
+
+    override fun dispose() {
+        coroutineJob.cancel()
+    }
+}
+
+@Suppress("TooManyFunctions")
+class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
     val columnName = arrayOf(
         "Link",
         "Unread",
@@ -86,14 +97,15 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         const val ROW_MIN_HEIGHT = 37
     }
 
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO + coroutineJob
-
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        apiClientWorkflow = ApiClientWorkflow(GitHubNotificationRepositoryImpl(), SettingStateRepositoryImpl(project))
-        settingStateWorkflow = SettingStateWorkflow(SettingStateRepositoryImpl(project))
-        val settingState = settingStateWorkflow.loadSettingState()
-        tableDataAssembler = TableDataAssembler()
+        val projectData = project.getService(ProjectData::class.java)
+        projectData.apiClientWorkflow = ApiClientWorkflow(
+            GitHubNotificationRepositoryImpl(),
+            SettingStateRepositoryImpl(project),
+        )
+        projectData.settingStateWorkflow = SettingStateWorkflow(SettingStateRepositoryImpl(project))
+        val settingState = projectData.settingStateWorkflow.loadSettingState()
+        projectData.tableDataAssembler = TableDataAssembler()
 
         val notificationToolTable = initializeJBTable()
         setupMouseListener(notificationToolTable)
@@ -107,19 +119,21 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
         notificationToolPanel.add(actionToolbar.component, BorderLayout.WEST)
 
         // filter panel
-        notificationFilterPanel = NotificationFilterPanel(filterState)
-        filterState.addListener {
-            filteredNotifications = NotificationFilter.applyFilter(currentNotifications, it)
-            val displayTable = tableDataAssembler.toTableDataDto(filteredNotifications)
+        projectData.notificationFilterPanel = NotificationFilterPanel(projectData.filterState)
+        projectData.filterState.addListener {
+            projectData.filteredNotifications = NotificationFilter.applyFilter(projectData.currentNotifications, it)
+            val displayTable = projectData.tableDataAssembler.toTableDataDto(projectData.filteredNotifications)
             fireTableDataChanged(notificationToolTable, displayTable)
         }
-        val filterPanel = notificationFilterPanel.create()
+        val filterPanel = projectData.notificationFilterPanel.create()
         notificationToolPanel.add(filterPanel, BorderLayout.NORTH)
 
         val content = ContentFactory.getInstance().createContent(notificationToolPanel, null, false)
         toolWindow.contentManager.addContent(content)
 
-        Disposer.register(toolWindow.disposable, this)
+        Disposer.register(toolWindow.disposable) {
+            projectData.dispose()
+        }
 
         startAutoRefresh(notificationToolTable, settingState.fetchInterval, project)
     }
@@ -197,13 +211,17 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     private fun refreshNotifications(table: JBTable, project: Project, isForceRefresh: Boolean) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val notifications = apiClientWorkflow.fetchNotifications(isForceRefresh)
+                val data = project.getService(ProjectData::class.java)
+                val notifications = data.apiClientWorkflow.fetchNotifications(isForceRefresh)
                 notifications.isEmpty() && return@launch
-                currentNotifications = notifications
-                notificationFilterPanel.notificationLabelsToComboBoxItems(currentNotifications)
-                notificationFilterPanel.notificationReviewersAndTeamsToComboBoxItems(currentNotifications)
-                filteredNotifications = NotificationFilter.applyFilter(currentNotifications, filterState.filter)
-                val displayTable = tableDataAssembler.toTableDataDto(filteredNotifications)
+                data.currentNotifications = notifications
+                data.notificationFilterPanel.notificationLabelsToComboBoxItems(data.currentNotifications)
+                data.notificationFilterPanel.notificationReviewersAndTeamsToComboBoxItems(data.currentNotifications)
+                data.filteredNotifications = NotificationFilter.applyFilter(
+                    data.currentNotifications,
+                    data.filterState.filter,
+                )
+                val displayTable = data.tableDataAssembler.toTableDataDto(data.filteredNotifications)
                 fireTableDataChanged(table, displayTable)
 
                 NotificationWorkflow().fetchedNotification(project)
@@ -260,16 +278,14 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware, Corou
     }
 
     private fun startAutoRefresh(table: JBTable, minute: Int, project: Project) {
-        launch {
+        val data = project.getService(ProjectData::class.java)
+
+        data.launch {
             while (isActive) {
                 refreshNotifications(table, project, false)
                 delay(timeMillis = minute * 60 * 1000L)
             }
         }
-    }
-
-    override fun dispose() {
-        coroutineJob.cancel()
     }
 
     private fun List<TableDataDto>.toJBTable(): JBTable {
