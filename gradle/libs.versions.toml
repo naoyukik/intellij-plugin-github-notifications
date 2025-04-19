@@ -5,7 +5,7 @@ kotlinx-serialization-json = "1.8.1"
 kotest-runner-junit5 = "6.0.0.M3"
 kotest-assertions-core = "6.0.0.M3"
 detekt-formatting = "1.23.8"
-mockk = "1.13.17"
+mockk = "1.14.0"
 
 # plugins
 changelog = "2.2.1"
