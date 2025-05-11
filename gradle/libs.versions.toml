@@ -2,7 +2,7 @@
 # libraries
 junit = "4.13.2"
 kotlinx-serialization-json = "1.8.1"
-kotest-runner-junit5 = "6.0.0.M3"
+kotest-runner-junit5 = "6.0.0.M4"
 kotest-assertions-core = "6.0.0.M4"
 detekt-formatting = "1.23.8"
 mockk = "1.14.2"
