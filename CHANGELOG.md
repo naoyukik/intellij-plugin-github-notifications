@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Support for IntelliJ 2025.2
+
 ## [0.14.2] - 2025-04-20
 
 ### Fixed
