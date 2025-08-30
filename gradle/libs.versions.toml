@@ -10,7 +10,7 @@ mockk = "1.14.5"
 # plugins
 changelog = "2.4.0"
 intelliJPlatform = "2.7.2"
-kotlin = "2.2.0"
+kotlin = "2.2.10"
 kover = "0.9.1"
 qodana = "2025.2.1"
 detekt = "1.23.8"
