@@ -12,8 +12,9 @@
             "matchStrings": [
                 "gradleVersion=(?<currentValue>[^\\s]+)"
             ],
+            "depNameTemplate": "gradle",
             "autoReplaceStringTemplate": "gradleVersion={{{newValue}}}",
-            "datasourceTemplate": "gradle"
+            "datasourceTemplate": "gradle-version"
         }
     ]
 }
