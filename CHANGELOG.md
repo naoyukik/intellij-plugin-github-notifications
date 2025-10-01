@@ -6,13 +6,7 @@
 
 ### Changed
 
-- Update IntelliJ platform version to 252.23591.19
-- Update dependency org.jetbrains.kotlinx:kotlinx-serialization-json to v1.9.0
-- Update gradle/actions to v4.4.1
-- Update gradle to v8.14.1
-- Update org.gradle.toolchains.foojay-resolver-convention to v1
-- Update codecov/codecov-action to v5.4.3
-- Update org.jetbrains.intellij.platform to v2.6.0
+- Support for IntelliJ 2025.3
 
 ## [0.14.3] - 2025-05-20
 
