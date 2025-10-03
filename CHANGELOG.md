@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.14.5] - 2025-10-02
+
 ### Changed
 
 - Support for IntelliJ 2025.3
