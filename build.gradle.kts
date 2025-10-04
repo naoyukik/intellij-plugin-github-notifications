@@ -1,5 +1,6 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
@@ -114,7 +115,17 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            recommended()
+            val productReleases = ProductReleasesValueSource().get()
+            val reducedProductReleases =
+                if (productReleases.size > 2) {
+                    listOf(productReleases.first(), productReleases.last())
+                } else {
+                    productReleases
+                }
+            reducedProductReleases.forEach { version ->
+                val ideVersion = version.substringAfter('-').ifEmpty { version }
+                create(IntelliJPlatformType.IntellijIdeaUltimate, ideVersion)
+            }
         }
     }
 }

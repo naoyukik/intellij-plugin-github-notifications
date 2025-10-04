@@ -9,6 +9,7 @@
 ### Changed
 
 - Support for IntelliJ 2025.3
+- Supported versions expanded from 2024.3
 
 ## [0.14.3] - 2025-05-20
 
