@@ -18,7 +18,7 @@ class GitHubNotificationRepositoryImplTest : StringSpec({
                     "id": "1",
                     "subject": {
                         "title": "Test Notification",
-                        "url": "https://example.com/issue",
+                        "url": null,
                         "type": "Issue"
                     },
                     "repository": {
