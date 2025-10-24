@@ -103,13 +103,14 @@ class TableDataAssembler {
         issueNumber: String,
         type: SubjectType,
     ): String {
+        val issueNumberWithSymbol = if (issueNumber.isEmpty()) issueNumber else "#$issueNumber"
         return TYPE_TO_PATH[type.name]?.let { typeToPath ->
             when (typeToPath) {
-                "issues", "pull" -> "$repositoryFullName #$issueNumber"
+                "issues", "pull" -> "$repositoryFullName $issueNumberWithSymbol"
                 "releases" -> "$issueNumber in $repositoryFullName"
-                else -> "$repositoryFullName #$issueNumber"
+                else -> "$repositoryFullName $issueNumberWithSymbol"
             }
-        } ?: "$repositoryFullName #$issueNumber"
+        } ?: "$repositoryFullName $issueNumberWithSymbol"
     }
 
     private fun apiUrlToHtmlUrlConverter(htmlUrl: String, issueNumber: String, type: SubjectType): URL? {
@@ -148,5 +149,7 @@ class TableDataAssembler {
         }
     }
 
-    private fun getIssueNumber(url: String): String = url.split("/").last()
+    private fun getIssueNumber(url: String): String {
+        return if (url.isEmpty()) "" else url.split("/").last()
+    }
 }
