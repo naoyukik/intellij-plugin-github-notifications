@@ -11,7 +11,6 @@ import com.github.naoyukik.intellijplugingithubnotifications.domain.model.Notifi
 import com.github.naoyukik.intellijplugingithubnotifications.domain.model.SettingState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.withContext
 import java.net.URI
 import java.time.ZonedDateTime
@@ -162,7 +161,7 @@ class ApiClientWorkflow(
                 unread = notification.unread,
                 subject = DtoSubject(
                     title = notification.subject.title,
-                    url = notification.subject.url,
+                    url = notification.subject.url.orEmpty(),
                     type = DtoSubjectType.valueOf(
                         notification.subject.type.name,
                     ),

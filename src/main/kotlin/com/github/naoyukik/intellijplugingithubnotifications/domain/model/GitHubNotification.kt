@@ -18,7 +18,7 @@ data class GitHubNotification(
     @Serializable
     data class Subject(
         val title: String,
-        val url: String,
+        val url: String?,
         val type: SubjectType,
     )
 
