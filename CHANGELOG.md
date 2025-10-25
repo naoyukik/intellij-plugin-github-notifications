@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix a bug that caused a crash when the notification subject URL is null.
+
 ## [0.14.6] - 2025-10-05
 
 ### Changed
