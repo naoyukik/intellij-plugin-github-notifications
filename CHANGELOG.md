@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.14.7] - 2025-10-26
+
 ### Fixed
 
 - Handle unknown notification subject types gracefully to prevent crashes from new GitHub API values.
@@ -196,7 +198,8 @@ Initial release of the GitHub Notifications IntelliJ Plugin.
 
 Done is better than perfect.
 
-[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.14.6...HEAD
+[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.14.7...HEAD
+[0.14.7]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.14.6...v0.14.7
 [0.14.6]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.14.5...v0.14.6
 [0.14.5]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.14.3...v0.14.5
 [0.14.3]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/v0.14.2...v0.14.3
