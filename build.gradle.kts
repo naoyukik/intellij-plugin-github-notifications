@@ -5,7 +5,7 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
     id("java") // Java support
-    kotlin("plugin.serialization") version "2.2.20" // Kotlinのバージョンに合わせる
+    kotlin("plugin.serialization") version "2.2.21" // Kotlinのバージョンに合わせる
     alias(libs.plugins.kotlin) // Kotlin support
     alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
