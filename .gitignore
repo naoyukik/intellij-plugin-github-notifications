@@ -8,3 +8,5 @@ build
 /node_modules/
 /.kotlin/
 
+/conductor/setup_state.json
+/conductor/tracks.md
