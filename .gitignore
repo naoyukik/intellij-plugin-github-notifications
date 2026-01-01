@@ -8,3 +8,13 @@ build
 /node_modules/
 /.kotlin/
 
+/.claude/
+/.gemini/
+/.aiassistant/
+/.junie/
+/CLAUDE.local.md
+/GEMINI.local.md
+/AGENTS.local.md
+
+/conductor/setup_state.json
+/conductor/tracks.md
