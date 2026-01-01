@@ -17,7 +17,12 @@ All tasks follow a strict lifecycle:
 
 ### Standard Task Workflow
 
-1. **Select Task:** Choose the next available task from `plan.md` in sequential order
+1. **Select Task & Analyze Context:**
+    - Choose the next available task from `plan.md` in sequential order.
+    - **Issue Analysis:** If the task has an associated ticket number or the current branch name contains a ticket
+      number (e.g., derived from `1234-feature`), you **must** access the GitHub Issue to understand the full context
+      and requirements.
+    - Use the command `gh issue view <ticket_number>` to retrieve and read the issue details before proceeding.
 
 2. **Mark In Progress:** Before beginning work, edit `plan.md` and change the task from `[ ]` to `[~]`
 
