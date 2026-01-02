@@ -1,0 +1,39 @@
+{
+  "tools": {
+    "allowed": [
+      "ShellTool(git status)",
+      "ShellTool(git rev-parse)",
+      "ShellTool(git log)",
+      "ShellTool(git remote get-url)",
+      "ShellTool(gh version)",
+      "ShellTool(grep)"
+    ]
+  },
+  "model": {
+    "name": "$MODEL_NAME"
+  },
+  "modelConfigs": {
+    "customAliases": {
+      "strict-coder": {
+        "extends": "gemini-3-pro-preview",
+        "modelConfig": {
+          "generateContentConfig": {
+            "temperature": 0,
+            "topP": 0.8,
+            "topK": 40
+          }
+        }
+      },
+      "balanced-architect": {
+        "extends": "gemini-3-pro-preview",
+        "modelConfig": {
+          "generateContentConfig": {
+            "temperature": 0.6,
+            "topP": 0.95,
+            "topK": 64
+          }
+        }
+      }
+    }
+  }
+}

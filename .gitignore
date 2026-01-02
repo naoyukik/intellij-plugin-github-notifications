@@ -9,7 +9,8 @@ build
 /.kotlin/
 
 /.claude/
-/.gemini/
+/.gemini/*
+!/.gemini/settings.json
 /.aiassistant/
 /.junie/
 /CLAUDE.local.md
@@ -18,3 +19,5 @@ build
 
 /conductor/setup_state.json
 /conductor/tracks.md
+
+/.env

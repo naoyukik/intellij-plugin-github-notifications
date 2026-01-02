@@ -17,7 +17,12 @@ All tasks follow a strict lifecycle:
 
 ### Standard Task Workflow
 
-1. **Select Task:** Choose the next available task from `plan.md` in sequential order
+1. **Select Task & Analyze Context:**
+    - Choose the next available task from `plan.md` in sequential order.
+    - **Issue Analysis:** If the task has an associated ticket number or the current branch name contains a ticket
+      number (e.g., derived from `1234-feature`), you **must** access the GitHub Issue to understand the full context
+      and requirements.
+    - Use the command `gh issue view <ticket_number>` to retrieve and read the issue details before proceeding.
 
 2. **Mark In Progress:** Before beginning work, edit `plan.md` and change the task from `[ ]` to `[~]`
 
@@ -140,17 +145,17 @@ All tasks follow a strict lifecycle:
     - Perform the commit with a clear and concise message (e.g., `conductor(checkpoint): Checkpoint end of Phase X`).
 
 7. **Attach Auditable Verification Report using Git Notes:**
-    - **Step 8.1: Draft Note Content:** Create a detailed verification report including the automated test command, the
+    - **Step 7.1: Draft Note Content:** Create a detailed verification report including the automated test command, the
       manual verification steps, and the user's confirmation.
-    - **Step 8.2: Attach Note:** Use the `git notes` command and the full commit hash from the previous step to attach
+    - **Step 7.2: Attach Note:** Use the `git notes` command and the full commit hash from the previous step to attach
       the full report to the checkpoint commit.
 
 8. **Get and Record Phase Checkpoint SHA:**
-    - **Step 7.1: Get Commit Hash:** Obtain the hash of the *just-created checkpoint commit* (
+    - **Step 8.1: Get Commit Hash:** Obtain the hash of the *just-created checkpoint commit* (
       `git log -1 --format="%H"`).
-    - **Step 7.2: Update Plan:** Read `plan.md`, find the heading for the completed phase, and append the first 7
+    - **Step 8.2: Update Plan:** Read `plan.md`, find the heading for the completed phase, and append the first 7
       characters of the commit hash in the format `[checkpoint: <sha>]`.
-    - **Step 7.3: Write Plan:** Write the updated content back to `plan.md`.
+    - **Step 8.3: Write Plan:** Write the updated content back to `plan.md`.
 
 9. **Commit Plan Update:**
     - **Action:** Stage the modified `plan.md` file.
