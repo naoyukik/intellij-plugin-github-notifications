@@ -1,12 +1,14 @@
 # Plan: Fix Deprecated API Usage (Issue #387)
 
 ## Phase 1: 現状確認と調査 [checkpoint: ee8b8b1]
+
 - [x] Task: プロジェクトのビルドと警告の確認
     - `./gradlew buildPlugin` を実行し、非推奨 API の警告が出ている箇所を特定する。
     - `GitHubNotificationsToolWindowFactory.kt` のコードを確認し、現在の `isApplicable` のロジックを把握する。
 - [x] Task: Conductor - User Manual Verification 'Phase 1: 現状確認と調査' (Protocol in workflow.md)
 
 ## Phase 2: 実装 (API修正) [checkpoint: 352a349]
+
 - [x] Task: `isApplicableAsync` への移行 [680954c]
     - `GitHubNotificationsToolWindowFactory` の `isApplicable` を `isApplicableAsync` に変更する。
     - Kotlin Coroutines を使用して非同期処理として実装する（必要な場合）。
@@ -16,6 +18,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: 実装 (API修正)' (Protocol in workflow.md)
 
 ## Phase 3: 動作検証
+
 - [x] Task: ツールウィンドウの表示確認
     - `./gradlew runIde` で IDE を起動する。
     - プラグインが読み込まれ、ツールウィンドウが表示されることを確認する。
