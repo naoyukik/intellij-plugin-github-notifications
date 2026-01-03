@@ -10,10 +10,10 @@
 - [x] Task: `isApplicableAsync` への移行 [680954c]
     - `GitHubNotificationsToolWindowFactory` の `isApplicable` を `isApplicableAsync` に変更する。
     - Kotlin Coroutines を使用して非同期処理として実装する（必要な場合）。
-- [~] Task: ビルドと静的解析の実行
+- [x] Task: ビルドと静的解析の実行 [6ea9f07]
     - `./gradlew buildPlugin` を実行し、ビルドが成功することを確認する。
     - `./gradlew detekt` を実行し、リントエラーがないことを確認する。
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: 実装 (API修正)' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 2: 実装 (API修正)' (Protocol in workflow.md)
 
 ## Phase 3: 動作検証
 - [ ] Task: ツールウィンドウの表示確認
