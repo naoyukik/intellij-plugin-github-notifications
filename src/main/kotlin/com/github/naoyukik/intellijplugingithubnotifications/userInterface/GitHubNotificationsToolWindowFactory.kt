@@ -97,6 +97,10 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
         const val ROW_MIN_HEIGHT = 37
     }
 
+    override suspend fun isApplicableAsync(project: Project): Boolean {
+        return true
+    }
+
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val projectData = project.getService(ProjectData::class.java)
         projectData.apiClientWorkflow = ApiClientWorkflow(
