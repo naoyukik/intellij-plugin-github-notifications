@@ -1,13 +1,42 @@
 {
   "tools": {
     "allowed": [
+      "LSTool",
+      "GrepTool",
+      "GlobTool",
       "ShellTool(git status)",
       "ShellTool(git rev-parse)",
       "ShellTool(git log)",
       "ShellTool(git remote get-url)",
       "ShellTool(gh version)",
-      "ShellTool(grep)"
+      "ShellTool(git config --get remote.origin.url)",
+      "ShellTool(Test-Path)",
+      "ShellTool(.\\gradlew buildPlugin)",
+      "ShellTool(.\\gradlew compileKotlin)",
+      "ShellTool(.\\gradlew clean compileKotlin)",
+      "ShellTool(.\\gradlew test)",
+      "ShellTool(.\\gradlew detekt)",
+      "sequential-thinking__sequentialthinking",
+      "jetbrains__find_files_by_glob",
+      "jetbrains__find_files_by_name_keyword",
+      "jetbrains__get_all_open_file_paths",
+      "jetbrains__get_file_problems",
+      "jetbrains__get_file_text_by_path",
+      "jetbrains__get_project_dependencies",
+      "jetbrains__get_project_modules",
+      "jetbrains__get_repositories",
+      "jetbrains__get_run_configurations",
+      "jetbrains__get_symbol_info",
+      "jetbrains__list_directory_tree",
+      "jetbrains__open_file_in_editor",
+      "jetbrains__search_in_files_by_regex",
+      "jetbrains__search_in_files_by_text"
     ]
+  },
+  "mcpServers": {
+    "jetbrains": {
+      "url": "http://localhost:64421/sse"
+    }
   },
   "model": {
     "name": "$MODEL_NAME"
