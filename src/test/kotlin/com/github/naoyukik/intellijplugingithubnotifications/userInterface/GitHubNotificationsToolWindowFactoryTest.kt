@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.mockk
 
 class GitHubNotificationsToolWindowFactoryTest : StringSpec({
-    "isApplicableAsync should return true" {
+    "isApplicableAsync should return true for any project (always applicable)" {
         val factory = GitHubNotificationsToolWindowFactory()
         val project = mockk<Project>()
         factory.isApplicableAsync(project) shouldBe true
