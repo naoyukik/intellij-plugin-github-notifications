@@ -17,7 +17,4 @@ build
 /GEMINI.local.md
 /AGENTS.local.md
 
-/conductor/setup_state.json
-/conductor/tracks.md
-
 /.env

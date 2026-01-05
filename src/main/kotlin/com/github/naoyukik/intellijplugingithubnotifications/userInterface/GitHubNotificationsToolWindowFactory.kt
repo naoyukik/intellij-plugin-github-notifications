@@ -97,6 +97,19 @@ class GitHubNotificationsToolWindowFactory : ToolWindowFactory, DumbAware {
         const val ROW_MIN_HEIGHT = 37
     }
 
+    /**
+     * Determines whether the tool window is applicable for the given project.
+     *
+     * This method currently returns `true` for all projects, as the GitHub Notifications tool window
+     * is intended to be available regardless of the specific project context.
+     *
+     * This implementation replaces the deprecated synchronous `isApplicable` method, ensuring
+     * compatibility with the async API requirements of the IntelliJ Platform.
+     */
+    override suspend fun isApplicableAsync(project: Project): Boolean {
+        return true
+    }
+
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val projectData = project.getService(ProjectData::class.java)
         projectData.apiClientWorkflow = ApiClientWorkflow(
