@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Migrate to `isApplicableAsync` to resolve deprecated API usage.
+
 ## [0.14.7] - 2025-10-26
 
 ### Fixed
