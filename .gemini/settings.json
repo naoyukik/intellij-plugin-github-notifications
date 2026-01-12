@@ -8,6 +8,7 @@
       "ShellTool(git rev-parse)",
       "ShellTool(git log)",
       "ShellTool(git remote get-url)",
+      "ShellTool(gh issue view)",
       "ShellTool(gh version)",
       "ShellTool(git config --get remote.origin.url)",
       "ShellTool(Test-Path)",
