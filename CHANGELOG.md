@@ -6,6 +6,7 @@
 
 ### Fixed
 
+- Support for IntelliJ 2026.1
 - Migrate to `isApplicableAsync` to resolve deprecated API usage.
 
 ## [0.14.7] - 2025-10-26
