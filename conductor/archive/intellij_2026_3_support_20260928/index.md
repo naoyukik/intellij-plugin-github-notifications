@@ -4,7 +4,10 @@
 
 `untilBuild` の指定を削除し、IntelliJ IDEA 2026.3 でのプラグイン配布と動作を可能にする。
 
-JetBrains の推奨方針に従い、`platformVersion` は変更せず 2026.1 SDK 相当からビルドした成果物による実行時互換性で 2026.3 に対応する。
+JetBrains の推奨方針に従い、`untilBuild` を削除して実行時の互換性のみで 2026.3 に対応する。
+
+着手時点で `main` ブランチの `buildPlugin` が失敗していたため、ビルドを成立させる修正 (`platformVersion` の更新、IntelliJ
+Platform Gradle Plugin の更新) も本 Issue に含める。詳細は仕様書を参照。
 
 ## 参照
 
