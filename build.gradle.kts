@@ -92,7 +92,6 @@ intellijPlatform {
 
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
-            untilBuild = providers.gradleProperty("pluginUntilBuild")
         }
     }
 
@@ -115,17 +114,15 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            val productReleases = ProductReleasesValueSource().get()
-            val reducedProductReleases =
-                if (productReleases.size > 2) {
-                    listOf(productReleases.first(), productReleases.last())
-                } else {
-                    productReleases
-                }
-            reducedProductReleases.forEach { version ->
-                val ideVersion = version.substringAfter('-').ifEmpty { version }
-                create(IntelliJPlatformType.IntellijIdeaUltimate, ideVersion)
-            }
+            val platformType = IntelliJPlatformType.IntellijIdeaUltimate
+            create(
+                type = platformType,
+                version = providers.gradleProperty("verifierVersionSince")
+            )
+            create(
+                type = platformType,
+                version = providers.gradleProperty("verifierVersionUntil")
+            )
         }
     }
 }
