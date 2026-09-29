@@ -92,7 +92,9 @@ intellijPlatform {
 
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
-            untilBuild = providers.gradleProperty("pluginUntilBuild")
+            // The upper bound is managed by the JetBrains Marketplace versions control.
+            // See https://platform.jetbrains.com/t/2026-2-is-coming-time-to-check-your-plugin-compatibility/4618
+            untilBuild = provider { null }
         }
     }
 
@@ -115,17 +117,10 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            val productReleases = ProductReleasesValueSource().get()
-            val reducedProductReleases =
-                if (productReleases.size > 2) {
-                    listOf(productReleases.first(), productReleases.last())
-                } else {
-                    productReleases
-                }
-            reducedProductReleases.forEach { version ->
-                val ideVersion = version.substringAfter('-').ifEmpty { version }
-                create(IntelliJPlatformType.IntellijIdeaUltimate, ideVersion)
-            }
+            // Verify the oldest and the newest supported IDE to keep the download size bounded.
+            // 2024.3 is the oldest release matching `pluginSinceBuild=243`.
+            create(IntelliJPlatformType.IntellijIdeaUltimate, "2024.3")
+            latest { types = listOf(IntelliJPlatformType.IntellijIdeaUltimate) }
         }
     }
 }
