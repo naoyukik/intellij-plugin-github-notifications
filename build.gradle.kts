@@ -37,7 +37,9 @@ dependencies {
     detektPlugins(libs.detektFormatting)
     implementation(libs.kotlinxSerializationJson)
     testImplementation(libs.junit)
-    testImplementation(libs.kotestRunnerJunit)
+    testImplementation(libs.kotestRunnerJunit) {
+        exclude(group = "org.junit.platform")
+    }
     testImplementation(libs.kotestAssertionsCore)
     testImplementation(libs.mockk)
 
