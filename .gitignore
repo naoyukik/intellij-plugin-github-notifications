@@ -7,14 +7,14 @@ build
 *.crt
 /node_modules/
 /.kotlin/
+.env
+http-client.private.env.json
 
-/.claude/
-/.gemini/*
-!/.gemini/settings.json
-/.aiassistant/
-/.junie/
-/CLAUDE.local.md
-/GEMINI.local.md
-/AGENTS.local.md
-
-/.env
+# local files
+# A folder for storing files you want to manage but not commit
+# AI files
+/.aiassistant
+/.junie
+*.local
+*.local.md
+/.inline-review-notes
