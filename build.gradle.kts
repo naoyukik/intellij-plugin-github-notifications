@@ -2,6 +2,7 @@ import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask
 
 plugins {
     id("java") // Java support
@@ -126,6 +127,15 @@ intellijPlatform {
                 version = providers.gradleProperty("verifierVersionUntil")
             )
         }
+
+        // KotlinがToolWindowFactoryの抽象メソッドに対して生成する委譲ブリッジメソッド
+        // (getAnchor/getIcon/manage) が、2024.3系では@Internal指定のためinternal API使用として検知される。
+        // javapで確認した実装は親インターフェースへの単一invokespecial委譲のみで実害がない。
+        // なお2026.2系では同メソッドがExperimental指定に昇格しており、この警告は発生しない。
+        failureLevel = listOf(
+            VerifyPluginTask.FailureLevel.COMPATIBILITY_PROBLEMS,
+            VerifyPluginTask.FailureLevel.OVERRIDE_ONLY_API_USAGES,
+        )
     }
 }
 
