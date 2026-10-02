@@ -1,0 +1,9 @@
+{
+  "track_id": "intellij_2026_3_support_20260928",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-09-28T00:00:00Z",
+  "updated_at": "2026-09-28T00:00:00Z",
+  "issue": 413,
+  "description": "Issue #413 対応: untilBuild を削除し IntelliJ IDEA 2026.3 での動作を検証する"
+}
