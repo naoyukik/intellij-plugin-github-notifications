@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.14.11] - 2026-10-02
+
 ### Changed
 
 - Support for IntelliJ 2026.3
@@ -220,7 +222,8 @@ Initial release of the GitHub Notifications IntelliJ Plugin.
 
 Done is better than perfect.
 
-[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/0.14.10...HEAD
+[Unreleased]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/0.14.11...HEAD
+[0.14.11]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/0.14.10...0.14.11
 [0.14.10]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/0.14.9...0.14.10
 [0.14.9]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/0.14.7...0.14.9
 [0.14.7]: https://github.com/naoyukik/intellij-plugin-github-notifications/compare/0.14.6...0.14.7
